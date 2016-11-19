@@ -244,7 +244,7 @@ body {
 }
 .layout-l {
   padding-right: 20px;
-  margin-top: 25px;
+  margin-top: 20px;
   float: right;
   width: 80%;
   *width: 74.969%;
@@ -324,7 +324,7 @@ body {
 }
 /* sidebar */
 #sidebar {
-  margin-top: 40px;
+  margin-top: 20px;
   word-wrap: break-word;
 }
 #sidebar .widget {
@@ -501,7 +501,7 @@ body {
 }
 /* post */
 .post {
-  padding: 20px;
+  padding: 4px 20px;
   background: #fff;
   margin-top: 0px;
   border-radius: 4px;
@@ -514,8 +514,8 @@ body {
   text-align: left;
   border-bottom: 1px solid #d8e2eb;
   padding-bottom: 10px;
-  font-weight: bold;
-  font-size: 22px;
+  font: bold 20px/30px 'MicrosoftYaHei Arial';
+  vertical-align: middle;
   line-height: 1.1;
 }
 .post .post-title a {
@@ -526,7 +526,7 @@ body {
 }
 .post .post-meta {
   padding: 0;
-  margin: 10px 0 0;
+  margin: 4px 0 0;
   color: #40759b;
   float: left;
   display: inline;
@@ -581,10 +581,11 @@ body {
 }
 .post .post-content {
   clear: left;
-  font-size: 15px;
+  font: normal 14px/24px Arial;
+  text-indent: 2em;
   line-height: 1.77;
   color: #333;
-  padding-top: 15px;
+  padding-top: 10px;
   text-align: justify;
   text-justify: distribute;
   word-break: normal;
@@ -666,7 +667,8 @@ body {
   display: block;
   height: 0;
   clear: both;
-  border-top: 1.5px dotted #000;
+  border-top: 0.5px dashed #999;
+  padding-bottom: 5px;
 }
 .post .tags {
   padding-bottom: 1em;

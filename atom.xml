@@ -4,21 +4,21 @@
   <subtitle>目前从事于大数据开发岗位，热衷于Hadoop、Hive、Spark、Storm、Kaffka、Redis、MongoDB、ElasticSearch、数据仓库等技术</subtitle>
   <link href="/atom.xml" rel="self"/>
   
-  <link href="http://jerryliu306.github.io/"/>
+  <link href="http://itsky88.com/"/>
   <updated>2016-11-19T02:25:48.000Z</updated>
-  <id>http://jerryliu306.github.io/</id>
+  <id>http://itsky88.com/</id>
   
   <author>
     <name>Jerry Liu</name>
-    
+    <email>1031757312@qq.com</email>
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
     <title>使用Hexo搭建博客</title>
-    <link href="http://jerryliu306.github.io/2016/11/19/hello-world/"/>
-    <id>http://jerryliu306.github.io/2016/11/19/hello-world/</id>
+    <link href="http://itsky88.com/2016/11/19/hello-world/"/>
+    <id>http://itsky88.com/2016/11/19/hello-world/</id>
     <published>2016-11-19T02:25:48.000Z</published>
     <updated>2016-11-19T02:25:48.000Z</updated>
     
@@ -39,10 +39,10 @@
     
     </summary>
     
-      <category term="Nodejs" scheme="http://jerryliu306.github.io/categories/Nodejs/"/>
+      <category term="Nodejs" scheme="http://itsky88.com/categories/Nodejs/"/>
     
     
-      <category term="Hexo" scheme="http://jerryliu306.github.io/tags/Hexo/"/>
+      <category term="Hexo" scheme="http://itsky88.com/tags/Hexo/"/>
     
   </entry>
   

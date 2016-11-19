@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
-  <title>Jerry 的数据田地</title>
+  <title>Jerry 的数据天地</title>
   <subtitle>目前从事于大数据开发岗位，热衷于Hadoop、Hive、Spark、Storm、Kaffka、Redis、MongoDB、ElasticSearch、数据仓库等技术</subtitle>
   <link href="/atom.xml" rel="self"/>
   

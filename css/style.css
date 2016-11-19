@@ -1,4 +1,7 @@
 /* reset */
+body {
+  font-family: Arial, Console, Verdana, Courier New;
+}
 body,
 dl,
 dt,
@@ -207,6 +210,15 @@ body {
 #center.body {
   padding: 0px 35px 0px 35px;
 }
+.notice.tracking-ad {
+  margin: 10px 10px;
+  padding: 2px 4px 2px 20px;
+  border: dashed 1px #f8cc7e;
+  background: #fffce7 url("../img/ico_notice.png") no-repeat 5px center;
+  _background: #fffce7 url("../img/ico_notice.gif") no-repeat 5px center;
+  font: normal 12px/22px Arial;
+  display: block;
+}
 .layout-g {
   letter-spacing: -0.31em;
   *letter-spacing: normal;
@@ -231,6 +243,8 @@ body {
   text-rendering: auto;
 }
 .layout-l {
+  padding-right: 20px;
+  margin-top: 25px;
   float: right;
   width: 80%;
   *width: 74.969%;
@@ -245,7 +259,7 @@ body {
   margin: 0 auto;
 }
 .content_container {
-  padding-right: 40px;
+  border: 1px solid #adc2d7;
 }
 .content_container .post .post-content h2 {
   margin: 0;
@@ -487,13 +501,12 @@ body {
 }
 /* post */
 .post {
-  padding: 25px;
+  padding: 20px;
   background: #fff;
-  margin-top: 40px;
+  margin-top: 0px;
   border-radius: 4px;
   -webkit-box-shadow: 1px 2px 3px #adc2d7;
   box-shadow: 1px 2px 3px #adc2d7;
-  border: 1px solid #adc2d7;
 }
 .post .post-title {
   margin: 0;
@@ -647,6 +660,13 @@ body {
 .post .post-content ul a:hover,
 .post .post-content ol a:hover {
   text-decoration: underline;
+}
+.post .clear:after {
+  content: "";
+  display: block;
+  height: 0;
+  clear: both;
+  border-top: 1.5px dotted #000;
 }
 .post .tags {
   padding-bottom: 1em;

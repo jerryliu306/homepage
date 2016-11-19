@@ -243,15 +243,14 @@ body {
   text-rendering: auto;
 }
 .layout-l {
-  padding-right: 20px;
-  margin-top: 20px;
-  float: right;
+  margin: 20px auto 0px;
   width: 80%;
   *width: 74.969%;
 }
 .layout-r {
-  float: left;
-  width: 20%;
+  align: right;
+  margin: auto;
+  width: 17%;
   *width: 24.969%;
 }
 .body_container {
@@ -329,7 +328,7 @@ body {
 }
 #sidebar .widget {
   margin-bottom: 20px;
-  padding: 10px 20px 20px 20px;
+  padding: 5px 13px;
   border-radius: 4px;
   -webkit-box-shadow: 1px 2px 3px #adc2d7;
   box-shadow: 1px 2px 3px #adc2d7;
@@ -352,6 +351,7 @@ body {
   border-bottom: 1px solid #d8e2eb;
   display: block;
   font-weight: normal;
+  padding: 0;
 }
 #sidebar .widget .tagcloud {
   margin-top: 10px;

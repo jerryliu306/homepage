@@ -1,0 +1,806 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+  <title>js-window对象的方法和属性资料 | ITSky</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=3, minimum-scale=1">
+  
+  <meta name="author" content="JerryLiu">
+  
+  <meta name="description" content="熟练window对象的open、close、alert、confirm、prompt、setTimeout、clearTimeout、setInterval、clearInterval、moveBy、resizeBy、scrollBy方法的使用掌握window对象的moveTo、resizeTo、s">
+  
+  
+  
+  
+  
+  <link rel="icon" href="/img/favicon.ico">
+  
+  
+  <link rel="apple-touch-icon" href="/img/pacman.jpg">
+  <link rel="apple-touch-icon-precomposed" href="/img/pacman.jpg">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <script src="/js/jquery-2.1.0.min.js"></script>
+  <link rel="stylesheet" href="//cdn.bootcss.com/highlight.js/8.0/styles/monokai_sublime.min.css">
+  <script type="text/javascript" src="//cdn.bootcss.com/highlight.js/8.0/highlight.min.js"></script>
+  <script type="text/javascript">
+      hljs.initHighlightingOnLoad()
+  </script>
+</head>
+
+  <body>
+    <header>
+      <div>
+	
+	<div id="textlogo">
+		<!-- <h1 class="site-name"><a href="/" title="ITSky">ITSky</a></h1>-->
+		<h1 class="site-name">ITSky</h1>
+		<h2 class="blog-motto">专注于Linux、Hadoop、Hive、Spark、Kaffka、Redis、MongoDB、ElasticSearch等技术</h2>
+	</div>
+	<div class="navbar">
+		<a class="navbutton navmobile" href="#" title="菜单"></a>
+	</div>
+	<nav class="animated">
+		<ul>
+			
+				<li><a href="/">主页</a></li>
+			
+				<li><a href="/archives">归档</a></li>
+			
+				<li><a href="/categories">分类</a></li>
+			
+				<li><a href="/about">About</a></li>
+			
+			<li>
+			
+			<!--<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+				<label>Search</label>
+				<input type="text" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+				<input type="hidden" name="q" value="site:itsky88.com">
+			</form>-->
+			
+			</li>
+		</ul>
+	</nav>
+</div>
+
+    </header>
+    <div id="container">
+      <!-- 文章内容详情模块 -->
+<div id="main" class="post" itemscope itemprop="blogPost">
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h2 itemprop="name">
+    
+      <a href="/2016/12/18/csdn/js-window对象的方法和属性资料/" title="js-window对象的方法和属性资料" itemprop="url">js-window对象的方法和属性资料</a>
+    
+  </h2>
+  <p class="article-author">By
+    
+      <a href="http://itsky88.com" title="JerryLiu">JerryLiu</a>
+    </p>
+  <p class="article-time">
+    <time datetime="2016-12-18T09:34:18.000Z" itemprop="datePublished">2016-12-18</time>
+    更新日期:<time datetime="2016-12-18T09:34:18.000Z" itemprop="dateModified">2016-12-18</time>
+    
+  </p>
+</header>
+		<div class="article-content">
+			
+			
+				<div id="toc" class="toc-article">
+					<strong class="toc-title">文章目录</strong>
+				
+				</div>
+			
+			<p>熟练window对象的open、close、alert、confirm、prompt、setTimeout、clearTimeout、setInterval、clearInterval、moveBy、resizeBy、scrollBy方法的使用<br>掌握window对象的moveTo、resizeTo、scrollTo、print方法的使用<br>熟练掌握window对象的status、location、name、self、opener属性的使用　　Window对象是客户端javascript最高层对象之一，只要打开浏览器窗口，不管该窗口中是否有打开的网页，当遇到BODY、FRAMESET或FRAME元素时，都会自动建立window对象的实例。另外，该对象的实例也可由window.open()方法创建。由于window对象是其它大部分对象的共同祖先，在调用window对象的方法和属性时，可以省略window对象的引用。例如：window.document.write()可以简写成： document.write()。　 在窗口中觖发本窗口对象的任何方法和属性时可以省去窗口的实例名称。例如给当前的myWin窗口设置status属性时，可以只用status而不用myWin.status。但是，在事件处理中调用location属性、close()方法或open()方法时必须使用实例名称。<br>6-2-1 window对象的方法<br>window对象有以下方法： </p>
+<p>open<br>close<br>alert<br>confirm<br>prompt<br>setTimeout<br>clearTimeout<br>setInterval<br>clearInterval<br>moveBy<br>moveTo<br>resizeBy<br>resizeTo<br>scrollBy<br>scrollTo<br>find<br>back<br>forward<br>home<br>stop<br>print<br>blur<br>focus<br>captureEvent<br>enableExternalCapture<br>disableExternalCapture<br>handleEvent<br>releaseEvent<br>routeEvent<br>scroll </p>
+<p>　　1. open方法<br>　　语法格式： </p>
+<p>window.open(URL,窗口名称,窗口风格)<br>　　功能：打开一个新的窗口，并在窗口中装载指定URL地址的网页。 </p>
+<p>　　说明： </p>
+<p>open方法用于打开一个新的浏览器窗口，并在新窗口中装入一个指定的URL地址；<br>open方法在打开一个新的浏览器窗口时，还可以指定窗口的名称(第二个参数)；<br>open方法在打开一个新的浏览器窗口时，还可以指定窗口的风格(第三个参数)， </p>
+<p>窗口风格有以下选项，这些选项可以多选，如果多选，各选项之间用逗号分隔：<br>toolbar：指定窗口是否有标准工具栏。当该选项的值为1或yes时，表示有标准工具栏，当该选项的值为0或no时，表示没有标准工具栏；<br>location：指定窗口是否有地址工具栏，选项的值及含义与toolbar相同；<br>directories：指定窗口是否有链接工具栏，选项的值及含义与toolbar相同；<br>status：指定窗口是否有状态栏，选项的值及含义与toolbar相同；<br>menubar：指定窗口是否有菜单，选项的值及含义与toolbar相同；<br>scrollbar：指定当前窗口文档大于窗口时是否有滚动条，选项的值及含义与toolbar相同；<br>resizable：指定窗口是否可改变大小，选项的值及含义与toolbar相同；<br>width：以像素为单位指定窗口的宽度，已被innerWidth取代；<br>height：以像素为单位指定窗口的高度，已被innerHeight取代；<br>outerWidth：以像素为单位指定窗口的外部宽度；<br>outerHeight：以像素为单位指定窗口的外部高度；<br>left：以像素为单位指定窗口距屏幕左边的位置；<br>top：以像素为单位指定窗口距屏幕顶端的位置；<br>alwaysLowered：指定窗口隐藏在所有窗口之后，选项的值及含义与toolbar相同；<br>alwaysRaised：指定窗口浮在所有窗口之上，选项的值及含义与toolbar相同；<br>dependent：指定打开的窗口为当前窗口的一个子窗口，并随着父窗口的关闭而关闭，选项的值及含义与toolbar相同；<br>hotkeys：在没有菜单栏的新窗口中设置安全退出的热键，选项的值及含义与toolbar相同；<br>innerHeight：设定窗口中文档的像素高度；<br>innerWidth：设定窗口中文档的像素宽度；<br>screenX：设定窗口距离屏幕左边界的像素长度；<br>screenY：设定窗口距离屏幕上边界的像素长度；<br>titleBar：指明标题栏是否在新窗口中可见，选项的值及含义与toolbar相同；<br>z-look：指明当窗口被激活时，不能浮在其它窗口之上，选项的值及含义与toolbar相同。 </p>
+<p>open方法返回的是该窗口的引用。 </p>
+<p>小技巧：该方法经常用于在打开一个网页时自动打开另一个窗口。 </p>
+<p>例6-2-1：编制一个小程序，它用于在打开当前窗口时自动打开另一个窗口，要 </p>
+<p>求该窗没有标准工具栏、地址栏、链接工具栏、菜单栏，但有状态栏，窗口中打 </p>
+<p>开的网页地址为：<a href="http://www.dlrtvu.edu.cn。" target="_blank" rel="external">http://www.dlrtvu.edu.cn。</a> </p>
+<ol>
+<li>close方法<br>语法格式： </li>
+</ol>
+<p>window.close()<br>功能：close方法用于自动关闭浏览器窗口。 </p>
+<ol>
+<li>alert方法<br>语法格式： </li>
+</ol>
+<p>window.alert(提示字符串)<br>功能：弹出一个警告框，在警告框内显示提示字符串文本。 </p>
+<ol>
+<li>confirm方法<br>语法格式： </li>
+</ol>
+<p>window.confirm(提示字符串)<br>功能：显示一个确认框，在确认框内显示提示字符串，当用户单击“确定”按钮 </p>
+<p>时该方法返回true，单击“取消”时返回false。 </p>
+<ol>
+<li>prompt方法<br>语法格式： </li>
+</ol>
+<p>window.prompt(提示字符串，缺省文本)<br>功能：显示一个输入框，在输入框内显示提示字符串，在输入文本框显示缺省文 </p>
+<p>本，并等待用户输入，当用户单击“确定”按钮时，返回用户输入的字符串，当 </p>
+<p>单击“取消”按钮时，返回null值。 </p>
+<ol>
+<li>setTimeout方法<br>语法格式： </li>
+</ol>
+<p>window.setTimeout(代码字符表达式,毫秒数)<br>功能：定时设置，当到了指定的毫秒数后，自动执行代码字符表达式。 </p>
+<ol>
+<li>clearTimeout方法<br>语法格式： </li>
+</ol>
+<p>window.clearTimeout(定时器)<br>功能：取消以前的定时设置，其中的参数是用setTimeout设置时的返回值。 </p>
+<ol>
+<li>setInterval方法<br>语法格式： </li>
+</ol>
+<p>window.setInterval(代码字符表达式,毫秒数)<br>功能：设定一个时间间隔后(第二个参数)，反复执行“代码字符表达式”的内容 </p>
+<ol>
+<li>clearInterval方法<br>语法格式： </li>
+</ol>
+<p>window.clearInterval(时间间隔器)<br>功能：取消setInterval设置的定时。其中的参数是setInterval方法的返回值。 </p>
+<ol>
+<li>moveBy方法<br>语法格式： </li>
+</ol>
+<p>window.moveBy(水平位移量,垂直位移量)<br>功能：按照给定像素参数移动指定窗口。第一个参数是窗口水平移动的像素，第 </p>
+<p>二个参数是窗口垂直移动的像素。 </p>
+<p>11.moveTo方法<br>语法格式： </p>
+<p>window.moveTo(x,y)<br>功能：将窗口移动到指定的指定坐标(x,y)处。 </p>
+<ol>
+<li>resizeBy方法<br>语法格式： </li>
+</ol>
+<p>window.resizeBy(水平,垂直)<br>功能：将当前窗口改变指定的大小(x,y)，当x、y的值大于0时为扩大，小于0时 </p>
+<p>为缩小。 </p>
+<ol>
+<li>resizeTo方法<br>语法格式： </li>
+</ol>
+<p>window.resizeTo(水平宽度,垂直宽度)<br>功能：将当前窗口改变成(x,y)大小，x、y分别为宽度和高度。 </p>
+<ol>
+<li>scrollBy方法<br>语法格式： </li>
+</ol>
+<p>window.scrollBy(水平位移量，垂直位移量)<br>功能：将窗口中的内容按给定的位移量滚动。参数为正数时，正向滚动，否则反 </p>
+<p>向滚动。 </p>
+<ol>
+<li>scrollTo方法<br>语法格式： </li>
+</ol>
+<p>window.scrollTo(x,y)<br>功能：将窗口中的内容滚动到指定位置。 </p>
+<p>16.find方法<br>语法格式： </p>
+<p>window.find()<br>功能：当触发该方法时，将弹出一个“find”(查找)对话窗口，并允许用户在触 </p>
+<p>发find方法的页面中查找一个字符串。 </p>
+<p>注：该属性在IE5.5及Netscape6.0中都不支持。 </p>
+<ol>
+<li>back方法<br>语法格式： </li>
+</ol>
+<p>window.back()<br>功能：模拟用户点击浏览器上的“后退”按钮，将页面转到浏览器的上一页。 </p>
+<p>说明：仅当当前页面存在上一页时才能进行该操作。 </p>
+<p>注：IE5.5不支持该方法，Netscape6.0支持。 </p>
+<ol>
+<li>forward方法<br>语法格式： </li>
+</ol>
+<p>window.forward()<br>功能：模拟用户点击浏览器上的“前进”按钮，将页面转到浏览器的下一页。 </p>
+<p>说明：仅当当前页面存在下一页时才能进行该操作。 </p>
+<p>注：IE5.5不支持该方法，Netscape6.0支持。 </p>
+<ol>
+<li>home方法<br>语法格式： </li>
+</ol>
+<p>window.home()<br>功能：模拟用户点击浏览器上的“主页”按钮，将页面转到指定的页面上。 </p>
+<p>注：IE5.5不支持该方法，Netscape6.0支持。 </p>
+<ol>
+<li>stop方法<br>语法格式： </li>
+</ol>
+<p>window.stop()<br>功能：模拟用户点击浏览器上的“停止”按钮，终止浏览器的下载操作。 </p>
+<p>注：IE5.5不支持该方法，Netscape6.0支持。 </p>
+<ol>
+<li>print方法<br>语法格式： </li>
+</ol>
+<p>window.print()<br>功能：模拟用户点击浏览器上的“打印”按钮，通知浏览器打开打印对话框打印 </p>
+<p>当前页。 </p>
+<ol>
+<li>blur方法<br>语法格式： </li>
+</ol>
+<p>window.blur()<br>功能：从窗口中移出焦点。当与focus方法合用时必须小心，因为可能导致焦点 </p>
+<p>不断移进移出。 </p>
+<ol>
+<li>focus方法<br>语法格式： </li>
+</ol>
+<p>window.focus()<br>功能：使窗口中得到焦点。当与blur方法合用时必须小心，因为可能导致焦点不 </p>
+<p>断移进移出。 </p>
+<ol>
+<li>captureEvent方法<br>语法格式： </li>
+</ol>
+<p>window.captureEvent(Event)<br>window.captureEvent(事件1|事件2|…|事件n)<br>功能：捕捉指定参数的所有事件。由于能够捕获哪些由本地程序自己处理的事件 </p>
+<p>，所以程序员可以随意定义函数来处理事件。如果有多个事件需要捕捉，各事件 </p>
+<p>之间用管道符“|”隔开。可捕捉的事件类型如下： </p>
+<p>Event.ABORT </p>
+<p>Event.BLUR </p>
+<p>Event.CHANGE </p>
+<p>Event.CLICK </p>
+<p>Event.DBLCLICK </p>
+<p>Event.DRAGDROP </p>
+<p>Event.ERROR </p>
+<p>Event.FOCUS </p>
+<p>Event.KEYDOWN </p>
+<p>Event.KEYPRESS </p>
+<p>Event.KEYUP </p>
+<p>Event.LOAD </p>
+<p>Event.MOUSEDOWN </p>
+<p>Event.MOUSUEMOVE </p>
+<p>Event.MOUSEOUT </p>
+<p>Event.MOUSEOVER </p>
+<p>Event.MOUSEUP </p>
+<p>Event.MOVE </p>
+<p>Event.RESET </p>
+<p>Event.RESIZE </p>
+<p>Event.SELECT </p>
+<p>Event.SUBMIT </p>
+<p>Event.UNLOAD </p>
+<ol>
+<li>enableExternalCapture事件<br>语法格式： </li>
+</ol>
+<p>window.enableExternalCapture(event)<br>功能：enableExternalCapture方法用于捕捉通过参数传入的外部事件。 </p>
+<ol>
+<li>disableExternalCapture事件<br>语法格式： </li>
+</ol>
+<p>window.disableExternalCapture()<br>功能：取消enableExternalCapture方法的设置，终止对外部事件的捕捉。 </p>
+<ol>
+<li>handleEvent事件<br>语法格式： </li>
+</ol>
+<p>window.handleEvent(event)<br>功能：触发指定事件的事件处理器。 </p>
+<ol>
+<li>releaseEvent事件<br>语法格式： </li>
+</ol>
+<p>window.releaseEvent(event)<br>window.releaseEvent(事件1|事件2|…|事件n)<br>功能：释放通过参数传入的已被捕捉的事件，这些事件是由 </p>
+<p>window.captureEvent方法设置的，可释放的事件与captureEvent相同。 </p>
+<ol>
+<li>routeEvent事件<br>语法格式： </li>
+</ol>
+<p>window.releaseEvent(event)<br>功能：把被捕捉类型的所有事件转交给标准事件处理方法进行处理，可转交的事 </p>
+<p>件与captureEvent相同。 </p>
+<p>30 scroll事件<br>语法格式： </p>
+<p>window.scroll(X坐标,Y坐标)<br>功能：将窗口移动到指定的坐标位置。 </p>
+<p>6-2-2 window对象的属性<br>window对象具有如下属性： </p>
+<p>status </p>
+<p>statusbar </p>
+<p>statusbar.visible </p>
+<p>defaultstatus </p>
+<p>location </p>
+<p>locationbar </p>
+<p>locationbar.visible </p>
+<p>self </p>
+<p>name </p>
+<p>closed </p>
+<p>frames </p>
+<p>frames.length </p>
+<p>length </p>
+<p>document </p>
+<p>history </p>
+<p>innerHeight </p>
+<p>innerWidth </p>
+<p>menubar </p>
+<p>menubar.visible </p>
+<p>opener </p>
+<p>outerHeight </p>
+<p>outerWidth </p>
+<p>pageXOffset </p>
+<p>pageYOffset </p>
+<p>parent </p>
+<p>personalbar </p>
+<p>personalbar.visible </p>
+<p>scrollbar </p>
+<p>scrollbar.visible </p>
+<p>toolbar </p>
+<p>toolbar.visible </p>
+<p>top </p>
+<ol>
+<li>status属性<br>语法格式： </li>
+</ol>
+<p>window.status=字符串<br>功能：设置或给出浏览器窗口中状态栏的当前显示信息。 </p>
+<p>小技巧：可以使用该属性设置浏览器窗口状态栏信息。 </p>
+<ol>
+<li>statusbar属性<br>语法格式： </li>
+</ol>
+<p>window.statusbar.属性<br>功能：statusbar属性本身也是一个对象，用于访问它自已的visible属性从而确 </p>
+<p>定状态栏是否可见。 </p>
+<p>注：IE5.5浏览器不支持该属性。 </p>
+<ol>
+<li>statusbar.visible属性<br>语法格式： </li>
+</ol>
+<p>window.statusbar.visible<br>功能：检查状态栏是否可见，如果可见则返回true，反之返回false。 </p>
+<p>注：IE5.5浏览器不支持该属性。 </p>
+<ol>
+<li>defaultstatus属性<br>语法格式： </li>
+</ol>
+<p>window.defaultstatus[=字符串]<br>功能：defaultstatus属性值是浏览器窗中状态栏的默认显示信息。 </p>
+<p>5.location属性<br>语法格式： </p>
+<p>window.location=URL<br>功能：给出当前窗口的URL信息或指定打开窗口的URL。 </p>
+<ol>
+<li>locationbar属性<br>语法格式： </li>
+</ol>
+<p>window.locationbar.属性<br>功能：locationbar属性也可以看成是一个子对象，这个属性用来获取它自已的 </p>
+<p>visible属性来确定位置栏是否可见。 </p>
+<p>到目前为止，该属性只有一个子属性：visible。 </p>
+<p>注：IE5.5不支持该属性。 </p>
+<ol>
+<li>locationbar.visible属性<br>语法格式： </li>
+</ol>
+<p>window.locationbar.visible<br>功能：返回位置栏是否可见，如果可见返回true，反之返回false。 </p>
+<p>注：IE5.5不支持该属性。 </p>
+<ol>
+<li>self属性<br>语法格式： </li>
+</ol>
+<p>window.self.方法<br>window.self.属性<br>功能：该属性包含当前窗口的标志，利用这个属性，可以保证在多个窗口被打开 </p>
+<p>的情况下，正确调用当前窗口内的函数或属性而不会发生混乱。 </p>
+<ol>
+<li>name属性<br>语法格式： </li>
+</ol>
+<p>window.name=名称<br>功能：返回窗口名称，这个名称是由window.open()方法创建新窗口时给定的。 </p>
+<p>在javascript1.0版本中，这个属性只能用于读取窗口名称，而到了 </p>
+<p>javascript1.1版本时，可以用这个属性给一个不是用window.open()方法创建的 </p>
+<p>窗口指定一个名称。 </p>
+<ol>
+<li>closed属性<br>语法格式： </li>
+</ol>
+<p>window.closed<br>功能：closed属性用于返回指定窗口的实例是否已经关闭，如果关闭，返回true </p>
+<p>，反之返回flase。 </p>
+<ol>
+<li>frames属性<br>语法格式： </li>
+</ol>
+<p>window.frames[“框架名称”]<br>window.frames[数值]<br>功能：frames属性是一个数组，用来存储文档中每一个由元素创建的子窗口(框 </p>
+<p>架)实例，其中的下标即可以是次序号也可以是用FRAME元素的NAME属性指定的名 </p>
+<p>称来得到并使用。 </p>
+<ol>
+<li>frames.length属性<br>语法格式： </li>
+</ol>
+<p>window.frames.length<br>功能：frames.length属性用于给出文档中子窗口(框架)实例的个数。 </p>
+<ol>
+<li>length属性<br>语法格式： </li>
+</ol>
+<p>window.length<br>功能：length属性返回一个窗口内的子窗口数目，该属性与 </p>
+<p>window.frame.length属性的值相同。 </p>
+<ol>
+<li>document属性<br>语法格式： </li>
+</ol>
+<p>window.document.事件<br>window.document.方法<br>window.document.属性<br>功能：window对象的子对象document是javascript的核心对象，在脚本中遇到 </p>
+<p>BODY元素时创建一个实例。 </p>
+<ol>
+<li>history属性<br>语法格式： </li>
+</ol>
+<p>window.history[数值]<br>window.history.方法()<br>window.history.属性<br>window对象的子对象history是javascript的核心对象之一，该属性包含了一个 </p>
+<p>已访问过页面的名称和URL的数组。 </p>
+<ol>
+<li>innerHeight属性<br>语法格式： </li>
+</ol>
+<p>window.innerHeight=数值<br>功能：返回或指定浏览器窗口中文档的像素高度，这个高度不包括任何工具栏和 </p>
+<p>组成窗口的页面修饰高度。 </p>
+<p>注：IE5.5不支持该属性。 </p>
+<ol>
+<li>innerWidth属性<br>语法格式： </li>
+</ol>
+<p>window.innerHeight=数值<br>功能：返回或指定浏览器窗口中文档的像素宽度，这个宽度不包括任何工具栏和 </p>
+<p>组成窗口的页面修饰宽度。 </p>
+<p>注：IE5.5不支持该属性。 </p>
+<ol>
+<li>menubar属性<br>语法格式： </li>
+</ol>
+<p>window.menubar.属性<br>功能：menubar属性也可以看成是一个子对象，这个属性用来获取它自已的 </p>
+<p>visible属性来确定菜单栏是否可见。 </p>
+<p>到目前为止，该属性只有一个子属性：visible。 </p>
+<p>注：IE5.5不支持该属性。 </p>
+<ol>
+<li>menubar.visible属性<br>语法格式： </li>
+</ol>
+<p>window.menubar.visible<br>功能：menubar.visible属性用于返回菜单栏是否可见，如果可见返回true，反 </p>
+<p>之返回false。 </p>
+<p>注：IE5.5不支持该属性。 </p>
+<ol>
+<li>opener属性<br>语法格式： </li>
+</ol>
+<p>window.opener<br>window.opener.方法<br>window.opener.属性<br>功能：opener属性与打开该窗口的父窗口相联系，当访问子窗口中operer属性时 </p>
+<p>，返回的是父窗口。通过该属性，可以使用父窗口对象中的方法和属性。 </p>
+<ol>
+<li>outerHeight属性<br>语法格式： </li>
+</ol>
+<p>window.outerHeight<br>功能：outerHeight属性用于访问浏览器窗口的像素高度，该高度包括工具栏和 </p>
+<p>装饰边的高度。 </p>
+<p>注：IE5.5不支持该属性。 </p>
+<ol>
+<li>outerWidth属性<br>语法格式： </li>
+</ol>
+<p>window.outerWidth<br>功能：outerWidth属性用于访问浏览器窗口的像素宽度，该宽度包括工具栏和装 </p>
+<p>饰边的宽度。 </p>
+<p>注：IE5.5不支持该属性。 </p>
+<ol>
+<li>pageXOffset属性<br>语法格式： </li>
+</ol>
+<p>window.pageXOffset=数值<br>功能：指定浏览器窗口中文档左上角在窗口中的当前水平像素位置。在利用 </p>
+<p>moveTo移动之前，可以通过该属性来决定是否需要移动窗口。因为该属性返回了 </p>
+<p>可见文档相对整个页面的当前位置。 </p>
+<p>注：IE5.5不支持该属性。 </p>
+<ol>
+<li>pageYOffset属性<br>语法格式： </li>
+</ol>
+<p>window.pageYOffset=数值<br>功能：指定浏览器窗口中文档左上角在窗口中的当前垂直像素位置。在利用 </p>
+<p>moveTo移动之前，可以通过该属性来决定是否需要移动窗口。因为该属性返回了 </p>
+<p>可见文档相对整个页面的当前位置。 </p>
+<p>注：IE5.5不支持该属性。 </p>
+<ol>
+<li>parent属性<br>语法格式： </li>
+</ol>
+<p>window.parent.frames[数值]<br>window.parent.framesName<br>功能：访问各个子窗口(多框架)所在的父窗口。 </p>
+<ol>
+<li>personalbar属性<br>语法格式： </li>
+</ol>
+<p>window.personalbar.属性<br>功能：personalbar属性本身也是一个对象，用于访问其自身的visible属性来确 </p>
+<p>定个人栏是否可见。 </p>
+<p>注：IE5.5不支持该属性。 </p>
+<ol>
+<li>personalbar.visible属性<br>语法格式： </li>
+</ol>
+<p>window.personalbar.visible<br>功能：确定个人栏是否可见，如果可见则返回true，反之返回false。 </p>
+<p>注：IE5.5不支持该属性。 </p>
+<ol>
+<li>scrollbars属性<br>语法格式： </li>
+</ol>
+<p>window.scrollbars.属性<br>功能：scrollbars属性本身也是一个对象，用于访问其自身的visible属性来确 </p>
+<p>定滚动栏是否可见。 </p>
+<p>注：IE5.5不支持该属性。 </p>
+<ol>
+<li>scrollbars.visible属性<br>语法格式： </li>
+</ol>
+<p>window.scrollbars.visible<br>功能：scrollbars.visible用于确定滚动栏是否可见，如果可见则返回true，反 </p>
+<p>之返回false。 </p>
+<p>注：IE5.5不支持该属性。 </p>
+<ol>
+<li>toolbar属性<br>语法格式： </li>
+</ol>
+<p>window.toolbar.属性<br>功能：toolbar属性本身也是一个对象，用于访问它自已的visible属性从而确定 </p>
+<p>工具栏是否可见。 </p>
+<p>注：IE5.5不支持该属性。 </p>
+<ol>
+<li>toolbar.visible属性<br>语法格式： </li>
+</ol>
+<p>window.toolbar.visible<br>功能：toolbar.visible属性用于检查工具栏是否可见，如果可见则返回true， </p>
+<p>反之返回false。 </p>
+<p>注：IE5.5不支持该属性。 </p>
+<ol>
+<li>top属性<br>语法格式： </li>
+</ol>
+<p>window.top.frames[数值]<br>window.top.frameName<br>window.top.方法()<br>window.top.属性<br>功能：window对象的top属性用于包含所有装入浏览器的子窗口(多框架)的最顶层窗口的信息。</p>
+<p>getAttribute()方法<br>●一份文档就是一棵节点树。</p>
+<p>  ●节点分为不同的类型：元素节点、属性节点和文本节点等。</p>
+<p>  ●getElementById()方法将返回一个对象，该对象对应着文档里的一个特定的元素节点。</p>
+<p>  ●getElementsByTagName()方法将返回一个对象数组，它们分别对应着文档里的一个特定的元素节点。</p>
+<p>  ●这些节点中的每个都是一个对象。</p>
+<p>接下来，我们将向大家介绍几个与这些对象相关联的属性和方法。</p>
+<p>3.4.1getAttribute()方法</p>
+<p>至此，我们已经向大家介绍了两种检索特定元素节点的办法：一种是使用getElementById()方法，另一种是使用getElementsByTagName()方法。在找到那个元素后，我们就可以利用getAttribute()方法把它的各种属性的值查询出来。</p>
+<p>getAttribute()方法是一个函数。它只有一个参数——你打算查询的属性的名字：</p>
+<p>object.getAttribute(attribute)<br>不过，getAttribute()方法不能通过document对象调用，这与我们此前介绍过的其他方法不同。我们只能通过一个元素节点对象调用它。</p>
+<p>例如，你可以把它与getElementsByTagName()方法结合起来，去查询每个</p><p>元素的title属性，如下所示：<br>var text=document.getElementsByTagName(“p”)<br>for (var i=0;i&lt;text.length;i++)<br>{<br>alert(text[i].getAttribute(“title”));</p>
+<p>}<br>如果把上面这段代码插入到前面给出的“购物清单”示例文档的末尾，并在Web浏览器里重新加载这个页面，屏幕上将弹出一个显示着文本消息“a gentle reminder”的alter对话框。</p>
+<p>在“购物清单”文档里只有一个带有title属性的</p><p>元素。假如这份文档还有一个或更多个不带title属性的</p><p>元素，则相应的getAttribute(“title”)调用将返回null。null是JavaScript语言中的空值，其含义是“你说的这个东西不存在”。如果你们想亲自验证一下这件事，请先把下面这段文本插入到“购物清单”文档中的现有文本段落之后：</p>
+<p></p><p>This is just test</p><br>然后重新加载这个页面。这一次，你们将看到两个alter对话框，而第二个对话框将是一片空白或者是只显示着单词“null”——具体情况要取决于你的Web浏览器将如何显示null值。<p></p>
+<p>可以修改我们的脚本，让它只在title属性存在时才弹出一条消息。我们将增加一条if语句来检查getAttribute()方法的返回值是不是null。趁着这个机会，我们还增加了几个变量以提高脚本的可读性：<br>var ts=document.getElementsByTagName(“li”);<br>for (var i=0; i&lt;ts.length;i++)<br>{text=ts[i].getAttribute(“title”);</p>
+<p>if(text!=null)<br>{<br>alert(text)<br>}<br>}<br>现在，如果重新加载这个页面，你们将只会看到一个显示着“a gentle reminder”消息的alter对话框，如下所示。</p>
+<p>我们甚至可以把这段代码缩得更短一些。当检查某项数据是否是null值时，我们其实是在检查它是否存在。这种检查可以简化为直接把被检查的数据用做if语句的条件。if (something)与if (something != null)完全等价，但前者显然更为简明。此时，如果something存在，则if语句的条件将为真；如果something不存在，则if语句的条件将为假。</p>
+<p>具体到这个例子，只要我们把if (title_text != null)替换为if (title_text)，我们就可以得到更简明的代码。此外，为了进一步增加代码的可读性，我们还可以趁此机会把alter语句与if语句写在同一行上，这可以让它们更接近于我们日常生活中的英语句子：<br>var ts=document.getElementsByTagName(“li”);<br>for (var i=0; i&lt;ts.length;i++)<br>{text=ts[i].getAttribute(“title”);</p>
+<p>if(text) alert(text)</p>
+<p>}<br>3.4.2setAttribute()方法</p>
+<p>我们此前介绍给大家的所有方法都只能用来检索信息。setAttribute()方法与它们有一个本质上的区别：它允许我们对属性节点的值做出修改。</p>
+<p>类似于getAttribute()方法，setAttribute()方法也是一个只能通过元素节点对象调用的函数，但setAttribute()方法需要我们向它传递两个参数：</p>
+<p>obiect.setAttribute(attribute,value)<br>在下面的例子里，第一条语句将把id属性值是purchase的元素检索出来，第二条语句将把这个元素的title属性值设置为a list of goods：</p>
+<p>var shopping=document.getElementById(“purchases”)<br>shopping.setAttribute(“title”,”a list of goods”)<br>我们可以利用getAttribute()方法来证明这个元素的title属性值确实发生了变化：<br>var shopping=document.getElementById(“purchases”);<br>alert(shopping.getAttribute(“title”));<br>shopping.setAttribute(“title”,”a list of goods”);<br>alert(shopping.getAttribute(“title”));<br>上面这些语句将在屏幕上弹出两个alert对话框：第一个alter对话框出现在setAttribute()方法被调用之前，它将是一片空白或显示着单词“null”；第二个出现在title属性值被设置之后，它将显示着“a list of goods”消息。</p>
+<p>在上例中，我们设置了一个现有节点的title属性，但这个属性原先并不存在。这意味着我们发出的setAttribute()调用实际完成了两项操作：先把这个属性创建出来，然后再对其值进行设置。如果我们把setAttribute()方法用在元素节点的某个现有属性上，这个属性的当前值将被覆盖。</p>
+<p>在“购物清单”示例文档里，</p><p>元素已经有了一个title属性，这个属性的值是a gentle reminder。我们可以用setAttribute()方法来改变它的当前值：</p>
+<p><script type="text/javascript"><br>var ts=document.getElementsByTagName(“li”);<br>for (var i=0; i<ts.length;i++)
+{
+var text=ts[i].getAttribute("title");
+alert(ts[i].getAttribute("title"))
+if(text)
+{
+ts[i].setAttribute("title","我会成功！")
+alert(ts[i].getAttribute("title"))
+}
+}
+上面这段代码将先从文档里把已经带有title属性的<p>元素全部检索出来，然后把它们的title属性值全部修改为brand new title text。具体到“购物清单”文档，属性值a gentle reminder将被覆盖。</p>
+<p>这里有一个非常值得关注的细节：通过setAttribute()方法对文档做出的修改，将使得文档在浏览器窗口里的显示效果和/或行为动作发生相应的变化，但我们在通过浏览器的view source（查看源代码）选项去查看文档的源代码时看到的仍将是原来的属性值——也就是说，setAttribute()方法做出的修改不会反映在文档本身的源代码里。这种“表里不一”的现象源自DOM的工作模式：先加载文档的静态内容、再以动态方式对它们进行刷新，动态刷新不影响文档的静态内容。这正是DOM的真正威力和诱人之处：对页面内容的刷新不需要最终用户在他们的浏览器里执行页面刷新操作就可以实现。</p>
+</script></p>
+		</div>
+		<footer class="article-footer clearfix">
+
+
+
+
+<div class="article-share" id="share">
+
+  <div data-url="http://itsky88.com/2016/12/18/csdn/js-window对象的方法和属性资料/" data-title="js-window对象的方法和属性资料 | ITSky" data-tsina="null" class="share clearfix">
+  </div>
+
+</div>
+</footer>   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2016/12/18/csdn/jquery访问table子元素tr访问不到的问题/" title="jquery访问table子元素tr访问不到的问题">
+  <strong>PREVIOUS:</strong><br/>
+  <span>
+  jquery访问table子元素tr访问不到的问题</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2016/12/18/csdn/js自执行函数的定义/"  title="js自执行函数的定义">
+ <strong>NEXT:</strong><br/> 
+ <span>js自执行函数的定义
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+	<script type="text/javascript" src="/js/my_highlight.js"></script>
+</div>  
+      <div class="openaside">
+    <a class="navbutton" href="#" title="显示侧边栏"></a>
+</div>
+
+  <div id="toc" class="toc-aside">
+      <strong class="toc-title">文章目录</strong>
+      
+  </div>
+
+<div id="asidepart">
+    <div class="closeaside">
+        <a class="closebutton" href="#" title="隐藏侧边栏"></a>
+    </div>
+    <aside class="clearfix">
+        
+          
+	<div class="widget">
+		<div class="categorieslist">
+			<p class="asidetitle fa fa-gui">分类</p>
+				<ul>
+				
+					<li><a href="/categories/Hibernate/" title="Hibernate">Hibernate<sup>1</sup></a></li>
+				
+					<li><a href="/categories/Hive/" title="Hive">Hive<sup>2</sup></a></li>
+				
+					<li><a href="/categories/Java/" title="Java">Java<sup>2</sup></a></li>
+				
+					<li><a href="/categories/Js/" title="Js">Js<sup>2</sup></a></li>
+				
+					<li><a href="/categories/Maven/" title="Maven">Maven<sup>1</sup></a></li>
+				
+					<li><a href="/categories/Nodejs/" title="Nodejs">Nodejs<sup>1</sup></a></li>
+				
+				</ul>
+		</div>
+	</div>
+
+        
+          
+  <div class="widget">
+    <div class="archiveslist">
+      <!-- 输出 ‘归档’ 标题 -->
+      <p class="asidetitle fa fa-fei">
+        <a href="/archives">
+          归档
+        </a>
+      </p>
+
+        <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">十二月 2016</a><span class="archive-list-count">89</span></li></ul>
+    </div>
+  </div>
+
+
+        
+          
+<div class="widget">
+	<div class="linkslist">
+		<p class="asidetitle fa fa-xie">最新文章</p>
+			<ul>
+			
+				<li><a href="/tags/Hexo/" title="Hexo">Hexo<sup>1</sup></a></li>
+			
+				<li><a href="/tags/Hibernate/" title="Hibernate">Hibernate<sup>1</sup></a></li>
+			
+				<li><a href="/tags/Hive/" title="Hive">Hive<sup>2</sup></a></li>
+			
+				<li><a href="/tags/Java/" title="Java">Java<sup>2</sup></a></li>
+			
+				<li><a href="/tags/Js/" title="Js">Js<sup>2</sup></a></li>
+			
+				<li><a href="/tags/Maven/" title="Maven">Maven<sup>1</sup></a></li>
+			
+			</ul>
+	</div>
+</div>
+
+        
+          <div class="widget">
+  <div class="linkslist">
+    <p class="asidetitle fa fa-you">友情链接</p>
+      <ul>
+        <li><a href="http://www.css88.com/jqapi-1.9/" target="_blank" title="Jquery参考手册">Jquery参考手册</a></li>
+        <li><a href="http://hexo.io" target="_blank" title="Hexo">Hexo</a></li>
+      </ul>
+  </div>
+</div>
+        
+    </aside>
+</div>
+    </div>
+    <a id="totop" href="#top"></a>
+<script type="text/javascript" src="/js/totop.js?v=1", async></script>
+    <footer><div id="footer" >
+	<div class="footer-info">
+		<p>
+			<a>网站地图</a>|<a>订阅本站</a>|<a>联系博主</a>:
+			<span>
+				<a class="fa fa-github" target="_blank" href="https://github.com/jerryliu306"></a>
+				<a class="fa fa-weibo" target="_blank" href="http://weibo.com/u/2679045517/home?wvr=5"></a>
+				<a class="fa fa-email" target="_blank" href="1031757312@qq.com"></a>
+			</span>
+		</p>
+		<p>
+			<span>
+				Copyright &copy;2016&nbsp;JerryLiu
+			</span>
+			<span>
+				Powered by
+				<a target='_blank', href='https://hexo.io'>Hexo.</a>
+			</span>
+		</p>
+	</div>
+	<!--
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	-->
+</div>
+</footer>
+    <script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else
+    {
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      h  = $('article h2')
+      ah = $('article h2'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  if(ah.length==0){
+    t.css('display','none');
+  }else{
+    c.click(function(){
+      ta.css('display', 'block').addClass('fadeIn');
+    });
+    o.click(function(){
+      ta.css('display', 'none');
+    });
+    $(window).scroll(function(){
+      ta.css("top",Math.max(140,320-$(this).scrollTop()));
+    });
+  };
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina');
+  var html = [
+  '<a href="#" class="overlay" id="qrcode"></a>',
+  '<div class="qrcode clearfix"><span>扫描二维码分享到微信朋友圈</span><a class="qrclose" href="#share"></a><strong>Loading...Please wait</strong><img id="qrcode-pic" data-src="http://s.jiathis.com/qrcode.php?url=' + encodedUrl + '"/></div>',
+  '<a href="#textlogo" class="article-back-to-top" title="Top"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="QRcode"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="Weibo"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+  $('.article-share-qrcode').click(function(){
+    var imgSrc = $('#qrcode-pic').attr('data-src');
+    $('#qrcode-pic').attr('src', imgSrc);
+    $('#qrcode-pic').load(function(){
+        $('.qrcode strong').text(' ');
+    });
+  });
+});     
+</script>
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+  </body>
+</html>
+

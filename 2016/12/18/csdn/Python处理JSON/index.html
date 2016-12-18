@@ -1,0 +1,586 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+  <title>Python处理JSON | ITSky</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=3, minimum-scale=1">
+  
+  <meta name="author" content="JerryLiu">
+  
+  <meta name="description" content="概念序列化（Serialization）：将对象的状态信息转换为可以存储或可以通过网络传输的过程，传输的格式可以是JSON、XML等。反序列化就是从存储区域（JSON，XML）读取反序列化对象的状态，重新创建该对象。JSON（JavaScript Object Notation）：一种轻量级数据交换">
+  
+  
+  
+  
+  
+  <link rel="icon" href="/img/favicon.ico">
+  
+  
+  <link rel="apple-touch-icon" href="/img/pacman.jpg">
+  <link rel="apple-touch-icon-precomposed" href="/img/pacman.jpg">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <script src="/js/jquery-2.1.0.min.js"></script>
+  <link rel="stylesheet" href="//cdn.bootcss.com/highlight.js/8.0/styles/monokai_sublime.min.css">
+  <script type="text/javascript" src="//cdn.bootcss.com/highlight.js/8.0/highlight.min.js"></script>
+  <script type="text/javascript">
+      hljs.initHighlightingOnLoad()
+  </script>
+</head>
+
+  <body>
+    <header>
+      <div>
+	
+	<div id="textlogo">
+		<!-- <h1 class="site-name"><a href="/" title="ITSky">ITSky</a></h1>-->
+		<h1 class="site-name">ITSky</h1>
+		<h2 class="blog-motto">专注于Linux、Hadoop、Hive、Spark、Kaffka、Redis、MongoDB、ElasticSearch等技术</h2>
+	</div>
+	<div class="navbar">
+		<a class="navbutton navmobile" href="#" title="菜单"></a>
+	</div>
+	<nav class="animated">
+		<ul>
+			
+				<li><a href="/">主页</a></li>
+			
+				<li><a href="/archives">归档</a></li>
+			
+				<li><a href="/categories">分类</a></li>
+			
+				<li><a href="/about">About</a></li>
+			
+			<li>
+			
+			<!--<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+				<label>Search</label>
+				<input type="text" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+				<input type="hidden" name="q" value="site:itsky88.com">
+			</form>-->
+			
+			</li>
+		</ul>
+	</nav>
+</div>
+
+    </header>
+    <div id="container">
+      <!-- 文章内容详情模块 -->
+<div id="main" class="post" itemscope itemprop="blogPost">
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h2 itemprop="name">
+    
+      <a href="/2016/12/18/csdn/Python处理JSON/" title="Python处理JSON" itemprop="url">Python处理JSON</a>
+    
+  </h2>
+  <p class="article-author">By
+    
+      <a href="http://itsky88.com" title="JerryLiu">JerryLiu</a>
+    </p>
+  <p class="article-time">
+    <time datetime="2016-12-18T09:34:18.000Z" itemprop="datePublished">2016-12-18</time>
+    更新日期:<time datetime="2016-12-18T09:34:18.000Z" itemprop="dateModified">2016-12-18</time>
+    
+  </p>
+</header>
+		<div class="article-content">
+			
+			
+				<div id="toc" class="toc-article">
+					<strong class="toc-title">文章目录</strong>
+				
+				</div>
+			
+			<p>概念<br>序列化（Serialization）：将对象的状态信息转换为可以存储或可以通过网络传输的过程，传输的格式可以是JSON、XML等。反序列化就是从存储区域（JSON，XML）读取反序列化对象的状态，重新创建该对象。<br>JSON（JavaScript Object Notation）：一种轻量级数据交换格式，相对于XML而言更简单，也易于阅读和编写，机器也方便解析和生成，Json是JavaScript中的一个子集。<br>Python2.6开始加入了JSON模块，无需另外下载，Python的Json模块序列化与反序列化的过程分别是 encoding和 decoding<br>encoding：把一个Python对象编码转换成Json字符串<br>decoding：把Json格式字符串解码转换成Python对象<br>对于简单数据类型（string、unicode、int、float、list、tuple、dict），可以直接处理。</p>
+<p>#####<a href="https://github.com/lzjun567/note/blob/master/python/json.md#jsondumpsencoding" target="_blank" rel="external"></a>json.dumps方法对简单数据类型encoding：<br>    import json<br>    data = [{‘a’:”A”,’b’:(2,4),’c’:3.0}]  #list对象<br>    print “DATA:”,repr(data)</p>
+<pre><code>data_string = json.dumps(data)
+print &quot;JSON:&quot;,data_string
+</code></pre><p>输出：<br>    DATA: [{‘a’:’A’,’c’:3.0,’b’:(2,4)}] #python的dict类型的数据是没有顺序存储的<br>    JSON: [{“a”:”A”,”c”:3.0,”b”:[2,4]}]  </p>
+<p>JSON的输出结果与DATA很相似，除了一些微妙的变化，如python的元组类型变成了Json的数组，Python到Json的编码转换规则是： <a href="https://github.com/lzjun567/note/blob/master/resource/image/python2json.png" target="_blank" rel="external"><img src="https://github.com/lzjun567/note/raw/master/resource/image/python2json.png" alt="python2json"></a></p>
+<p>#####<a href="https://github.com/lzjun567/note/blob/master/python/json.md#jsonloadsdecoding" target="_blank" rel="external"></a>json.loads方法处理简单数据类型的decoding（解码）转换<br>    import json<br>    data = [{‘a’:”A”,’b’:(2,4),’c’:3.0}]  #list对象</p>
+<pre><code>data_string = json.dumps(data)
+print &quot;ENCODED:&quot;,data_string
+
+decoded = json.loads(data_string)
+print &quot;DECODED:&quot;,decoded
+
+print &quot;ORIGINAL:&quot;,type(data[0][&#39;b&#39;])
+print &quot;DECODED:&quot;,type(decoded[0][&#39;b&#39;])
+</code></pre><p>输出:<br>    ENCODED: [{“a”: “A”, “c”: 3.0, “b”: [2, 4]}]<br>    DECODED: [{u’a’: u’A’, u’c’: 3.0, u’b’: [2, 4]}]<br>    ORIGINAL: <type 'tuple'=""><br>    DECODED: <type 'list'=""></type></type></p>
+<p>解码过程中，json的数组最终转换成了python的list，而不是最初的tuple类型，Json到Python的解码规则是： <a href="https://github.com/lzjun567/note/blob/master/resource/image/json2python.png" target="_blank" rel="external"><img src="https://github.com/lzjun567/note/raw/master/resource/image/json2python.png" alt="json2python"></a></p>
+<p>####<a href="https://github.com/lzjun567/note/blob/master/python/json.md#json" target="_blank" rel="external"></a>json的人文关怀<br>编码后的json格式字符串紧凑的输出，而且也没有顺序，因此<code>dumps</code>方法提供了一些可选的参数，让输出的格式提高可读性，如<code>sort_keys</code>是告诉编码器按照字典排序(a到z)输出。<br>    import json</p>
+<pre><code>data = [ { &#39;a&#39;:&#39;A&#39;, &#39;b&#39;:(2, 4), &#39;c&#39;:3.0 } ]
+print &#39;DATA:&#39;, repr(data)
+
+unsorted = json.dumps(data)
+print &#39;JSON:&#39;, json.dumps(data)
+print &#39;SORT:&#39;, json.dumps(data, sort_keys=True)
+</code></pre><p>输出:<br>    DATA: [{‘a’: ‘A’, ‘c’: 3.0, ‘b’: (2, 4)}]<br>    JSON: [{“a”: “A”, “c”: 3.0, “b”: [2, 4]}]<br>    SORT: [{“a”: “A”, “b”: [2, 4], “c”: 3.0}</p>
+<p><code>indent</code>参数根据数据格式缩进显示，读起来更加清晰:<br>    import json</p>
+<pre><code>data = [ { &#39;a&#39;:&#39;A&#39;, &#39;b&#39;:(2, 4), &#39;c&#39;:3.0 } ]
+print &#39;DATA:&#39;, repr(data)
+
+print &#39;NORMAL:&#39;, json.dumps(data, sort_keys=True)
+print &#39;INDENT:&#39;, json.dumps(data, sort_keys=True, indent=2)
+</code></pre><p>输出:<br>    DATA: [{‘a’: ‘A’, ‘c’: 3.0, ‘b’: (2, 4)}]<br>    NORMAL: [{“a”: “A”, “b”: [2, 4], “c”: 3.0}]<br>    INDENT: [<br>      {<br>        “a”: “A”,<br>        “b”: [<br>          2,<br>          4<br>        ],<br>        “c”: 3.0<br>      }<br>    ]</p>
+<p><code>separators</code>参数的作用是去掉<code>,</code>,<code>:</code>后面的空格，从上面的输出结果都能看到”,<br> :”后面都有个空格，这都是为了美化输出结果的作用，但是在我们传输数据的过程中，越精简越好，冗余的东西全部去掉，因此就可以加上separators参数：<br>    import json</p>
+<pre><code>data = [ { &#39;a&#39;:&#39;A&#39;, &#39;b&#39;:(2, 4), &#39;c&#39;:3.0 } ]
+print &#39;DATA:&#39;, repr(data)
+print &#39;repr(data)             :&#39;, len(repr(data))
+print &#39;dumps(data)            :&#39;, len(json.dumps(data))
+print &#39;dumps(data, indent=2)  :&#39;, len(json.dumps(data, indent=2))
+print &#39;dumps(data, separators):&#39;, len(json.dumps(data, separators=(&#39;,&#39;,&#39;:&#39;)))
+</code></pre><p>输出：<br>    DATA: [{‘a’: ‘A’, ‘c’: 3.0, ‘b’: (2, 4)}]<br>    repr(data)             : 35<br>    dumps(data)            : 35<br>    dumps(data, indent=2)  : 76<br>    dumps(data, separators): 29</p>
+<p><code>skipkeys</code>参数，在encoding过程中，dict对象的key只可以是string对象，如果是其他类型，那么在编码过程中就会抛出<code>ValueError</code>的异常。<code>skipkeys</code>可以跳过那些非string对象当作key的处理.<br>    import json</p>
+<pre><code>data= [ { &#39;a&#39;:&#39;A&#39;, &#39;b&#39;:(2, 4), &#39;c&#39;:3.0, (&#39;d&#39;,):&#39;D tuple&#39; } ]
+
+try:
+    print json.dumps(data)
+except (TypeError, ValueError) as err:
+    print &#39;ERROR:&#39;, err
+print 
+print json.dumps(data, skipkeys=True)
+</code></pre><p>输出:<br>    ERROR: keys must be a string</p>
+<pre><code>[{&quot;a&quot;: &quot;A&quot;, &quot;c&quot;: 3.0, &quot;b&quot;: [2, 4]}]
+</code></pre><p>####<a href="https://github.com/lzjun567/note/blob/master/python/json.md#json-1" target="_blank" rel="external"></a>让json支持自定义数据类型<br>以上例子都是基于python的built-in类型的，对于自定义类型的数据结构，json模块默认是没法处理的，会抛出异常：<code>TypeError
+ xx is not JSON serializable</code>，此时你需要自定义一个转换函数:<br>    import json  </p>
+<pre><code>class MyObj(object):
+    def __init__(self, s):
+        self.s = s
+    def __repr__(self):
+        return &#39;&lt;MyObj(%s)&gt;&#39; % self.s
+
+obj = .MyObj(&#39;helloworld&#39;)
+
+try:
+    print json.dumps(obj)
+except TypeError, err:
+    print &#39;ERROR:&#39;, err
+
+#转换函数
+def convert_to_builtin_type(obj):
+    print &#39;default(&#39;, repr(obj), &#39;)&#39;
+    # 把MyObj对象转换成dict类型的对象
+    d = { &#39;__class__&#39;:obj.__class__.__name__, 
+          &#39;__module__&#39;:obj.__module__,
+        }
+    d.update(obj.__dict__)
+    return d
+
+print json.dumps(obj, default=convert_to_builtin_type)
+</code></pre><p>输出:<br>    ERROR: <myobj(helloworld)> is not JSON serializable<br>    default( <myobj(helloworld)> )<br>    {“s”: “hellworld”, “<strong>module</strong>“: “MyObj”, “<strong>class</strong>“: “<strong>main</strong>“} </myobj(helloworld)></myobj(helloworld)></p>
+<pre><code>#注意：这里的class和module根据你代码的所在文件位置不同而不同
+</code></pre><p>相反，如果要把json decode 成python对象，同样也需要自定转换函数，传递给json.loads方法的<code>object_hook</code>参数：</p>
+<pre><code>#jsontest.py
+
+import json
+
+class MyObj(object):
+
+    def __init__(self,s):
+        self.s = s
+
+    def __repr__(self):
+
+        return &quot;&lt;MyObj(%s)&gt;&quot; % self.s
+
+def dict_to_object(d):
+    if &#39;__class__&#39; in d:
+        class_name = d.pop(&#39;__class__&#39;)
+        module_name = d.pop(&#39;__module__&#39;)
+        module = __import__(module_name)
+
+        print &quot;MODULE:&quot;,module
+
+        class_ = getattr(module,class_name)
+
+        print &quot;CLASS&quot;,class_
+
+        args = dict((key.encode(&#39;ascii&#39;),value) for key,value in d.items())
+
+        print &#39;INSTANCE ARGS:&#39;,args
+
+        inst = class_(**args)
+    else:
+        inst = d
+    return inst
+
+encoded_object = &#39;[{&quot;s&quot;:&quot;helloworld&quot;,&quot;__module__&quot;:&quot;jsontest&quot;,&quot;__class__&quot;:&quot;MyObj&quot;}]&#39;
+
+myobj_instance = json.loads(encoded_object,object_hook=dict_to_object)
+print myobj_instance
+</code></pre><p>输出：<br>    MODULE: <module 'jsontest'="" from="" 'e:\users\liuzhijun\workspace\python\jsontest.py'=""><br>    CLASS <class 'jsontest.myobj'=""><br>    INSTANCE ARGS: {‘s’: u’helloworld’}<br>    [<myobj(helloworld)>]<br>    MODULE: <module 'jsontest'="" from="" 'e:\users\liuzhijun\workspace\python\jsontest.py'=""><br>    CLASS <class 'jsontest.myobj'=""><br>    INSTANCE ARGS: {‘s’: u’helloworld’}<br>    [<myobj(helloworld)>]</myobj(helloworld)></class></module></myobj(helloworld)></class></module></p>
+<p>####<a href="https://github.com/lzjun567/note/blob/master/python/json.md#encoderdecoderjson" target="_blank" rel="external"></a>使用Encoder与Decoder类实现json编码的转换<br>JSONEncoder有一个迭代接口<code>iterencode(data)</code>，返回一系列编码的数据，他的好处是可以方便的把逐个数据写到文件或网络流中，而不需要一次性就把数据读入内存.<br>    import json</p>
+<pre><code>encoder = json.JSONEncoder()
+data = [ { &#39;a&#39;:&#39;A&#39;, &#39;b&#39;:(2, 4), &#39;c&#39;:3.0 } ]
+
+for part in encoder.iterencode(data):
+    print &#39;PART:&#39;, part
+</code></pre><p>输出：<br>    PART: [<br>    PART: {<br>    PART: “a”<br>    PART: :<br>    PART: “A”<br>    PART: ,<br>    PART: “c”<br>    PART: :<br>    PART: 3.0<br>    PART: ,<br>    PART: “b”<br>    PART: :<br>    PART: [2<br>    PART: , 4<br>    PART: ]<br>    PART: }<br>    PART: ]</p>
+<p><code>encode</code>方法等价于<code>&#39;&#39;.join(encoder.iterencode()</code>，而且预先会做些错误检查（比如非字符串作为dict的key），对于自定义的对象，我们只需从些JSONEncoder的<code>default()</code>方法，其实现方式与上面提及的函数<code>convet_to_builtin_type()</code>是类似的。<br>    import json<br>    import json_myobj</p>
+<pre><code>class MyObj(object):
+
+    def __init__(self,s):
+        self.s = s
+
+    def __repr__(self):
+        return &quot;&lt;MyObj(%s)&gt;&quot; % self.s
+
+class MyEncoder(json.JSONEncoder):
+
+    def default(self, obj):
+        print &#39;default(&#39;, repr(obj), &#39;)&#39;
+        # Convert objects to a dictionary of their representation
+        d = { &#39;__class__&#39;:obj.__class__.__name__, 
+              &#39;__module__&#39;:obj.__module__,
+              }
+        d.update(obj.__dict__)
+        return d
+
+obj = json_myobj.MyObj(&#39;helloworld&#39;)
+print obj
+print MyEncoder().encode(obj)
+</code></pre><p>输出：<br>    <myobj(internal data)=""><br>    default( <myobj(internal data)=""> )<br>    {“s”: “helloworld”, “<strong>module</strong>“: “Myobj”, “<strong>class</strong>“: “MyObj”}</myobj(internal></myobj(internal></p>
+<p>从json对Python对象的转换:<br>    class MyDecoder(json.JSONDecoder):</p>
+<pre><code>    def __init__(self):
+        json.JSONDecoder.__init__(self, object_hook=self.dict_to_object)
+
+    def dict_to_object(self, d):
+        if &#39;__class__&#39; in d:
+            class_name = d.pop(&#39;__class__&#39;)
+            module_name = d.pop(&#39;__module__&#39;)
+            module = __import__(module_name)
+            print &#39;MODULE:&#39;, module
+            class_ = getattr(module, class_name)
+            print &#39;CLASS:&#39;, class_
+            args = dict( (key.encode(&#39;ascii&#39;), value) for key, value in d.items())
+            print &#39;INSTANCE ARGS:&#39;, args
+            inst = class_(**args)
+        else:
+            inst = d
+        return inst
+
+encoded_object = &#39;[{&quot;s&quot;: &quot;helloworld&quot;, &quot;__module__&quot;: &quot;jsontest&quot;, &quot;__class__&quot;: &quot;MyObj&quot;}]&#39;
+
+myobj_instance = MyDecoder().decode(encoded_object)
+print myobj_instance
+</code></pre><p>输出:<br>    MODULE: <module 'jsontest'="" from="" 'e:\users\liuzhijun\workspace\python\jsontest.py'=""><br>    CLASS: <class 'jsontest.myobj'=""><br>    INSTANCE ARGS: {‘s’: u’helloworld’}<br>    [<myobj(helloworld)>]</myobj(helloworld)></class></module></p>
+<p>####<a href="https://github.com/lzjun567/note/blob/master/python/json.md#json-2" target="_blank" rel="external"></a>json格式字符串写入到文件流中<br>上面的例子都是在内存中操作的，如果对于大数据，把他编码到一个类文件(file-like)中更合适，<code>load()</code>和<code>dump()</code>方法就可以实现这样的功能。<br>    import json<br>    import tempfile</p>
+<pre><code>data = [ { &#39;a&#39;:&#39;A&#39;, &#39;b&#39;:(2, 4), &#39;c&#39;:3.0 } ]
+
+f = tempfile.NamedTemporaryFile(mode=&#39;w+&#39;)
+json.dump(data, f)
+f.flush()
+
+print open(f.name, &#39;r&#39;).read()
+</code></pre><p>输出：<br>    [{“a”: “A”, “c”: 3.0, “b”: [2, 4]}]</p>
+<p>类似的：<br>    import json<br>    import tempfile</p>
+<pre><code>f = tempfile.NamedTemporaryFile(mode=&#39;w+&#39;)
+f.write(&#39;[{&quot;a&quot;: &quot;A&quot;, &quot;c&quot;: 3.0, &quot;b&quot;: [2, 4]}]&#39;)
+f.flush()
+f.seek(0)
+
+print json.load(f)
+</code></pre><p>输出：<br>    [{u’a’: u’A’, u’c’: 3.0, u’b’: [2, 4]}]</p>
+<p>参考：<br><a href="http://docs.python.org/2/library/json.html" target="_blank" rel="external">http://docs.python.org/2/library/json.html</a><br><a href="http://www.cnblogs.com/coser/archive/2011/12/14/2287739.html" target="_blank" rel="external">http://www.cnblogs.com/coser/archive/2011/12/14/2287739.html</a><br><a href="http://pymotw.com/2/json/" target="_blank" rel="external">http://pymotw.com/2/json/</a></p>
+
+		</div>
+		<footer class="article-footer clearfix">
+
+
+
+
+<div class="article-share" id="share">
+
+  <div data-url="http://itsky88.com/2016/12/18/csdn/Python处理JSON/" data-title="Python处理JSON | ITSky" data-tsina="null" class="share clearfix">
+  </div>
+
+</div>
+</footer>   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2016/12/18/csdn/PyCharm 3的PEP8代码风格警告提示信息/" title="PyCharm 3的PEP8代码风格警告提示信息">
+  <strong>PREVIOUS:</strong><br/>
+  <span>
+  PyCharm 3的PEP8代码风格警告提示信息</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2016/12/18/csdn/Python解析xml文件遇到的编码解析的问题/"  title="Python解析xml文件遇到的编码解析的问题">
+ <strong>NEXT:</strong><br/> 
+ <span>Python解析xml文件遇到的编码解析的问题
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+	<script type="text/javascript" src="/js/my_highlight.js"></script>
+</div>  
+      <div class="openaside">
+    <a class="navbutton" href="#" title="显示侧边栏"></a>
+</div>
+
+  <div id="toc" class="toc-aside">
+      <strong class="toc-title">文章目录</strong>
+      
+  </div>
+
+<div id="asidepart">
+    <div class="closeaside">
+        <a class="closebutton" href="#" title="隐藏侧边栏"></a>
+    </div>
+    <aside class="clearfix">
+        
+          
+	<div class="widget">
+		<div class="categorieslist">
+			<p class="asidetitle fa fa-gui">分类</p>
+				<ul>
+				
+					<li><a href="/categories/Hibernate/" title="Hibernate">Hibernate<sup>1</sup></a></li>
+				
+					<li><a href="/categories/Hive/" title="Hive">Hive<sup>2</sup></a></li>
+				
+					<li><a href="/categories/Java/" title="Java">Java<sup>2</sup></a></li>
+				
+					<li><a href="/categories/Js/" title="Js">Js<sup>2</sup></a></li>
+				
+					<li><a href="/categories/Maven/" title="Maven">Maven<sup>1</sup></a></li>
+				
+					<li><a href="/categories/Nodejs/" title="Nodejs">Nodejs<sup>1</sup></a></li>
+				
+				</ul>
+		</div>
+	</div>
+
+        
+          
+  <div class="widget">
+    <div class="archiveslist">
+      <!-- 输出 ‘归档’ 标题 -->
+      <p class="asidetitle fa fa-fei">
+        <a href="/archives">
+          归档
+        </a>
+      </p>
+
+        <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">十二月 2016</a><span class="archive-list-count">89</span></li></ul>
+    </div>
+  </div>
+
+
+        
+          
+<div class="widget">
+	<div class="linkslist">
+		<p class="asidetitle fa fa-xie">最新文章</p>
+			<ul>
+			
+				<li><a href="/tags/Hexo/" title="Hexo">Hexo<sup>1</sup></a></li>
+			
+				<li><a href="/tags/Hibernate/" title="Hibernate">Hibernate<sup>1</sup></a></li>
+			
+				<li><a href="/tags/Hive/" title="Hive">Hive<sup>2</sup></a></li>
+			
+				<li><a href="/tags/Java/" title="Java">Java<sup>2</sup></a></li>
+			
+				<li><a href="/tags/Js/" title="Js">Js<sup>2</sup></a></li>
+			
+				<li><a href="/tags/Maven/" title="Maven">Maven<sup>1</sup></a></li>
+			
+			</ul>
+	</div>
+</div>
+
+        
+          <div class="widget">
+  <div class="linkslist">
+    <p class="asidetitle fa fa-you">友情链接</p>
+      <ul>
+        <li><a href="http://www.css88.com/jqapi-1.9/" target="_blank" title="Jquery参考手册">Jquery参考手册</a></li>
+        <li><a href="http://hexo.io" target="_blank" title="Hexo">Hexo</a></li>
+      </ul>
+  </div>
+</div>
+        
+    </aside>
+</div>
+    </div>
+    <a id="totop" href="#top"></a>
+<script type="text/javascript" src="/js/totop.js?v=1", async></script>
+    <footer><div id="footer" >
+	<div class="footer-info">
+		<p>
+			<a>网站地图</a>|<a>订阅本站</a>|<a>联系博主</a>:
+			<span>
+				<a class="fa fa-github" target="_blank" href="https://github.com/jerryliu306"></a>
+				<a class="fa fa-weibo" target="_blank" href="http://weibo.com/u/2679045517/home?wvr=5"></a>
+				<a class="fa fa-email" target="_blank" href="1031757312@qq.com"></a>
+			</span>
+		</p>
+		<p>
+			<span>
+				Copyright &copy;2016&nbsp;JerryLiu
+			</span>
+			<span>
+				Powered by
+				<a target='_blank', href='https://hexo.io'>Hexo.</a>
+			</span>
+		</p>
+	</div>
+	<!--
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	-->
+</div>
+</footer>
+    <script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else
+    {
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      h  = $('article h2')
+      ah = $('article h2'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  if(ah.length==0){
+    t.css('display','none');
+  }else{
+    c.click(function(){
+      ta.css('display', 'block').addClass('fadeIn');
+    });
+    o.click(function(){
+      ta.css('display', 'none');
+    });
+    $(window).scroll(function(){
+      ta.css("top",Math.max(140,320-$(this).scrollTop()));
+    });
+  };
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina');
+  var html = [
+  '<a href="#" class="overlay" id="qrcode"></a>',
+  '<div class="qrcode clearfix"><span>扫描二维码分享到微信朋友圈</span><a class="qrclose" href="#share"></a><strong>Loading...Please wait</strong><img id="qrcode-pic" data-src="http://s.jiathis.com/qrcode.php?url=' + encodedUrl + '"/></div>',
+  '<a href="#textlogo" class="article-back-to-top" title="Top"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="QRcode"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="Weibo"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+  $('.article-share-qrcode').click(function(){
+    var imgSrc = $('#qrcode-pic').attr('data-src');
+    $('#qrcode-pic').attr('src', imgSrc);
+    $('#qrcode-pic').load(function(){
+        $('.qrcode strong').text(' ');
+    });
+  });
+});     
+</script>
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+  </body>
+</html>
+

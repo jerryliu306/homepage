@@ -1,0 +1,415 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+  <title>Spark DataFrame小试牛刀 | ITSky</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=3, minimum-scale=1">
+  
+  <meta name="author" content="JerryLiu">
+  
+  <meta name="description" content="三月中旬，Spark发布了最新的1.3.0版本，其中最重要的变化，便是DataFrame这个API的推出。DataFrame让Spark具备了处理大规模结构化数据的能力，在比原有的RDD转化方式易用的前提下，计算性能更还快了两倍。这一个小小的API，隐含着Spark希望大一统「大数据江湖」的野心和决">
+  
+  
+  
+  
+  
+  <link rel="icon" href="/img/favicon.ico">
+  
+  
+  <link rel="apple-touch-icon" href="/img/pacman.jpg">
+  <link rel="apple-touch-icon-precomposed" href="/img/pacman.jpg">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <script src="/js/jquery-2.1.0.min.js"></script>
+  <link rel="stylesheet" href="//cdn.bootcss.com/highlight.js/8.0/styles/monokai_sublime.min.css">
+  <script type="text/javascript" src="//cdn.bootcss.com/highlight.js/8.0/highlight.min.js"></script>
+  <script type="text/javascript">
+      hljs.initHighlightingOnLoad()
+  </script>
+</head>
+
+  <body>
+    <header>
+      <div>
+	
+	<div id="textlogo">
+		<!-- <h1 class="site-name"><a href="/" title="ITSky">ITSky</a></h1>-->
+		<h1 class="site-name">ITSky</h1>
+		<h2 class="blog-motto">专注于Linux、Hadoop、Hive、Spark、Kaffka、Redis、MongoDB、ElasticSearch等技术</h2>
+	</div>
+	<div class="navbar">
+		<a class="navbutton navmobile" href="#" title="菜单"></a>
+	</div>
+	<nav class="animated">
+		<ul>
+			
+				<li><a href="/">主页</a></li>
+			
+				<li><a href="/archives">归档</a></li>
+			
+				<li><a href="/categories">分类</a></li>
+			
+				<li><a href="/about">About</a></li>
+			
+			<li>
+			
+			<!--<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+				<label>Search</label>
+				<input type="text" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+				<input type="hidden" name="q" value="site:itsky88.com">
+			</form>-->
+			
+			</li>
+		</ul>
+	</nav>
+</div>
+
+    </header>
+    <div id="container">
+      <!-- 文章内容详情模块 -->
+<div id="main" class="post" itemscope itemprop="blogPost">
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h2 itemprop="name">
+    
+      <a href="/2016/12/18/csdn/Spark DataFrame小试牛刀/" title="Spark DataFrame小试牛刀" itemprop="url">Spark DataFrame小试牛刀</a>
+    
+  </h2>
+  <p class="article-author">By
+    
+      <a href="http://itsky88.com" title="JerryLiu">JerryLiu</a>
+    </p>
+  <p class="article-time">
+    <time datetime="2016-12-18T09:34:18.000Z" itemprop="datePublished">2016-12-18</time>
+    更新日期:<time datetime="2016-12-18T09:34:18.000Z" itemprop="dateModified">2016-12-18</time>
+    
+  </p>
+</header>
+		<div class="article-content">
+			
+			
+				<div id="toc" class="toc-article">
+					<strong class="toc-title">文章目录</strong>
+				
+				</div>
+			
+			<p>三月中旬，Spark发布了最新的1.3.0版本，其中最重要的变化，便是<code>DataFrame</code>这个API的推出。<code>DataFrame</code>让Spark具备了处理大规模结构化数据的能力，在比原有的RDD转化方式易用的前提下，计算性能更还快了两倍。这一个小小的API，隐含着Spark希望大一统「大数据江湖」的野心和决心。<code>DataFrame</code>像是一条联结所有主流数据源并自动转化为可并行处理格式的水渠，通过它Spark能取悦大数据生态链上的所有玩家，无论是善用R的数据科学家，惯用SQL的商业分析师，还是在意效率和实时性的统计工程师。<br>以一个常见的场景 – 日志解析为例，有时我们需要用到一些额外的结构化数据（比如做IP和地址的映射），通常这样的数据会存在MySQL，而访问的方式有两种：一是每个worker远程去检索数据库，弊端是耗费额外的网络I/O资源；二是使用<code>JdbcRDD</code>的API转化为RDD格式，然后编写繁复的函数去实现检索，显然要写更多的代码。而现在，Spark提供了一种新的选择，一行代码就能实现从MySQL到<code>DataFrame</code>的转化，并且支持SQL查询。</p>
+<p>##实例<br>首先我们在本地放置了一个JSON文件，文件内容如下：<br>     {“name”:”Michael”}<br>     {“name”:”Andy”, “age”:30}<br>     {“name”:”Justin”, “age”:19}</p>
+<p>然后我们进入<code>spark-shell</code>，控制台的提示说明Spark为我们创建了一个叫<code>sqlContext</code>的上下文，注意，它是<code>DataFrame</code>的起点。<br>接下来我们希望把本地的JSON文件转化为<code>DataFrame</code>：<br>    scala&gt; val df = sqlContext.jsonFile(“/path/to/your/jsonfile”)<br>    df: org.apache.spark.sql.DataFrame = [age: bigint, name: string]</p>
+<p>从控制台的提示可以得知，我们成功创建了一个<code>DataFrame</code>的对象，包含<code>age</code>和<code>name</code>两个字段。<br>而<code>DataFrame</code>自带的玩法就多了：<br>    // 输出表结构<br>    df.printSchema()</p>
+<pre><code>// 选择所有年龄大于21岁的人，只保留name字段
+df.filter(df(&quot;age&quot;) &gt; 21).select(&quot;name&quot;).show()
+
+// 选择name，并把age字段自增
+df.select(&quot;name&quot;, df(&quot;age&quot;) + 1).show()
+
+// 按年龄分组计数
+df.groupBy(&quot;age&quot;).count().show()
+
+// 左联表（注意是3个等号！）
+df.join(df2, df(&quot;name&quot;) === df2(&quot;name&quot;), &quot;left&quot;).show()
+</code></pre><p>此外，我们也可以把<code>DataFrame</code>对象转化为一个虚拟的表，然后用SQL语句查询，比如下面的命令就等同于<code>df.groupBy(&quot;age&quot;).count().show()</code>：<br>    df.registerTempTable(“people”)<br>    sqlContext.sql(“select age, count(*) from people groupby age”).show()<br>当然，Python有同样丰富的API（由于最终都是转化为<code>JVM bytecode</code>执行，Python和Scala的效率是一样的），而且Python还提供了类<code>Pandas</code>的操作语法。关于Python的API，可以参考<a href="http://www.csdn.net/article/2015-02-17/2823997" target="_blank" rel="external">Spark新年福音：一个用于大规模数据科学的API——DataFrame</a>。</p>
+<p>##MySQL<br>除了JSON之外，<code>DataFrame</code>现在已经能支持MySQL、Hive、HDFS、PostgreSQL等外部数据源，而对关系数据库的读取，是通过<code>jdbc</code>实现的。<br>对于不同的关系数据库，必须在<code>SPARK_CLASSPATH</code>变量中加入对应connector的jar包，比如希望连接<code>MySQL</code>的话应该这么启动<code>spark-shell</code>：<br>    SPARK_CLASSPATH=mysql-connector-java-x.x.x-bin.jar spark-shell</p>
+<p>下面要将一个MySQL表转化为<code>DataFrame</code>对象：<br>    val jdbcDF = sqlContext.load(“jdbc”, Map(“url” -&gt; “jdbc:mysql://localhost:3306/your_database?user=your_user&amp;password=your_password”, “dbtable” -&gt; “your_table”))</p>
+<p>然后十八般武艺又可以派上用场了。</p>
+<p>##Hive<br>Spark提供了一个<code>HiveContext</code>的上下文，其实是<code>SQLContext</code>的一个子类，但从作用上来说，<code>sqlContext</code>也支持Hive数据源。只要在部署Spark的时候加入Hive选项，并把已有的<code>hive-site.xml</code>文件挪到<code>$SPARK_HOME/conf</code>路径下，我们就可以直接用Spark查询包含已有元数据的Hive表了：<br>    sqlContext.sql(“selectcount(*) from hive_people”).show()</p>
+<p>##结语<br>Spark的目标在于成为一个跨环境、跨语言、跨工具的大数据处理和分析平台。<code>DataFrame</code>的推出很好诠释了这一目标，从初步的使用来看确实很容易上手。随着性能和稳定性的持续优化，我相信某一天所有玩数据的人，都可以使用Spark作为惟一的平台入口。<br>转载自： <a href="http://segmentfault.com/a/1190000002614456[点击打开链接](http://segmentfault.com/a/1190000002614456" target="_blank" rel="external">http://segmentfault.com/a/1190000002614456[点击打开链接](http://segmentfault.com/a/1190000002614456</a>)</p>
+
+		</div>
+		<footer class="article-footer clearfix">
+
+
+
+
+<div class="article-share" id="share">
+
+  <div data-url="http://itsky88.com/2016/12/18/csdn/Spark DataFrame小试牛刀/" data-title="Spark DataFrame小试牛刀 | ITSky" data-tsina="null" class="share clearfix">
+  </div>
+
+</div>
+</footer>   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2016/12/18/csdn/Scala隐式转换类遇到的问题/" title="Scala隐式转换类遇到的问题">
+  <strong>PREVIOUS:</strong><br/>
+  <span>
+  Scala隐式转换类遇到的问题</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2016/12/18/csdn/Spark RDD API扩展开发(1)/"  title="Spark RDD API扩展开发(1)">
+ <strong>NEXT:</strong><br/> 
+ <span>Spark RDD API扩展开发(1)
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+	<script type="text/javascript" src="/js/my_highlight.js"></script>
+</div>  
+      <div class="openaside">
+    <a class="navbutton" href="#" title="显示侧边栏"></a>
+</div>
+
+  <div id="toc" class="toc-aside">
+      <strong class="toc-title">文章目录</strong>
+      
+  </div>
+
+<div id="asidepart">
+    <div class="closeaside">
+        <a class="closebutton" href="#" title="隐藏侧边栏"></a>
+    </div>
+    <aside class="clearfix">
+        
+          
+	<div class="widget">
+		<div class="categorieslist">
+			<p class="asidetitle fa fa-gui">分类</p>
+				<ul>
+				
+					<li><a href="/categories/Hibernate/" title="Hibernate">Hibernate<sup>1</sup></a></li>
+				
+					<li><a href="/categories/Hive/" title="Hive">Hive<sup>2</sup></a></li>
+				
+					<li><a href="/categories/Java/" title="Java">Java<sup>2</sup></a></li>
+				
+					<li><a href="/categories/Js/" title="Js">Js<sup>2</sup></a></li>
+				
+					<li><a href="/categories/Maven/" title="Maven">Maven<sup>1</sup></a></li>
+				
+					<li><a href="/categories/Nodejs/" title="Nodejs">Nodejs<sup>1</sup></a></li>
+				
+				</ul>
+		</div>
+	</div>
+
+        
+          
+  <div class="widget">
+    <div class="archiveslist">
+      <!-- 输出 ‘归档’ 标题 -->
+      <p class="asidetitle fa fa-fei">
+        <a href="/archives">
+          归档
+        </a>
+      </p>
+
+        <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">十二月 2016</a><span class="archive-list-count">89</span></li></ul>
+    </div>
+  </div>
+
+
+        
+          
+<div class="widget">
+	<div class="linkslist">
+		<p class="asidetitle fa fa-xie">最新文章</p>
+			<ul>
+			
+				<li><a href="/tags/Hexo/" title="Hexo">Hexo<sup>1</sup></a></li>
+			
+				<li><a href="/tags/Hibernate/" title="Hibernate">Hibernate<sup>1</sup></a></li>
+			
+				<li><a href="/tags/Hive/" title="Hive">Hive<sup>2</sup></a></li>
+			
+				<li><a href="/tags/Java/" title="Java">Java<sup>2</sup></a></li>
+			
+				<li><a href="/tags/Js/" title="Js">Js<sup>2</sup></a></li>
+			
+				<li><a href="/tags/Maven/" title="Maven">Maven<sup>1</sup></a></li>
+			
+			</ul>
+	</div>
+</div>
+
+        
+          <div class="widget">
+  <div class="linkslist">
+    <p class="asidetitle fa fa-you">友情链接</p>
+      <ul>
+        <li><a href="http://www.css88.com/jqapi-1.9/" target="_blank" title="Jquery参考手册">Jquery参考手册</a></li>
+        <li><a href="http://hexo.io" target="_blank" title="Hexo">Hexo</a></li>
+      </ul>
+  </div>
+</div>
+        
+    </aside>
+</div>
+    </div>
+    <a id="totop" href="#top"></a>
+<script type="text/javascript" src="/js/totop.js?v=1", async></script>
+    <footer><div id="footer" >
+	<div class="footer-info">
+		<p>
+			<a>网站地图</a>|<a>订阅本站</a>|<a>联系博主</a>:
+			<span>
+				<a class="fa fa-github" target="_blank" href="https://github.com/jerryliu306"></a>
+				<a class="fa fa-weibo" target="_blank" href="http://weibo.com/u/2679045517/home?wvr=5"></a>
+				<a class="fa fa-email" target="_blank" href="1031757312@qq.com"></a>
+			</span>
+		</p>
+		<p>
+			<span>
+				Copyright &copy;2016&nbsp;JerryLiu
+			</span>
+			<span>
+				Powered by
+				<a target='_blank', href='https://hexo.io'>Hexo.</a>
+			</span>
+		</p>
+	</div>
+	<!--
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	-->
+</div>
+</footer>
+    <script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else
+    {
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      h  = $('article h2')
+      ah = $('article h2'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  if(ah.length==0){
+    t.css('display','none');
+  }else{
+    c.click(function(){
+      ta.css('display', 'block').addClass('fadeIn');
+    });
+    o.click(function(){
+      ta.css('display', 'none');
+    });
+    $(window).scroll(function(){
+      ta.css("top",Math.max(140,320-$(this).scrollTop()));
+    });
+  };
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina');
+  var html = [
+  '<a href="#" class="overlay" id="qrcode"></a>',
+  '<div class="qrcode clearfix"><span>扫描二维码分享到微信朋友圈</span><a class="qrclose" href="#share"></a><strong>Loading...Please wait</strong><img id="qrcode-pic" data-src="http://s.jiathis.com/qrcode.php?url=' + encodedUrl + '"/></div>',
+  '<a href="#textlogo" class="article-back-to-top" title="Top"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="QRcode"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="Weibo"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+  $('.article-share-qrcode').click(function(){
+    var imgSrc = $('#qrcode-pic').attr('data-src');
+    $('#qrcode-pic').attr('src', imgSrc);
+    $('#qrcode-pic').load(function(){
+        $('.qrcode strong').text(' ');
+    });
+  });
+});     
+</script>
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+  </body>
+</html>
+

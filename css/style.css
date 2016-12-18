@@ -603,8 +603,7 @@ header nav ul li a:hover {
   display: block;
 }
 #main section.post {
-  margin-bottom: 0.125em;
-  padding: 0.2em 1em;
+  padding: 1em 0em;
 }
 @media only screen and (min-width: 768px) {
   #main section.post {
@@ -847,7 +846,6 @@ header nav ul li a:hover {
 .page .readmore a {
   font-size: 14px;
   color: #40759b;
-  margin: 8px 0 0;
   padding: 0px 10px;
   float: right;
 }
@@ -878,9 +876,8 @@ header nav ul li a:hover {
     border-bottom: 1px solid #dbdbdb;
   }
 }
-article header.article-info >h1 {
-  padding: 0.2em 3%;
-  font-size: 170%;
+article header.article-info >h2 {
+  padding: 0 3%;
   line-height: 1.5;
   word-wrap: break-word;
   word-break: normal;
@@ -889,13 +886,13 @@ article header.article-info >h1 {
   border-left: 5px solid #ff7300;
 }
 @media only screen and (min-width: 1024px) {
-  article header.article-info >h1 {
-    font-size: 200%;
-    padding-top: 0.3em;
+  article header.article-info >h2 {
+    font-size: 145%;
+    padding-top: 0.1em;
   }
 }
 article header.article-info >p.article-author {
-  padding: 0.3em 4% 0.3em 0;
+  padding: 0.3em 4% 0 0;
   text-align: right;
   border-bottom: 1px solid #dbdbdb;
 }
@@ -906,15 +903,13 @@ article header.article-info >p.article-author {
   }
 }
 article header.article-info >p.article-time {
-  padding-top: 0.5em;
-  font-size: 0.8em;
+  font-size: 0.6em;
   text-align: center;
 }
 @media only screen and (min-width: 768px) {
   article header.article-info >p.article-time {
     float: right;
     margin-right: 1em;
-    padding-top: 0.1em;
     font-size: 0.9em;
   }
 }
@@ -926,7 +921,7 @@ article header.article-info >p.article-time:before {
   -moz-osx-font-smoothing: grayscale;
 }
 article .article-content {
-  padding: 1.5em 4%;
+  padding: 0 4%;
 }
 article .article-content .kb {
   padding: 0.1em 0.6em;
@@ -962,8 +957,7 @@ article .article-content h6 {
   color: #333;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  padding: 0.3em 0;
-  margin: 0.5em 0;
+  padding: 0.2em 0 0;
 }
 article .article-content h1 >code,
 article .article-content h2 >code,
@@ -1045,11 +1039,11 @@ article .article-content em code {
 article .article-content p {
   font-size: 105%;
   line-height: 1.7;
-  margin: 0.7em 0;
+  margin: 0.3em 0;
 }
 @media only screen and (min-width: 1024px) {
   article .article-content p {
-    margin: 1.2em 0;
+    margin: 0.3em 0;
   }
 }
 article .article-content img,
@@ -2123,7 +2117,7 @@ footer {
   }
 }
 .has-numbering {
-  padding-left: 1.5em;
+  padding-left: 2.3em;
   word-wrap: normal;
   word-break: keep-all;
   white-space: pre;
@@ -2138,18 +2132,23 @@ footer {
     white-space: pre-wrap !important;
   }
 }
+code.hljs {
+  overflow-x: auto;
+  overflow-y: auto;
+  word-break: keep-all;
+  white-space: pre;
+}
 article .article-content ul.pre-numbering {
   position: absolute;
   top: 0;
   left: 0;
-  width: 1em;
+  width: 1.5em;
   height: 100%;
-  padding: 0.5em 0.2em 0.5em 0.2em;
+  padding: 0.5em 0.5em 0.5em 0.2em;
   border-right: 1px solid #c3ccd0;
   border-radius: 3px 0 0 3px;
   background-color: #eee;
   text-align: right;
-  font-size: 1em;
   color: #aaa;
   list-style: none;
   background: #23241f;
@@ -2159,6 +2158,8 @@ article .article-content ul.pre-numbering {
 article .article-content ul.pre-numbering li {
   list-style: none;
   margin: 0;
+  font-size: 0.8em;
+  line-height: 28px;
   padding-left: 0;
 }
 @media (max-width: 768px) {

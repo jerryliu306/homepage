@@ -1,0 +1,459 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+  <title>crontab命令详解 | ITSky</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=3, minimum-scale=1">
+  
+  <meta name="author" content="JerryLiu">
+  
+  <meta name="description" content="一、**crond简介**crond是linux下用来周期性的执行某种任务或等待处理某些事件的一个守护进程，与windows下的计划任务类似，当安装完成操作系统后，默认会安装此服务工具，并且会自动启动crond进程，crond进程每分钟会定期检查是否有要执行的任务，如果有要执行的任务，则自动执行该任">
+  
+  
+  
+  
+  
+  <link rel="icon" href="/img/favicon.ico">
+  
+  
+  <link rel="apple-touch-icon" href="/img/pacman.jpg">
+  <link rel="apple-touch-icon-precomposed" href="/img/pacman.jpg">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <script src="/js/jquery-2.1.0.min.js"></script>
+  <link rel="stylesheet" href="//cdn.bootcss.com/highlight.js/8.0/styles/monokai_sublime.min.css">
+  <script type="text/javascript" src="//cdn.bootcss.com/highlight.js/8.0/highlight.min.js"></script>
+  <script type="text/javascript">
+      hljs.initHighlightingOnLoad()
+  </script>
+</head>
+
+  <body>
+    <header>
+      <div>
+	
+	<div id="textlogo">
+		<!-- <h1 class="site-name"><a href="/" title="ITSky">ITSky</a></h1>-->
+		<h1 class="site-name">ITSky</h1>
+		<h2 class="blog-motto">专注于Linux、Hadoop、Hive、Spark、Kaffka、Redis、MongoDB、ElasticSearch等技术</h2>
+	</div>
+	<div class="navbar">
+		<a class="navbutton navmobile" href="#" title="菜单"></a>
+	</div>
+	<nav class="animated">
+		<ul>
+			
+				<li><a href="/">主页</a></li>
+			
+				<li><a href="/archives">归档</a></li>
+			
+				<li><a href="/categories">分类</a></li>
+			
+				<li><a href="/about">About</a></li>
+			
+			<li>
+			
+			<!--<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+				<label>Search</label>
+				<input type="text" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+				<input type="hidden" name="q" value="site:itsky88.com">
+			</form>-->
+			
+			</li>
+		</ul>
+	</nav>
+</div>
+
+    </header>
+    <div id="container">
+      <!-- 文章内容详情模块 -->
+<div id="main" class="post" itemscope itemprop="blogPost">
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h2 itemprop="name">
+    
+      <a href="/2016/12/18/csdn/crontab命令详解/" title="crontab命令详解" itemprop="url">crontab命令详解</a>
+    
+  </h2>
+  <p class="article-author">By
+    
+      <a href="http://itsky88.com" title="JerryLiu">JerryLiu</a>
+    </p>
+  <p class="article-time">
+    <time datetime="2016-12-18T09:34:18.000Z" itemprop="datePublished">2016-12-18</time>
+    更新日期:<time datetime="2016-12-18T09:34:18.000Z" itemprop="dateModified">2016-12-18</time>
+    
+  </p>
+</header>
+		<div class="article-content">
+			
+			
+				<div id="toc" class="toc-article">
+					<strong class="toc-title">文章目录</strong>
+				<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#run-parts"><span class="toc-number">1.</span> <span class="toc-text">run-parts</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#DT-delete-core-files-at-3-30am-on-1-7-14-21-26-26-days-of-each-month"><span class="toc-number">2.</span> <span class="toc-text">DT:delete core files,at 3.30am on 1,7,14,21,26,26 days of each month</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#crondave-installed-on-Tue-May-4-13-07-43-1999"><span class="toc-number">3.</span> <span class="toc-text">(crondave installed on Tue May 4 13:07:43 1999)</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#DT-ech-the-date-to-the-console-every-30-minites"><span class="toc-number">4.</span> <span class="toc-text">DT:ech the date to the console every 30 minites</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#DT-delete-core-files-at-3-30am-on-1-7-14-21-26-26-days-of-each-month-1"><span class="toc-number">5.</span> <span class="toc-text">DT:delete core files,at 3.30am on 1,7,14,21,26,26 days of each month</span></a></li></ol>
+				</div>
+			
+			<p><strong>一、**</strong>crond简介**<br>crond是linux下用来周期性的执行某种任务或等待处理某些事件的一个守护进程，与windows下的计划任务类似，当安装完成操作系统后，默认会安装此服务工具，并且会自动启动crond进程，crond进程每分钟会定期检查是否有要执行的任务，如果有要执行的任务，则自动执行该任务。<br>Linux下的任务调度分为两类，系统任务调度和用户任务调度。<br>系统任务调度：系统周期性所要执行的工作，比如写缓存数据到硬盘、日志清理等。在/etc目录下有一个crontab文件，这个就是系统任务调度的配置文件。<br>/etc/crontab文件包括下面几行：<br>[root@localhost ~]# cat /etc/crontab<br>SHELL=/bin/bash<br>PATH=/sbin:/bin:/usr/sbin:/usr/bin<br>MAILTO=””HOME=/</p>
+<h1 id="run-parts"><a href="#run-parts" class="headerlink" title="run-parts"></a>run-parts</h1><p>51 <em> </em> <em> </em> root run-parts /etc/cron.hourly<br>24 7 <em> </em> <em> root run-parts /etc/cron.daily<br>22 4 </em> <em> 0 root run-parts /etc/cron.weekly<br>42 4 1 </em> * root run-parts /etc/cron.monthly<br>[root@localhost ~]#</p>
+<p>前四行是用来配置crond任务运行的环境变量，第一行SHELL变量指定了系统要使用哪个shell，这里是bash，第二行PATH变量指定了系统执行命令的路径，第三行MAILTO变量指定了crond的任务执行信息将通过电子邮件发送给root用户，如果MAILTO变量的值为空，则表示不发送任务执行信息给用户，第四行的HOME变量指定了在执行命令或者脚本时使用的主目录。第六至九行表示的含义将在下个小节详细讲述。这里不在多说。<br>用户任务调度：用户定期要执行的工作，比如用户数据备份、定时邮件提醒等。用户可以使用 crontab 工具来定制自己的计划任务。所有用户定义的crontab 文件都被保存在 /var/spool/cron目录中。其文件名与用户名一致。</p>
+<p><strong>使用者权限文件**</strong>：**<br>文件：<br>/etc/cron.deny<br>说明：<br>该文件中所列用户不允许使用crontab命令<br>文件：<br>/etc/cron.allow<br>说明：<br>该文件中所列用户允许使用crontab命令<br>文件：<br>/var/spool/cron/<br>说明：<br>所有用户crontab文件存放的目录,以用户名命名</p>
+<p><strong>crontab文件的含义：</strong><br>用户所建立的crontab文件中，每一行都代表一项任务，每行的每个字段代表一项设置，它的格式共分为六个字段，前五段是时间设定段，第六段是要执行的命令段，格式如下：<br>minute   hour   day   month   week   command<br>其中：<br>minute： 表示分钟，可以是从0到59之间的任何整数。<br>hour：表示小时，可以是从0到23之间的任何整数。<br>day：表示日期，可以是从1到31之间的任何整数。<br>month：表示月份，可以是从1到12之间的任何整数。<br>week：表示星期几，可以是从0到7之间的任何整数，这里的0或7代表星期日。<br>command：要执行的命令，可以是系统命令，也可以是自己编写的脚本文件。<br><img src="http://images.cnitblog.com/blog/34483/201301/08090352-4e0aa3fe4f404b3491df384758229be1.png" alt=""><br><strong>在以上各个字段中，还可以使用以下特殊字符：</strong><br>星号（<em>）：代表所有可能的值，例如month字段如果是星号，则表示在满足其它字段的制约条件后每月都执行该命令操作。<br>逗号（,）：可以用逗号隔开的值指定一个列表范围，例如，“1,2,5,7,8,9”<br>中杠（-）：可以用整数之间的中杠表示一个整数范围，例如“2-6”表示“2,3,4,5,6”<br>正斜线（/）：可以用正斜线指定时间的间隔频率，例如“0-23/2”表示每两小时执行一次。同时正斜线可以和星号一起使用，例如</em>/10，如果用在minute字段，表示每十分钟执行一次。</p>
+<p><strong>二、**</strong>crond服务**<br>安装crontab：<br>yum install crontabs<br>服务操作说明：<br>/sbin/service crond start //启动服务<br>/sbin/service crond stop //关闭服务<br>/sbin/service crond restart //重启服务<br>/sbin/service crond reload //重新载入配置<br>查看crontab服务状态：<br>service crond status<br>手动启动crontab服务：<br>service crond start<br>查看crontab服务是否已设置为开机启动，执行命令：<br>ntsysv<br>加入开机自动启动：<br>chkconfig –level 35 crond on</p>
+<p><strong>三、**</strong>crontab命令详解<strong>
+</strong>1．<strong>**命令格式：</strong><br>crontab [-u user] file<br>crontab [-u user] [ -e | -l | -r ]<br><strong>2．**</strong>命令功能：<strong><br>通过crontab 命令，我们可以在固定的间隔时间执行指定的系统指令或 shell script脚本。时间间隔的单位可以是分钟、小时、日、月、周及以上的任意组合。这个命令非常设合周期性的日志分析或数据备份等工作。
+</strong>3．<strong>**命令参数：</strong><br>-u user：用来设定某个用户的crontab服务，例如，“-u ixdba”表示设定ixdba用户的crontab服务，此参数一般有root用户来运行。<br>file：file是命令文件的名字,表示将file做为crontab的任务列表文件并载入crontab。如果在命令行中没有指定这个文件，crontab命令将接受标准输入（键盘）上键入的命令，并将它们载入crontab。<br>-e：编辑某个用户的crontab文件内容。如果不指定用户，则表示编辑当前用户的crontab文件。<br>-l：显示某个用户的crontab文件内容，如果不指定用户，则表示显示当前用户的crontab文件内容。<br>-r：从/var/spool/cron目录中删除某个用户的crontab文件，如果不指定用户，则默认删除当前用户的crontab文件。<br>-i：在删除用户的crontab文件时给确认提示。<br><strong>4．**</strong>常用方法：<strong>
+</strong>1)<strong>**. 创建一个新的crontab文件</strong></p>
+<p>在考虑向cron进程提交一个crontab文件之前，首先要做的一件事情就是设置环境变量EDITOR。cron进程根据它来确定使用哪个编辑器编辑crontab文件。9 9 %的UNIX和LINUX用户都使用vi，如果你也是这样，那么你就编辑$ HOME目录下的. profile文件，在其中加入这样一行：<br>EDITOR=vi; export EDITOR<br>然后保存并退出。不妨创建一个名为<user> cron的文件，其中<user>是用户名，例如， davecron。在该文件中加入如下的内容。</user></user></p>
+<pre><code> # (put your own initials here)echo the date to the console every
+ # 15minutes between 6pm and 6am
+ 0,15,30,45 18-06 * * * /bin/echo &#39;date&#39; &gt; /dev/console
+保存并退出。确信前面5个域用空格分隔。
+</code></pre><p>在上面的例子中，系统将每隔1 5分钟向控制台输出一次当前时间。如果系统崩溃或挂起，从最后所显示的时间就可以一眼看出系统是什么时间停止工作的。在有些系统中，用tty1来表示控制台，可以根据实际情况对上面的例子进行相应的修改。为了提交你刚刚创建的crontab文件，可以把这个新创建的文件作为cron命令的参数：<br>    $ crontab davecron<br>现在该文件已经提交给cron进程，它将每隔1 5分钟运行一次。<br>同时，新创建文件的一个副本已经被放在/var/spool/cron目录中，文件名就是用户名(即dave)。<br><strong>2**</strong>)<strong>**. 列出crontab文件</strong><br>   为了列出crontab文件，可以用：<br>    $ crontab -l<br>    0,15,30,45,18-06 <em> </em> <em> /bin/echo <code>date</code> &gt; dev/tty1<br>你将会看到和上面类似的内容。可以使用这种方法在$ H O M E目录中对crontab文件做一备份：<br>    $ crontab -l &gt; $HOME/mycron<br>    这样，一旦不小心误删了crontab文件，可以用上一节所讲述的方法迅速恢复。<br><strong>3**</strong>)<em>**</em>. 编辑crontab文件*</em><br>   如果希望添加、删除或编辑crontab文件中的条目，而E D I TO R环境变量又设置为v i，那么就可以用v i来编辑crontab文件，相应的命令为：<br>    $ crontab -e<br>可以像使用v i编辑其他任何文件那样修改crontab文件并退出。如果修改了某些条目或添加了新的条目，那么在保存该文件时， c r o n会对其进行必要的完整性检查。如果其中的某个域出现了超出允许范围的值，它会提示你。<br>我们在编辑crontab文件时，没准会加入新的条目。例如，加入下面的一条：</p>
+<h1 id="DT-delete-core-files-at-3-30am-on-1-7-14-21-26-26-days-of-each-month"><a href="#DT-delete-core-files-at-3-30am-on-1-7-14-21-26-26-days-of-each-month" class="headerlink" title="DT:delete core files,at 3.30am on 1,7,14,21,26,26 days of each month"></a>DT:delete core files,at 3.30am on 1,7,14,21,26,26 days of each month</h1><pre><code>30 3 1,7,14,21,26 * * /bin/find -name &quot;core&#39; -exec rm {} \;
+</code></pre><p>现在保存并退出。最好在crontab文件的每一个条目之上加入一条注释，这样就可以知道它的功能、运行时间，更为重要的是，知道这是哪位用户的作业。<br>现在让我们使用前面讲过的crontab -l命令列出它的全部信息：<br>   $ crontab -l </p>
+<h1 id="crondave-installed-on-Tue-May-4-13-07-43-1999"><a href="#crondave-installed-on-Tue-May-4-13-07-43-1999" class="headerlink" title="(crondave installed on Tue May 4 13:07:43 1999)"></a>(crondave installed on Tue May 4 13:07:43 1999)</h1><h1 id="DT-ech-the-date-to-the-console-every-30-minites"><a href="#DT-ech-the-date-to-the-console-every-30-minites" class="headerlink" title="DT:ech the date to the console every 30 minites"></a>DT:ech the date to the console every 30 minites</h1><p>  0,15,30,45 18-06 <em> </em> * /bin/echo <code>date</code> &gt; /dev/tty1</p>
+<h1 id="DT-delete-core-files-at-3-30am-on-1-7-14-21-26-26-days-of-each-month-1"><a href="#DT-delete-core-files-at-3-30am-on-1-7-14-21-26-26-days-of-each-month-1" class="headerlink" title="DT:delete core files,at 3.30am on 1,7,14,21,26,26 days of each month"></a>DT:delete core files,at 3.30am on 1,7,14,21,26,26 days of each month</h1><p>   30 3 1,7,14,21,26 <em> </em> /bin/find -name “core’ -exec rm {} \;<br><strong>4)**</strong>. 删除crontab文件<strong><br>要删除crontab文件，可以用：<br>   $ crontab -r
+</strong>5<strong><strong>)</strong></strong>. 恢复丢失的crontab文件<strong><br>如果不小心误删了crontab文件，假设你在自己的$ H O M E目录下还有一个备份，那么可以将其拷贝到/var/spool/cron/<username>，其中<username>是用户名。如果由于权限问题无法完成拷贝，可以用：<br>    $ crontab <filename><br>    其中，<filename>是你在$ H O M E目录中副本的文件名。<br>我建议你在自己的$ H O M E目录中保存一个该文件的副本。我就有过类似的经历，有数次误删了crontab文件（因为r键紧挨在e键的右边）。这就是为什么有些系统文档建议不要直接编辑crontab文件，而是编辑该文件的一个副本，然后重新提交新的文件。<br>有些crontab的变体有些怪异，所以在使用crontab命令时要格外小心。如果遗漏了任何选项，crontab可能会打开一个空文件，或者看起来像是个空文件。这时敲delete键退出，不要按<ctrl-d>，否则你将丢失crontab文件。
+</ctrl-d></filename></filename></username></username></strong>5．<strong>**使用实例</strong><br><strong>实例**</strong>1：<strong>**每1分钟执行一次command</strong><br><strong>命令：</strong></p>
+<ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li>command</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p><strong>实例**</strong>2：<strong>**每小时的第3和第15分钟执行</strong><br><strong>命令：</strong><br>3,15 <em> </em> <em> </em> command</p>
+<p><strong>实例**</strong>3：<strong>**在上午8点到11点的第3和第15分钟执行</strong><br><strong>命令：</strong><br>3,15 8-11 <em> </em> * command</p>
+<p><strong>实例**</strong>4：<strong>**每隔两天的上午8点到11点的第3和第15分钟执行</strong><br><strong>命令：</strong><br>3,15 8-11 <em>/2 </em> * command</p>
+<p><strong>实例**</strong>5：<strong>**每个星期一的上午8点到11点的第3和第15分钟执行</strong><br><strong>命令：</strong><br>3,15 8-11 <em> </em> 1 command</p>
+<p><strong>实例**</strong>6：<strong>**每晚的21:30重启smb </strong><br><strong>命令：</strong><br>30 21 <em> </em> * /etc/init.d/smb restart</p>
+<p><strong>实例**</strong>7：<strong>**每月1、10、22日的4 : 45重启smb </strong><br><strong>命令：</strong><br>45 4 1,10,22 <em> </em> /etc/init.d/smb restart</p>
+<p><strong>实例**</strong>8：<strong>**每周六、周日的1 : 10重启smb</strong><br><strong>命令：</strong><br>10 1 <em> </em> 6,0 /etc/init.d/smb restart</p>
+<p><strong>实例**</strong>9：<strong>**每天18 : 00至23 : 00之间每隔30分钟重启smb </strong><br><strong>命令：</strong><br>0,30 18-23 <em> </em> * /etc/init.d/smb restart</p>
+<p><strong>实例**</strong>10：<strong>**每星期六的晚上11 : 00 pm重启smb </strong><br><strong>命令：</strong><br>0 23 <em> </em> 6 /etc/init.d/smb restart</p>
+<p><strong>实例**</strong>11：<strong>**每一小时重启smb </strong><br><strong>命令：</strong></p>
+<ul>
+<li><em>/1 </em> <em> </em> /etc/init.d/smb restart</li>
+</ul>
+<p><strong>实例**</strong>12：<strong>**晚上11点到早上7点之间，每隔一小时重启smb </strong><br><strong>命令：</strong></p>
+<ul>
+<li>23-7/1 <em> </em> * /etc/init.d/smb restart</li>
+</ul>
+<p><strong>实例**</strong>13<strong><strong>：</strong></strong>每月的4号与每周一到周三的11点重启smb <strong>
+</strong>命令：<em>*<br>0 11 4 </em> mon-wed /etc/init.d/smb restart</p>
+<p><strong>实例**</strong>14：<strong>**一月一号的4点重启smb </strong><br><strong>命令：</strong><br>0 4 1 jan * /etc/init.d/smb restart</p>
+<p><strong>实例**</strong>15：<strong>**每小时执行/etc/cron.hourly目录内的脚本</strong><br><strong>命令：</strong><br>01   <em>   </em>   <em>   </em>     root run-parts /etc/cron.hourly<br><strong>说明：</strong><br>run-parts这个参数了，如果去掉这个参数的话，后面就可以写要运行的某个脚本名，而不是目录名了</p>
+<p><strong>四、**</strong>使用注意事项<strong>
+</strong>1. <strong>**注意环境变量问题</strong><br>有时我们创建了一个crontab，但是这个任务却无法自动执行，而手动执行这个任务却没有问题，这种情况一般是由于在crontab文件中没有配置环境变量引起的。<br>在crontab文件中定义多个调度任务时，需要特别注意的一个问题就是环境变量的设置，因为我们手动执行某个任务时，是在当前shell环境下进行的，程序当然能找到环境变量，而系统自动执行任务调度时，是不会加载任何环境变量的，因此，就需要在crontab文件中指定任务运行所需的所有环境变量，这样，系统执行任务调度时就没有问题了。<br>不要假定cron知道所需要的特殊环境，它其实并不知道。所以你要保证在shelll脚本中提供所有必要的路径和环境变量，除了一些自动设置的全局变量。所以注意如下3点：<br>1）脚本中涉及文件路径时写全局路径；<br>2）脚本执行要用到java或其他环境变量时，通过source命令引入环境变量，如：<br>cat start_cbp.sh</p>
+<p>#!/bin/sh<br>source /etc/profile<br>export RUN_CONF=/home/d139/conf/platform/cbp/cbp_jboss.conf<br>/usr/local/jboss-4.0.5/bin/run.sh -c mev &amp;<br>3）当手动执行脚本OK，但是crontab死活不执行时。这时必须大胆怀疑是环境变量惹的祸，并可以尝试在crontab中直接引入环境变量解决问题。如：<br>0 <em> </em> <em> </em> . /etc/profile;/bin/sh /var/www/java/audit_no_count/bin/restart_audit.sh</p>
+<p><strong>2. **</strong>注意清理系统用户的邮件日志<em>*<br>每条任务调度执行完毕，系统都会将任务输出信息通过电子邮件的形式发送给当前系统用户，这样日积月累，日志信息会非常大，可能会影响系统的正常运行，因此，将每条任务进行重定向处理非常重要。<br>例如，可以在crontab文件中设置如下形式，忽略日志输出：<br>0 </em>/3 <em> </em> * /usr/local/apache2/apachectl restart &gt;/dev/null 2&gt;&amp;1<br>“/dev/null 2&gt;&amp;1”表示先将标准输出重定向到/dev/null，然后将标准错误重定向到标准输出，由于标准输出已经重定向到了/dev/null，因此标准错误也会重定向到/dev/null，这样日志输出问题就解决了。</p>
+<p><strong>3. **</strong>系统级任务调度与用户级任务调度<strong><br>系统级任务调度主要完成系统的一些维护操作，用户级任务调度主要完成用户自定义的一些任务，可以将用户级任务调度放到系统级任务调度来完成（不建议这么做），但是反过来却不行，root用户的任务调度操作可以通过“crontab –uroot –e”来设置，也可以将调度任务直接写入/etc/crontab文件，需要注意的是，如果要定义一个定时重启系统的任务，就必须将任务放到/etc/crontab文件，即使在root用户下创建一个定时重启系统的任务也是无效的。
+</strong>4.<strong> </strong>其他注意事项**<br>新创建的cron job，不会马上执行，至少要过2分钟才执行。如果重启cron则马上执行。<br>当crontab突然失效时，可以尝试/etc/init.d/crond restart解决问题。或者查看日志看某个job有没有执行/报错tail -f /var/log/cron。<br>千万别乱运行crontab -r。它从Crontab目录（/var/spool/cron）中删除用户的Crontab文件。删除了该用户的所有crontab都没了。<br>在crontab中%是有特殊含义的，表示换行的意思。如果要用的话必须进行转义\%，如经常用的date ‘+%Y%m%d’在crontab里是不会执行的，应该换成date ‘+\%Y\%m\%d’。</p>
+<p>转载自：<a href="http://www.cnblogs.com/peida/archive/2013/01/08/2850483.html" target="_blank" rel="external">http://www.cnblogs.com/peida/archive/2013/01/08/2850483.html</a> <a href="http://www.cnblogs.com/peida/archive/2013/01/08/2850483.html" target="_blank" rel="external">点击打开链接</a></p>
+
+		</div>
+		<footer class="article-footer clearfix">
+
+
+
+
+<div class="article-share" id="share">
+
+  <div data-url="http://itsky88.com/2016/12/18/csdn/crontab命令详解/" data-title="crontab命令详解 | ITSky" data-tsina="null" class="share clearfix">
+  </div>
+
+</div>
+</footer>   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2016/12/18/csdn/cmake编译时遇到的问题解决/" title="cmake编译时遇到的问题解决">
+  <strong>PREVIOUS:</strong><br/>
+  <span>
+  cmake编译时遇到的问题解决</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2016/12/18/csdn/easy-Ui toolTip的使用/"  title="easy-Ui toolTip的使用">
+ <strong>NEXT:</strong><br/> 
+ <span>easy-Ui toolTip的使用
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+	<script type="text/javascript" src="/js/my_highlight.js"></script>
+</div>  
+      <div class="openaside">
+    <a class="navbutton" href="#" title="显示侧边栏"></a>
+</div>
+
+  <div id="toc" class="toc-aside">
+      <strong class="toc-title">文章目录</strong>
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#run-parts"><span class="toc-number">1.</span> <span class="toc-text">run-parts</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#DT-delete-core-files-at-3-30am-on-1-7-14-21-26-26-days-of-each-month"><span class="toc-number">2.</span> <span class="toc-text">DT:delete core files,at 3.30am on 1,7,14,21,26,26 days of each month</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#crondave-installed-on-Tue-May-4-13-07-43-1999"><span class="toc-number">3.</span> <span class="toc-text">(crondave installed on Tue May 4 13:07:43 1999)</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#DT-ech-the-date-to-the-console-every-30-minites"><span class="toc-number">4.</span> <span class="toc-text">DT:ech the date to the console every 30 minites</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#DT-delete-core-files-at-3-30am-on-1-7-14-21-26-26-days-of-each-month-1"><span class="toc-number">5.</span> <span class="toc-text">DT:delete core files,at 3.30am on 1,7,14,21,26,26 days of each month</span></a></li></ol>
+  </div>
+
+<div id="asidepart">
+    <div class="closeaside">
+        <a class="closebutton" href="#" title="隐藏侧边栏"></a>
+    </div>
+    <aside class="clearfix">
+        
+          
+	<div class="widget">
+		<div class="categorieslist">
+			<p class="asidetitle fa fa-gui">分类</p>
+				<ul>
+				
+					<li><a href="/categories/Hibernate/" title="Hibernate">Hibernate<sup>1</sup></a></li>
+				
+					<li><a href="/categories/Hive/" title="Hive">Hive<sup>2</sup></a></li>
+				
+					<li><a href="/categories/Java/" title="Java">Java<sup>2</sup></a></li>
+				
+					<li><a href="/categories/Js/" title="Js">Js<sup>2</sup></a></li>
+				
+					<li><a href="/categories/Maven/" title="Maven">Maven<sup>1</sup></a></li>
+				
+					<li><a href="/categories/Nodejs/" title="Nodejs">Nodejs<sup>1</sup></a></li>
+				
+				</ul>
+		</div>
+	</div>
+
+        
+          
+  <div class="widget">
+    <div class="archiveslist">
+      <!-- 输出 ‘归档’ 标题 -->
+      <p class="asidetitle fa fa-fei">
+        <a href="/archives">
+          归档
+        </a>
+      </p>
+
+        <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">十二月 2016</a><span class="archive-list-count">89</span></li></ul>
+    </div>
+  </div>
+
+
+        
+          
+<div class="widget">
+	<div class="linkslist">
+		<p class="asidetitle fa fa-xie">最新文章</p>
+			<ul>
+			
+				<li><a href="/tags/Hexo/" title="Hexo">Hexo<sup>1</sup></a></li>
+			
+				<li><a href="/tags/Hibernate/" title="Hibernate">Hibernate<sup>1</sup></a></li>
+			
+				<li><a href="/tags/Hive/" title="Hive">Hive<sup>2</sup></a></li>
+			
+				<li><a href="/tags/Java/" title="Java">Java<sup>2</sup></a></li>
+			
+				<li><a href="/tags/Js/" title="Js">Js<sup>2</sup></a></li>
+			
+				<li><a href="/tags/Maven/" title="Maven">Maven<sup>1</sup></a></li>
+			
+			</ul>
+	</div>
+</div>
+
+        
+          <div class="widget">
+  <div class="linkslist">
+    <p class="asidetitle fa fa-you">友情链接</p>
+      <ul>
+        <li><a href="http://www.css88.com/jqapi-1.9/" target="_blank" title="Jquery参考手册">Jquery参考手册</a></li>
+        <li><a href="http://hexo.io" target="_blank" title="Hexo">Hexo</a></li>
+      </ul>
+  </div>
+</div>
+        
+    </aside>
+</div>
+    </div>
+    <a id="totop" href="#top"></a>
+<script type="text/javascript" src="/js/totop.js?v=1", async></script>
+    <footer><div id="footer" >
+	<div class="footer-info">
+		<p>
+			<a>网站地图</a>|<a>订阅本站</a>|<a>联系博主</a>:
+			<span>
+				<a class="fa fa-github" target="_blank" href="https://github.com/jerryliu306"></a>
+				<a class="fa fa-weibo" target="_blank" href="http://weibo.com/u/2679045517/home?wvr=5"></a>
+				<a class="fa fa-email" target="_blank" href="1031757312@qq.com"></a>
+			</span>
+		</p>
+		<p>
+			<span>
+				Copyright &copy;2016&nbsp;JerryLiu
+			</span>
+			<span>
+				Powered by
+				<a target='_blank', href='https://hexo.io'>Hexo.</a>
+			</span>
+		</p>
+	</div>
+	<!--
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	-->
+</div>
+</footer>
+    <script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else
+    {
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      h  = $('article h2')
+      ah = $('article h2'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  if(ah.length==0){
+    t.css('display','none');
+  }else{
+    c.click(function(){
+      ta.css('display', 'block').addClass('fadeIn');
+    });
+    o.click(function(){
+      ta.css('display', 'none');
+    });
+    $(window).scroll(function(){
+      ta.css("top",Math.max(140,320-$(this).scrollTop()));
+    });
+  };
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina');
+  var html = [
+  '<a href="#" class="overlay" id="qrcode"></a>',
+  '<div class="qrcode clearfix"><span>扫描二维码分享到微信朋友圈</span><a class="qrclose" href="#share"></a><strong>Loading...Please wait</strong><img id="qrcode-pic" data-src="http://s.jiathis.com/qrcode.php?url=' + encodedUrl + '"/></div>',
+  '<a href="#textlogo" class="article-back-to-top" title="Top"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="QRcode"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="Weibo"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+  $('.article-share-qrcode').click(function(){
+    var imgSrc = $('#qrcode-pic').attr('data-src');
+    $('#qrcode-pic').attr('src', imgSrc);
+    $('#qrcode-pic').load(function(){
+        $('.qrcode strong').text(' ');
+    });
+  });
+});     
+</script>
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+  </body>
+</html>
+

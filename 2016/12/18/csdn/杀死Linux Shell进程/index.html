@@ -1,0 +1,402 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+  <title>杀死Linux Shell进程 | ITSky</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=3, minimum-scale=1">
+  
+  <meta name="author" content="JerryLiu">
+  
+  <meta name="description" content="1、查找目标shell进程：例如：我想要查找 odm_clean 脚本运行进程    ps -ef | grep “odm_clean”hadoop    3702 46809  0 17:17 pts/16   00:00:00 grep odm_cleanhadoop   28376 28349">
+  
+  
+  
+  
+  
+  <link rel="icon" href="/img/favicon.ico">
+  
+  
+  <link rel="apple-touch-icon" href="/img/pacman.jpg">
+  <link rel="apple-touch-icon-precomposed" href="/img/pacman.jpg">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <script src="/js/jquery-2.1.0.min.js"></script>
+  <link rel="stylesheet" href="//cdn.bootcss.com/highlight.js/8.0/styles/monokai_sublime.min.css">
+  <script type="text/javascript" src="//cdn.bootcss.com/highlight.js/8.0/highlight.min.js"></script>
+  <script type="text/javascript">
+      hljs.initHighlightingOnLoad()
+  </script>
+</head>
+
+  <body>
+    <header>
+      <div>
+	
+	<div id="textlogo">
+		<!-- <h1 class="site-name"><a href="/" title="ITSky">ITSky</a></h1>-->
+		<h1 class="site-name">ITSky</h1>
+		<h2 class="blog-motto">专注于Linux、Hadoop、Hive、Spark、Kaffka、Redis、MongoDB、ElasticSearch等技术</h2>
+	</div>
+	<div class="navbar">
+		<a class="navbutton navmobile" href="#" title="菜单"></a>
+	</div>
+	<nav class="animated">
+		<ul>
+			
+				<li><a href="/">主页</a></li>
+			
+				<li><a href="/archives">归档</a></li>
+			
+				<li><a href="/categories">分类</a></li>
+			
+				<li><a href="/about">About</a></li>
+			
+			<li>
+			
+			<!--<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+				<label>Search</label>
+				<input type="text" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+				<input type="hidden" name="q" value="site:itsky88.com">
+			</form>-->
+			
+			</li>
+		</ul>
+	</nav>
+</div>
+
+    </header>
+    <div id="container">
+      <!-- 文章内容详情模块 -->
+<div id="main" class="post" itemscope itemprop="blogPost">
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h2 itemprop="name">
+    
+      <a href="/2016/12/18/csdn/杀死Linux Shell进程/" title="杀死Linux Shell进程" itemprop="url">杀死Linux Shell进程</a>
+    
+  </h2>
+  <p class="article-author">By
+    
+      <a href="http://itsky88.com" title="JerryLiu">JerryLiu</a>
+    </p>
+  <p class="article-time">
+    <time datetime="2016-12-18T09:34:18.000Z" itemprop="datePublished">2016-12-18</time>
+    更新日期:<time datetime="2016-12-18T09:34:18.000Z" itemprop="dateModified">2016-12-18</time>
+    
+  </p>
+</header>
+		<div class="article-content">
+			
+			
+				<div id="toc" class="toc-article">
+					<strong class="toc-title">文章目录</strong>
+				
+				</div>
+			
+			<p>1、查找目标shell进程：<br>例如：我想要查找 odm_clean 脚本运行进程<br>    ps -ef | grep “odm_clean”<br>hadoop    3702 46809  0 17:17 pts/16   00:00:00 grep odm_clean<br>hadoop   28376 28349  0 13:47 pts/11   00:00:00 bash ./odm_clean.sh 2015-06-16 2015-06-20<br>用户名     pid<br>2、杀死进程：<br>kill -9 28376<br>Killed</p>
+<p>详细介绍：</p>
+<ol>
+<li><p>ps简介<br>　　ps命令就是最根本相应情况下也是相当强大地进程查看命令.运用该命令可以确定有哪些进程正在运行和运行地状态、进程是否结束、进程有没有僵死、哪些进程占用了过多地资源等等.总之大部分信息均为可以通过执行该命令得到地.<br>　　2. ps命令及其参数<br>　　ps命令最经常使用地还是用于监控后台进程地工作情况,因为后台进程是不和屏幕键盘这些标准输入/输出设<br>　　备进行通信地,所以如果需要检测其情况,便可以运用ps命令了.<br>　　该命令语法格式如下：<br>　　ps [选项]<br>　　-e 显示所有进程,环境变量<br>　　-f 全格式<br>　　-h 不显示标题<br>　　-l 长格式<br>　　-w 宽输出<br>　　a 显示终端上地所有进程,包括其他用户地进程<br>　　r 只显示正在运行地进程<br>　　x 显示没有控制终端地进程<br>　　O[+|-] k1 [,[+|-] k2 [,…]] 根据SHORT KEYS、k1、k2中快捷键指定地多级排序顺序显示进程列表.<br>　　对于ps地不同格式都存在着默认地顺序指定.这些默认顺序可以被用户地指定所覆盖.在这里面“+”字符是可选地,“-”字符是倒转指定键地方向.<br>　　pids只列出进程标识符,之间运用逗号分隔.该进程列表必须在命令行参数地最后一个选项后面紧接着给出,中间不能插入空格.比如：ps -f1,4,5.<br>　　以下介绍长命令行选项,这些选项都运用“–”开头：<br>　　–sort X[+|-] key [,[+|-] key [,…]] 从SORT KEYS段中选一个多字母键.“+”字符是可选地,因为默认地方向就是按数字升序或者词典顺序.比如： ps -jax -sort=uid,-ppid,+pid.<br>　　–help 显示帮助信息.<br>　　–version 显示该命令地版本信息.<br>　　在前面地选项说明中提到了排序键,接下来对排序键作进一步说明.需要注意地是排序中运用地值是ps运用地内部值,并非仅用于某些输出格式地伪值.排序键列表见表4-3.<br>　　表4-3　排序键列表<br>　　c<br>　　cmd<br>　　可执行地简单名称<br>　　C<br>　　cmdline<br>　　完整命令行<br>　　f<br>　　flags<br>　　长模式标志<br>　　g<br>　　pgrp<br>　　进程地组ID<br>　　G<br>　　tpgid<br>　　控制tty进程组ID<br>　　j<br>　　cutime<br>　　累计用户时间<br>　　J<br>　　cstime<br>　　累计系统时间<br>　　k<br>　　utime<br>　　用户时间<br>　　K<br>　　stime<br>　　系统时间<br>　　m<br>　　min_flt<br>　　次要页错误地数量<br>　　M<br>　　maj_flt<br>　　重点页错误地数量<br>　　n<br>　　cmin_flt<br>　　累计次要页错误<br>　　N<br>　　cmaj_flt<br>　　累计重点页错误<br>　　o<br>　　session<br>　　对话ID<br>　　p<br>　　pid<br>　　进程ID<br>　　P<br>　　ppid<br>　　父进程ID<br>　　r<br>　　rss<br>　　驻留大小<br>　　R<br>　　resident<br>　　驻留页<br>　　s<br>　　size<br>　　内存大小(千字节)<br>　　S<br>　　share<br>　　共享页地数量<br>　　t<br>　　tty<br>　　tty次要设备号<br>　　T<br>　　start_time<br>　　进程启动地时间<br>　　U<br>　　uid<br>　　UID<br>　　u<br>　　user<br>　　用户名<br>　　v<br>　　vsize<br>　　总地虚拟内存数量(字节)<br>　　y<br>　　priority<br>　　内核调度优先级</p>
+</li>
+<li><p>经常使用ps命令参数<br>　　最经常使用地三个参数是u、a、x,下面将通过例子来说明其具体用法.<br>　　[例20] 以root身份登录系统,查看当前进程状况<br>　　$ ps<br>　　PID TTY TIME COMMAND<br>　　5800 ttyp0 00:00:00 bash<br>　　5835 ttyp0 00:00:00 ps<br>　　可以看到,显示地项目共分为四项,依次为PID(进程ID)、TTY(终端名称)、TIME(进程执行时间)<br>　　、COMMAND(该进程地命令行输入).<br>　　可以运用u选项来查看进程所有者及其他少许详细信息,如下所示：<br>　　$ ps u<br>　　USER PID %CPU %MEM USZ RSS TTY STAT START TIME COMMAND<br>　　test 5800 0.0 0.4 1892 1040 ttyp0 S Nov27 0:00 -bash<br>　　test 5836 0.0 0.3 2528 856 ttyp0 R Nov27 0:00 ps u<br>　　在bash进程前面有条横线,意味着该进程便是用户地登录shell,所以对于一个登录用户来说带短横线地进程只有一个.还可以看到%CPU、%MEM两个选项,前者指该进程占用地CPU时间和总时间地百分比;后者指该进程占用地内存和总内存地百分比.<br>　　在这种情况下看到了所有控制终端地进程;当然对于其他那些没有控制终端地进程还是没有观察到,所以这时就需要运用x选项.运用x选项可以观察到所有地进程情况.<br>　　———————————————————————————–<br>　　KILL<br>　　———————————————————————————–<br>　　由于职责的要求，你不得不费力地阅读那些令你感到费解的晦涩的Linux应用程序的说明文件。然后，你将运行指令和编辑设置文件。一切都在正常 运行，生活真美好。但是，你知道，好时光不会永远持续下去。当你遇到令人恐惧的“send the process a SIGHUP”提示时，好时光结束了。<br>　　什么是“SIGHUP（启动信号）”，你如何发送它?它像是你送给你的恋人的一束花吗?虽然你可以肯定这不是一个命令行指令，不过，你还是试着 键入它。当然，这没有结果。然后，你检查一下键盘。哦，没有SIGHUP键。于是你又重新阅读这个应用程序的参考指南，看到下面这段文字:<br>　　当收到一个hangup（进程结束）信号时，sshd程序会重新阅读配置文件。通过执行启动程序时的命令及选项来发送SIGHUP信号，如:/usr/sbin/sshd。<br>　　哦，原来是这样。<br>　　程序员 VS 使用者<br>　　LINUX程序的在线参考指南作者一般都要既照顾到最终用户的需求也要照顾到高级程序员的需求。因此，有些说明比较难懂。不过，不要担心。现在我们就要揭开覆盖在这些让人迷惑的内容上面那神秘的面纱。<br>　　信号与进程控制<br>　　这个问题主要属于信号和进程控制的范畴。对于我们系统管理员和普通用户来说，我们主要关心的是启动、停止和重新启动服务、停止失控的进程和被挂起的进程，并且尽可能不中断系统运行。因为不同的<br>　　操作系统和不同的命令外壳处理信号的方式都不相同，我们这里只介绍Linux操作系统和bash外壳。<br>　　信号是用来与守护程序和进程通信的。任何活动任务都是一个进程，而守护程序是等待对某些事件做出反应或者按照日程安排执行任务的后台服务。一个 程序必须有建在其中的信号处理程序用于捕获和应答信号。在LINUX中的signal 参考指南解释了各种不同信号和这些信号的用途。信号是由“kill”命令发出的。kill -l命令可以显示一个可用信号列表及其编号。<br>　　所有的守护程序和进程都有一个进程ID(PID)，例如使用ps命名所显示的内容：<br>　　$ ps aux<br>　　USER PID %CPU %MEM TTY STAT COMMAND<br>　　root 1 0.0 0.1 ? S init [2]<br>　　105 7783 0.0 0.2 ? Ss /usr/bin/dbus-daemon –system<br>　　hal 7796 0.0 0.7 ? Ss /usr/sbin/hald<br>　　postfix 7957 0.0 0.2 ? S qmgr -l -t fifo -u -c<br>　　nagios 8371 0.0 0.2 ? SNs /usr/sbin/nagios /etc/nagios/nagios.cfg<br>　　这个输出是经过简化的。你在系统中可以看到更多的行和栏目。如果某些进程消耗了你的全部CPU或者内存，你可以在这个输出的%CPU和%MEM 列中发现它们。找到失控的进程的一种更快捷的方法是使用top命令，因为按照默认的设置，使用占用CPU资源最多的进程在最上面显示。我们可以使用一条 “yes”命令来<a href="http://softtest.chinaitlab.com/" target="_blank" rel="external">测试</a>一下:<br>　　$ yes carla is teh awesum<br>　　这个命令将以很高的速度反复显示“carla is teh awesum”，直到你停止它运行。这将使你的CPU使用率达到警戒线。<br>　　$ top<br>　　…<br>　　PID USER PR NI VIRT RES SHR S %CPU %MEM TIME+ COMMAND<br>　　12144 carla 25 0 31592 17m 13m R 93.4 3.5 0:50.26 konsole<br>　　22236 carla 15 0 2860 468 400 S 4.3 0.1 0:00.97 yes<br>　　分析一下这个结果，你会发现一些有趣的事，你会发现，占用CPU最多的程序是konsole虚拟终端程序，而不是“yes”命令，这是因为 “yes”命令是在konsole终端程序中运行的。如果在一个“真正的”控制台(按Ctrl+alt+f2键)中运行同样的命令序列，你将看到 “yes”命令被排在第一位。<br>　　有许多停止“yes”命令运行的方式。如果你要回到运行它的shell中，按CTRL+c键就可以了。或者你可以在另一个shell中用“kill”命令停止“yes”命令的运行，Kill命令后面跟PID或者命令名称，如下如示:<br>　　$ kill 22236<br>　　或者<br>　　$ killall yes<br>　　按CTRL+c键发出一个SIGINT（信号2），这个信号是键盘要求取得控制权的中断信号。kill和killall这两个命令按照默认的设 置都发出一个SIGTERM信号(编号15)。程序中可以设置对SIGTERM信号(15)是捕捉或者忽略，或者以不同的方式解释。因此，如果你的程序对 于 KILL命令的反应与你预期不同，很可能是被KILL的目标程序的问题。<br>　　终止一个父进程通常也终止了它的子进程。不过，情况并不总是如此。你知道子进程是什么吗?使用ps命令加上-f选项就可以看到，如下所示:<br>　　$ ps axf<br>　　22371 ? R 2:35 <em> konsole [kdeinit]<br>　　22372 pts/3 Ss 0:00 | </em> /bin/bash<br>　　24322 pts/3 S+ 0:00 | | <em> yes carla is teh awesum<br>　　22381 pts/4 Rs 0:00 | </em> /bin/bash<br>　　24323 pts/4 R+ 0:00 | | _ ps axf<br>　　现在，回到SIGHUP的话题<br>　　SIGHUP的发音是“sig-hup”，是signal hangup的缩写，含义是“中止信号”。你如何发送一个SIGHUP信号呢?这里有几种方式:<br>　　# kill -HUP [pid]<br>　　# killall -HUP [process-name]<br>　　# kill -1 [pid]<br>　　# killall -1 [process-name]<br>　　因此，你可以使用PID或者名称，信号名称或者号码。那么为什么要这样做而不使用/etc/init.d/foo命令重新启动呢?使用它们自己 的 init(初始化)文件来控制服务是优先选择的方式，因为这些文件通常包含健全和错误检查以及额外的功能。使用“kill”命令和信号的主要原因是尽可能 明确地终止挂起和失控的进程，而不必重新启动或者登出。<br>　　终止进程<br>　　正如你在关于信号的man page中所看到的，有十几种控制进程的方法。下面是一些常用的方法:<br>　　kill -STOP [pid]<br>　　发送SIGSTOP (17,19,23)停止一个进程，而并不消灭这个进程。<br>　　kill -CONT [pid]<br>　　发送SIGCONT (19,18,25)重新开始一个停止的进程。<br>　　kill -KILL [pid]<br>　　发送SIGKILL (9)强迫进程立即停止，并且不实施清理操作。<br>　　kill -9 -1<br>　　终止你拥有的全部进程。<br>　　SIGKILL和SIGSTOP信号不能被捕捉、封锁或者忽略，但是，其它的信号可以。所以这是你的终极武器。<br>　　Bash shell的Kil命令l<br>　　Bash外壳包含一个内置的kill命令，当执行下面命令:<br>　　$ type -all kill<br>　　kill is a shell built-in<br>　　kill is /bin/kill<br>　　命令的结果表明有两个kill命令，一个是BASH的内置命令，另一个是/bin/kill可执行程序。一般来说这两个命令不太可能遇到冲突的情况，不过，如果你确实遇到了kill命令行为异常时，你可以明确的指定/bin/kill命令。<br>　　你一定要进一步查阅下面的资源中列出的参考资源来了解Linux中kill的妙用，因为这是你进入维护Linux系统领域的门票。这些知识能够让你像做外科手术一样对系统进行维护，而不用在遇到问题时每一次都重新启动系统，就像我们知道的某些蹩脚的<br>　　操作系统那样。<br>　　资源<br>　　Linux Cookbook一书的第七章“开始和终止Linux”<br>　　bash (1) - GNU Bourne-Again Shell<br>　　yes (1) - 在被终止前反复打印字符<br>　　signal (7) - 可用信号列表<br>　　ps (1) - 报告当前进程的快照<br>　　kill (1) - 向一个进程发出信号<br>　　killall (1) - 按名字消灭进程<br>　　pkill (1) - 根据名字和其它属性查看或者发出进程信号<br>　　skill (1) - 发送一个信号或者报告进程状态<br>　　xkill (1) - 按照X资源消灭一个客户程序</p>
+</li>
+</ol>
+
+		</div>
+		<footer class="article-footer clearfix">
+
+
+
+
+<div class="article-share" id="share">
+
+  <div data-url="http://itsky88.com/2016/12/18/csdn/杀死Linux Shell进程/" data-title="杀死Linux Shell进程 | ITSky" data-tsina="null" class="share clearfix">
+  </div>
+
+</div>
+</footer>   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2016/12/18/csdn/推荐八个配色网站/" title="推荐八个配色网站">
+  <strong>PREVIOUS:</strong><br/>
+  <span>
+  推荐八个配色网站</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2016/12/18/csdn/jQuery插件之form/"  title="jQuery插件之form">
+ <strong>NEXT:</strong><br/> 
+ <span>jQuery插件之form
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+	<script type="text/javascript" src="/js/my_highlight.js"></script>
+</div>  
+      <div class="openaside">
+    <a class="navbutton" href="#" title="显示侧边栏"></a>
+</div>
+
+  <div id="toc" class="toc-aside">
+      <strong class="toc-title">文章目录</strong>
+      
+  </div>
+
+<div id="asidepart">
+    <div class="closeaside">
+        <a class="closebutton" href="#" title="隐藏侧边栏"></a>
+    </div>
+    <aside class="clearfix">
+        
+          
+	<div class="widget">
+		<div class="categorieslist">
+			<p class="asidetitle fa fa-gui">分类</p>
+				<ul>
+				
+					<li><a href="/categories/Hibernate/" title="Hibernate">Hibernate<sup>1</sup></a></li>
+				
+					<li><a href="/categories/Hive/" title="Hive">Hive<sup>2</sup></a></li>
+				
+					<li><a href="/categories/Java/" title="Java">Java<sup>2</sup></a></li>
+				
+					<li><a href="/categories/Js/" title="Js">Js<sup>2</sup></a></li>
+				
+					<li><a href="/categories/Maven/" title="Maven">Maven<sup>1</sup></a></li>
+				
+					<li><a href="/categories/Nodejs/" title="Nodejs">Nodejs<sup>1</sup></a></li>
+				
+				</ul>
+		</div>
+	</div>
+
+        
+          
+  <div class="widget">
+    <div class="archiveslist">
+      <!-- 输出 ‘归档’ 标题 -->
+      <p class="asidetitle fa fa-fei">
+        <a href="/archives">
+          归档
+        </a>
+      </p>
+
+        <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">十二月 2016</a><span class="archive-list-count">89</span></li></ul>
+    </div>
+  </div>
+
+
+        
+          
+<div class="widget">
+	<div class="linkslist">
+		<p class="asidetitle fa fa-xie">最新文章</p>
+			<ul>
+			
+				<li><a href="/tags/Hexo/" title="Hexo">Hexo<sup>1</sup></a></li>
+			
+				<li><a href="/tags/Hibernate/" title="Hibernate">Hibernate<sup>1</sup></a></li>
+			
+				<li><a href="/tags/Hive/" title="Hive">Hive<sup>2</sup></a></li>
+			
+				<li><a href="/tags/Java/" title="Java">Java<sup>2</sup></a></li>
+			
+				<li><a href="/tags/Js/" title="Js">Js<sup>2</sup></a></li>
+			
+				<li><a href="/tags/Maven/" title="Maven">Maven<sup>1</sup></a></li>
+			
+			</ul>
+	</div>
+</div>
+
+        
+          <div class="widget">
+  <div class="linkslist">
+    <p class="asidetitle fa fa-you">友情链接</p>
+      <ul>
+        <li><a href="http://www.css88.com/jqapi-1.9/" target="_blank" title="Jquery参考手册">Jquery参考手册</a></li>
+        <li><a href="http://hexo.io" target="_blank" title="Hexo">Hexo</a></li>
+      </ul>
+  </div>
+</div>
+        
+    </aside>
+</div>
+    </div>
+    <a id="totop" href="#top"></a>
+<script type="text/javascript" src="/js/totop.js?v=1", async></script>
+    <footer><div id="footer" >
+	<div class="footer-info">
+		<p>
+			<a>网站地图</a>|<a>订阅本站</a>|<a>联系博主</a>:
+			<span>
+				<a class="fa fa-github" target="_blank" href="https://github.com/jerryliu306"></a>
+				<a class="fa fa-weibo" target="_blank" href="http://weibo.com/u/2679045517/home?wvr=5"></a>
+				<a class="fa fa-email" target="_blank" href="1031757312@qq.com"></a>
+			</span>
+		</p>
+		<p>
+			<span>
+				Copyright &copy;2016&nbsp;JerryLiu
+			</span>
+			<span>
+				Powered by
+				<a target='_blank', href='https://hexo.io'>Hexo.</a>
+			</span>
+		</p>
+	</div>
+	<!--
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	-->
+</div>
+</footer>
+    <script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else
+    {
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      h  = $('article h2')
+      ah = $('article h2'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  if(ah.length==0){
+    t.css('display','none');
+  }else{
+    c.click(function(){
+      ta.css('display', 'block').addClass('fadeIn');
+    });
+    o.click(function(){
+      ta.css('display', 'none');
+    });
+    $(window).scroll(function(){
+      ta.css("top",Math.max(140,320-$(this).scrollTop()));
+    });
+  };
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina');
+  var html = [
+  '<a href="#" class="overlay" id="qrcode"></a>',
+  '<div class="qrcode clearfix"><span>扫描二维码分享到微信朋友圈</span><a class="qrclose" href="#share"></a><strong>Loading...Please wait</strong><img id="qrcode-pic" data-src="http://s.jiathis.com/qrcode.php?url=' + encodedUrl + '"/></div>',
+  '<a href="#textlogo" class="article-back-to-top" title="Top"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="QRcode"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="Weibo"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+  $('.article-share-qrcode').click(function(){
+    var imgSrc = $('#qrcode-pic').attr('data-src');
+    $('#qrcode-pic').attr('src', imgSrc);
+    $('#qrcode-pic').load(function(){
+        $('.qrcode strong').text(' ');
+    });
+  });
+});     
+</script>
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+  </body>
+</html>
+

@@ -1,0 +1,598 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+  <title>Spring HttpInvoker远程调用的例子 | ITSky</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=3, minimum-scale=1">
+  
+  <meta name="author" content="JerryLiu">
+  
+  <meta name="description" content="HttpInvoker的实现原理和java的RMI实现原理相同，都是基于Http协议，将java对象序列化以后以流的方式在客户端和服务器端进行传输。
+例子的项目结构图：
+执行流程图如下：
+类图如下：涉及到的类及接口：客户端：
+接口
+package com.httpinvoker.test.clien">
+  
+  
+  
+  
+  
+  <link rel="icon" href="/img/favicon.ico">
+  
+  
+  <link rel="apple-touch-icon" href="/img/pacman.jpg">
+  <link rel="apple-touch-icon-precomposed" href="/img/pacman.jpg">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <script src="/js/jquery-2.1.0.min.js"></script>
+  <link rel="stylesheet" href="//cdn.bootcss.com/highlight.js/8.0/styles/monokai_sublime.min.css">
+  <script type="text/javascript" src="//cdn.bootcss.com/highlight.js/8.0/highlight.min.js"></script>
+  <script type="text/javascript">
+      hljs.initHighlightingOnLoad()
+  </script>
+</head>
+
+  <body>
+    <header>
+      <div>
+	
+	<div id="textlogo">
+		<!-- <h1 class="site-name"><a href="/" title="ITSky">ITSky</a></h1>-->
+		<h1 class="site-name">ITSky</h1>
+		<h2 class="blog-motto">专注于Linux、Hadoop、Hive、Spark、Kaffka、Redis、MongoDB、ElasticSearch等技术</h2>
+	</div>
+	<div class="navbar">
+		<a class="navbutton navmobile" href="#" title="菜单"></a>
+	</div>
+	<nav class="animated">
+		<ul>
+			
+				<li><a href="/">主页</a></li>
+			
+				<li><a href="/archives">归档</a></li>
+			
+				<li><a href="/categories">分类</a></li>
+			
+				<li><a href="/about">About</a></li>
+			
+			<li>
+			
+			<!--<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+				<label>Search</label>
+				<input type="text" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+				<input type="hidden" name="q" value="site:itsky88.com">
+			</form>-->
+			
+			</li>
+		</ul>
+	</nav>
+</div>
+
+    </header>
+    <div id="container">
+      <!-- 文章内容详情模块 -->
+<div id="main" class="post" itemscope itemprop="blogPost">
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h2 itemprop="name">
+    
+      <a href="/2016/12/18/csdn/Spring HttpInvoker远程调用的例子/" title="Spring HttpInvoker远程调用的例子" itemprop="url">Spring HttpInvoker远程调用的例子</a>
+    
+  </h2>
+  <p class="article-author">By
+    
+      <a href="http://itsky88.com" title="JerryLiu">JerryLiu</a>
+    </p>
+  <p class="article-time">
+    <time datetime="2016-12-17T16:00:00.000Z" itemprop="datePublished">2016-12-18</time>
+    更新日期:<time datetime="2016-12-18T10:23:06.000Z" itemprop="dateModified">2016-12-18</time>
+    
+  </p>
+</header>
+		<div class="article-content">
+			
+			
+				<div id="toc" class="toc-article">
+					<strong class="toc-title">文章目录</strong>
+				
+				</div>
+			
+			<p>HttpInvoker的实现原理和java的RMI实现原理相同，都是基于Http协议，将java对象序列化以后以流的方式在客户端和服务器端进行传输。</p>
+<p>例子的项目结构图：</p>
+<p><img src="http://img.blog.csdn.net/20131212161317390?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGl1aHVpXzMwNg==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" alt=""><br>执行流程图如下：<br><img src="http://img.blog.csdn.net/20131212161415984?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGl1aHVpXzMwNg==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" alt=""></p>
+<p>类图如下：<br><img src="http://img.blog.csdn.net/20131212163822171?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGl1aHVpXzMwNg==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" alt=""><br>涉及到的类及接口：<br>客户端：</p>
+<pre><code class="java">接口
+package com.httpinvoker.test.client;
+
+import com.httpinvoker.test.bean.User;
+
+/**
+ * 远程调用的客户端
+ */
+public interface ClientService {
+
+    /**
+     * 添加一个账户
+     * @param account
+     */
+    void addAccount(User account);
+
+    /**
+     * 查询一个账户
+     * @return
+     */
+    User findAccount();
+
+}
+
+测试类
+package com.httpinvoker.test.client;
+
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+import com.httpinvoker.test.bean.User;
+
+public class HttpInvokerTest {
+    public static void main(String[] args) {
+        ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext(
+                new String[] {&quot;spring-register-service.xml&quot; });
+
+        ClientService clientService = (ClientService)ctx.getBean(&quot;accountService&quot;);
+
+        User account = new User(&quot;张三&quot;, &quot;zhangsan&quot;, &quot;男&quot;);
+
+        clientService.addAccount(account);
+
+        User account2 = clientService.findAccount();
+        System.out.println(&quot;客户端查询到的用户的名字为 : &quot; + account2.getName());
+    }
+}
+</code></pre>
+<p>服务器端：</p>
+<pre><code class="java">接口
+package com.httpinvoker.test.server;
+
+import com.httpinvoker.test.bean.User;
+
+/**
+ * 远程调用的客户端
+ */
+public interface ServerService {
+
+    /**
+     * 添加一个账户
+     * @param account
+     */
+    void addAccount(User account);
+
+    /**
+     * 查询一个账户
+     * @return
+     */
+    User findAccount();
+
+}
+
+实现
+package com.httpinvoker.test.server;
+
+import com.httpinvoker.test.bean.User;
+
+public class ServerServiceImpl implements ServerService {
+
+    public void addAccount(User account) {
+        System.out.println(&quot;用户 : &quot; + account.getName() + &quot; 添加成功!&quot;);
+    }
+
+    public User findAccount() {
+        User account = new User(&quot;张三&quot;, &quot;zhangsan&quot;, &quot;男&quot;);
+        System.out.println(&quot;用户 : &quot; + account.getName() + &quot; 查找成功!&quot;);
+        return account;
+    }
+}
+</code></pre>
+<p>公共的User对象</p>
+<pre><code class="java">package com.httpinvoker.test.bean;
+
+import java.io.Serializable;
+
+public class User implements Serializable{
+    private static final long serialVersionUID = 1L;
+
+    private String name;
+    private String passwd;
+    private String sex;
+
+    public User() {
+    }
+
+    public User(String name, String passwd, String sex) {
+        this.name = name;
+        this.passwd = passwd;
+        this.sex = sex;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getPasswd() {
+        return passwd;
+    }
+
+    public void setPasswd(String passwd) {
+        this.passwd = passwd;
+    }
+
+    public String getSex() {
+        return sex;
+    }
+
+    public void setSex(String sex) {
+        this.sex = sex;
+    }
+}
+</code></pre>
+<p>客户端spring的配置：</p>
+<pre><code class="xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot; xmlns:p=&quot;http://www.springframework.org/schema/p&quot; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xmlns:aop=&quot;http://www.springframework.org/schema/aop&quot; xmlns:tx=&quot;http://www.springframework.org/schema/tx&quot; xmlns:context=&quot;http://www.springframework.org/schema/context&quot; xsi:schemaLocation=&quot;
+            http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+            http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+            http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+            http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd&quot;&gt;
+    &lt;bean id=&quot;accountService&quot; class=&quot;org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean&quot;&gt;
+        &lt;property name=&quot;serviceUrl&quot;&gt;
+            &lt;value&gt;http://localhost:8080/MavenTest/userHttpInvokerService&lt;/value&gt;
+        &lt;/property&gt;
+        &lt;property name=&quot;serviceInterface&quot;&gt;
+            &lt;value&gt;com.httpinvoker.test.client.ClientService&lt;/value&gt;
+        &lt;/property&gt;
+    &lt;/bean&gt;
+
+&lt;/beans&gt;
+</code></pre>
+<p>服务器端 spring的配置</p>
+<pre><code class="xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot; xmlns:p=&quot;http://www.springframework.org/schema/p&quot; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xmlns:aop=&quot;http://www.springframework.org/schema/aop&quot; xmlns:tx=&quot;http://www.springframework.org/schema/tx&quot; xmlns:context=&quot;http://www.springframework.org/schema/context&quot; xsi:schemaLocation=&quot;
+            http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+            http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+            http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+            http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd&quot;&gt;
+
+    &lt;bean id=&quot;accountService&quot; class=&quot;com.httpinvoker.test.server.ServerServiceImpl&quot;&gt;
+    &lt;/bean&gt;
+
+    &lt;bean name=&quot;userHttpInvokerService&quot; class=&quot;org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter&quot;&gt;
+        &lt;property name=&quot;service&quot; ref=&quot;accountService&quot;/&gt;
+        &lt;property name=&quot;serviceInterface&quot; value=&quot;com.httpinvoker.test.server.ServerService&quot;/&gt;
+    &lt;/bean&gt;
+
+&lt;/beans&gt;
+</code></pre>
+<p>“web.xml”的配置:</p>
+<pre><code class="xml">&lt;servlets&gt;
+    &lt;servlet&gt;
+         &lt;servlet-name&gt;userHttpInvokerService&lt;/servlet-name&gt;
+         &lt;servlet-class&gt;org.springframework.web.context.support.HttpRequestHandlerServlet&lt;/servlet-class&gt;
+    &lt;/servlet&gt;
+    &lt;servlet-mapping&gt;
+         &lt;servlet-name&gt;userHttpInvokerService&lt;/servlet-name&gt;
+         &lt;url-pattern&gt;/userHttpInvokerService&lt;/url-pattern&gt;
+    &lt;/servlet-mapping&gt;
+&lt;/servlets&gt;
+</code></pre>
+<p>注意：<a href="http://localhost:8080/MavenTest/userHttpInvokerService" target="_blank" rel="external">http://localhost:8080/MavenTest/userHttpInvokerService</a>中的/userHttpInvokerService是服务器端的servlet所匹配的servlet-name所对应的bean的name属性值。</p>
+
+		</div>
+		<footer class="article-footer clearfix">
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/Java/">Java</a>
+  </div>
+
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/Java/">Java</a>
+</div>
+
+
+
+<div class="article-share" id="share">
+
+  <div data-url="http://itsky88.com/2016/12/18/csdn/Spring HttpInvoker远程调用的例子/" data-title="Spring HttpInvoker远程调用的例子 | ITSky" data-tsina="null" class="share clearfix">
+  </div>
+
+</div>
+</footer>   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2016/12/18/csdn/hive 执行sql客户端异常/" title="hive 执行sql客户端异常">
+  <strong>PREVIOUS:</strong><br/>
+  <span>
+  hive 执行sql客户端异常</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2016/12/17/csdn/阿里云maven仓库镜像地址/"  title="阿里云maven仓库镜像地址">
+ <strong>NEXT:</strong><br/> 
+ <span>阿里云maven仓库镜像地址
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+	<script type="text/javascript" src="/js/my_highlight.js"></script>
+</div>  
+      <div class="openaside">
+    <a class="navbutton" href="#" title="显示侧边栏"></a>
+</div>
+
+  <div id="toc" class="toc-aside">
+      <strong class="toc-title">文章目录</strong>
+      
+  </div>
+
+<div id="asidepart">
+    <div class="closeaside">
+        <a class="closebutton" href="#" title="隐藏侧边栏"></a>
+    </div>
+    <aside class="clearfix">
+        
+          
+	<div class="widget">
+		<div class="categorieslist">
+			<p class="asidetitle fa fa-gui">分类</p>
+				<ul>
+				
+					<li><a href="/categories/Hibernate/" title="Hibernate">Hibernate<sup>1</sup></a></li>
+				
+					<li><a href="/categories/Hive/" title="Hive">Hive<sup>2</sup></a></li>
+				
+					<li><a href="/categories/Java/" title="Java">Java<sup>2</sup></a></li>
+				
+					<li><a href="/categories/Js/" title="Js">Js<sup>2</sup></a></li>
+				
+					<li><a href="/categories/Maven/" title="Maven">Maven<sup>1</sup></a></li>
+				
+					<li><a href="/categories/Nodejs/" title="Nodejs">Nodejs<sup>1</sup></a></li>
+				
+				</ul>
+		</div>
+	</div>
+
+        
+          
+  <div class="widget">
+    <div class="archiveslist">
+      <!-- 输出 ‘归档’ 标题 -->
+      <p class="asidetitle fa fa-fei">
+        <a href="/archives">
+          归档
+        </a>
+      </p>
+
+        <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">十二月 2016</a><span class="archive-list-count">89</span></li></ul>
+    </div>
+  </div>
+
+
+        
+          
+<div class="widget">
+	<div class="linkslist">
+		<p class="asidetitle fa fa-xie">最新文章</p>
+			<ul>
+			
+				<li><a href="/tags/Hexo/" title="Hexo">Hexo<sup>1</sup></a></li>
+			
+				<li><a href="/tags/Hibernate/" title="Hibernate">Hibernate<sup>1</sup></a></li>
+			
+				<li><a href="/tags/Hive/" title="Hive">Hive<sup>2</sup></a></li>
+			
+				<li><a href="/tags/Java/" title="Java">Java<sup>2</sup></a></li>
+			
+				<li><a href="/tags/Js/" title="Js">Js<sup>2</sup></a></li>
+			
+				<li><a href="/tags/Maven/" title="Maven">Maven<sup>1</sup></a></li>
+			
+			</ul>
+	</div>
+</div>
+
+        
+          <div class="widget">
+  <div class="linkslist">
+    <p class="asidetitle fa fa-you">友情链接</p>
+      <ul>
+        <li><a href="http://www.css88.com/jqapi-1.9/" target="_blank" title="Jquery参考手册">Jquery参考手册</a></li>
+        <li><a href="http://hexo.io" target="_blank" title="Hexo">Hexo</a></li>
+      </ul>
+  </div>
+</div>
+        
+    </aside>
+</div>
+    </div>
+    <a id="totop" href="#top"></a>
+<script type="text/javascript" src="/js/totop.js?v=1", async></script>
+    <footer><div id="footer" >
+	<div class="footer-info">
+		<p>
+			<a>网站地图</a>|<a>订阅本站</a>|<a>联系博主</a>:
+			<span>
+				<a class="fa fa-github" target="_blank" href="https://github.com/jerryliu306"></a>
+				<a class="fa fa-weibo" target="_blank" href="http://weibo.com/u/2679045517/home?wvr=5"></a>
+				<a class="fa fa-email" target="_blank" href="1031757312@qq.com"></a>
+			</span>
+		</p>
+		<p>
+			<span>
+				Copyright &copy;2016&nbsp;JerryLiu
+			</span>
+			<span>
+				Powered by
+				<a target='_blank', href='https://hexo.io'>Hexo.</a>
+			</span>
+		</p>
+	</div>
+	<!--
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	-->
+</div>
+</footer>
+    <script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else
+    {
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      h  = $('article h2')
+      ah = $('article h2'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  if(ah.length==0){
+    t.css('display','none');
+  }else{
+    c.click(function(){
+      ta.css('display', 'block').addClass('fadeIn');
+    });
+    o.click(function(){
+      ta.css('display', 'none');
+    });
+    $(window).scroll(function(){
+      ta.css("top",Math.max(140,320-$(this).scrollTop()));
+    });
+  };
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina');
+  var html = [
+  '<a href="#" class="overlay" id="qrcode"></a>',
+  '<div class="qrcode clearfix"><span>扫描二维码分享到微信朋友圈</span><a class="qrclose" href="#share"></a><strong>Loading...Please wait</strong><img id="qrcode-pic" data-src="http://s.jiathis.com/qrcode.php?url=' + encodedUrl + '"/></div>',
+  '<a href="#textlogo" class="article-back-to-top" title="Top"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="QRcode"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="Weibo"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+  $('.article-share-qrcode').click(function(){
+    var imgSrc = $('#qrcode-pic').attr('data-src');
+    $('#qrcode-pic').attr('src', imgSrc);
+    $('#qrcode-pic').load(function(){
+        $('.qrcode strong').text(' ');
+    });
+  });
+});     
+</script>
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+  </body>
+</html>
+

@@ -32,36 +32,36 @@
     <header>
       <div>
 	
-		<div id="textlogo">
-			<!-- <h1 class="site-name"><a href="/" title="ITSky">ITSky</a></h1>-->
-			<h1 class="site-name">ITSky</h1>
-			<h2 class="blog-motto">专注于Linux、Hadoop、Hive、Spark、Kaffka、Redis、MongoDB、ElasticSearch等技术</h2>
-		</div>
-		<div class="navbar">
-			<a class="navbutton navmobile" href="#" title="菜单"></a>
-		</div>
-		<nav class="animated">
-			<ul>
-				
-					<li><a href="/">主页</a></li>
-				
-					<li><a href="/archives">归档</a></li>
-				
-					<li><a href="/categories">分类</a></li>
-				
-					<li><a href="/about">About</a></li>
-				
-				<li>
-				
-				<!--<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
-					<label>Search</label>
-					<input type="text" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
-					<input type="hidden" name="q" value="site:itsky88.com">
-				</form>-->
-				
-				</li>
-			</ul>
-		</nav>
+	<div id="textlogo">
+		<!-- <h1 class="site-name"><a href="/" title="ITSky">ITSky</a></h1>-->
+		<h1 class="site-name">ITSky</h1>
+		<h2 class="blog-motto">专注于Linux、Hadoop、Hive、Spark、Kaffka、Redis、MongoDB、ElasticSearch等技术</h2>
+	</div>
+	<div class="navbar">
+		<a class="navbutton navmobile" href="#" title="菜单"></a>
+	</div>
+	<nav class="animated">
+		<ul>
+			
+				<li><a href="/">主页</a></li>
+			
+				<li><a href="/archives">归档</a></li>
+			
+				<li><a href="/categories">分类</a></li>
+			
+				<li><a href="/about">About</a></li>
+			
+			<li>
+			
+			<!--<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+				<label>Search</label>
+				<input type="text" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+				<input type="hidden" name="q" value="site:itsky88.com">
+			</form>-->
+			
+			</li>
+		</ul>
+	</nav>
 </div>
 
     </header>
@@ -76,9 +76,9 @@
   
     <section class="post" itemscope itemprop="blogPost">
   
-    <a href="/2016/12/18/javascript Array.map 源码解读/" title="javascript Array.map 源码解读" itemprop="url">
+    <a href="/2016/12/18/csdn/hive根据日期获取星期几的方法/" title="hive根据日期获取星期几的方法" itemprop="url">
   
-        <h1 itemprop="name">javascript Array.map 源码解读</h1>
+        <h1 itemprop="name">hive根据日期获取星期几的方法</h1>
     </a>
     <div class="post-meta">
         2016-12-18
@@ -87,28 +87,26 @@
     <div class="post-content">
         
             
-                <p itemprop="description" >// 实现 ECMA-262, Edition 5, 15.4.4.19  
-// 参考: http://es5.github.com/#x15.4.4.19  
-if (!Array.prototype.map) {  
-  Array.prototype.map = func</p>
+                <p itemprop="description" >hive原生未提供获取一个日期是星期几的方法，所以只有我们自己编写udf函数提供，udf就不说了，在这里给出了一个使用hive原生函数获取星期几的技巧。pmod(datediff(#date#, ‘1920-01-01’) - 3, 7) 
+#date#表示给的日期。输出的结果为</p>
             
         
     </div>
     <div class="readmore">
         
-            <a href="/2016/12/18/javascript Array.map 源码解读/" title="javascript Array.map 源码解读" itemprop="url">阅读更多</a>
+            <a href="/2016/12/18/csdn/hive根据日期获取星期几的方法/" title="hive根据日期获取星期几的方法" itemprop="url">阅读更多</a>
         
     </div>
-    <!--<time datetime="2016-12-18T02:47:24.000Z" itemprop="datePublished">2016-12-18</time>-->
+    <!--<time datetime="2016-12-18T09:34:18.000Z" itemprop="datePublished">2016-12-18</time>-->
     <div class="clear"></div>
 
 </section>
   
     <section class="post" itemscope itemprop="blogPost">
   
-    <a href="/2016/12/18/史上最全javascript parseInt函数详解/" title="史上最全javascript parseInt函数详解" itemprop="url">
+    <a href="/2016/12/18/csdn/马士兵Hibernate学习笔记/" title="马士兵Hibernate学习笔记" itemprop="url">
   
-        <h1 itemprop="name">史上最全javascript parseInt函数详解</h1>
+        <h1 itemprop="name">马士兵Hibernate学习笔记</h1>
     </a>
     <div class="post-meta">
         2016-12-18
@@ -117,74 +115,263 @@ if (!Array.prototype.map) {
     <div class="post-content">
         
             
-                <p itemprop="description" >全局 parseInt 函数的总结：parseInt(numString, redix);numString 将要被转换为Int的字符串。 注意点： 1、可为数字或字符串, 不管怎样都会使用String(numString)将其转换成字符串; 如： parseInt(010); </p>
+                <p itemprop="description" >http://blog.csdn.net/tanyit/article/details/6987279</p>
             
         
     </div>
     <div class="readmore">
         
-            <a href="/2016/12/18/史上最全javascript parseInt函数详解/" title="史上最全javascript parseInt函数详解" itemprop="url">阅读更多</a>
+            <a href="/2016/12/18/csdn/马士兵Hibernate学习笔记/" title="马士兵Hibernate学习笔记" itemprop="url">阅读更多</a>
         
     </div>
-    <!--<time datetime="2016-12-18T02:43:28.000Z" itemprop="datePublished">2016-12-18</time>-->
+    <!--<time datetime="2016-12-18T09:34:18.000Z" itemprop="datePublished">2016-12-18</time>-->
     <div class="clear"></div>
 
 </section>
   
     <section class="post" itemscope itemprop="blogPost">
   
-    <a href="/2016/12/17/阿里云maven仓库镜像地址/" title="阿里云maven仓库镜像地址" itemprop="url">
+    <a href="/2016/12/18/csdn/Eclipse快捷键的使用，很实用/" title="Eclipse快捷键的使用，很实用" itemprop="url">
   
-        <h1 itemprop="name">阿里云maven仓库镜像地址</h1>
+        <h1 itemprop="name">Eclipse快捷键的使用，很实用</h1>
     </a>
     <div class="post-meta">
-        2016-12-17
+        2016-12-18
     </div>
     <a class="ds-thread-count">暂无评论</a>
     <div class="post-content">
         
             
-                <p itemprop="description" >maven确实是一个好东西，但是在国内下载官方仓库的jar却是个大问题，速度不敢恭维，现在oschina的国内maven镜像服务已关闭，无奈之下只能另寻门路。今天突然发现了阿里云maven国内镜像，修改完以后速度飞一般的感觉，超赞，这个激动啊。。。修改方法：在~/.m2目录下的s</p>
+                <p itemprop="description" >http://www.open-open.com/bbs/view/1320934157953</p>
             
         
     </div>
     <div class="readmore">
         
-            <a href="/2016/12/17/阿里云maven仓库镜像地址/" title="阿里云maven仓库镜像地址" itemprop="url">阅读更多</a>
+            <a href="/2016/12/18/csdn/Eclipse快捷键的使用，很实用/" title="Eclipse快捷键的使用，很实用" itemprop="url">阅读更多</a>
         
     </div>
-    <!--<time datetime="2016-12-17T14:26:29.000Z" itemprop="datePublished">2016-12-17</time>-->
+    <!--<time datetime="2016-12-18T09:34:18.000Z" itemprop="datePublished">2016-12-18</time>-->
     <div class="clear"></div>
 
 </section>
   
     <section class="post" itemscope itemprop="blogPost">
   
-    <a href="/2016/12/04/hello-world/" title="使用Hexo搭建博客" itemprop="url">
+    <a href="/2016/12/18/csdn/FATAL Fatal error during KafkaServerStartable startup. java.lang.OutOfMemoryError Java heap space/" title="FATAL Fatal error during KafkaServerStartable startup. java.lang.OutOfMemoryError Java heap space" itemprop="url">
   
-        <h1 itemprop="name">使用Hexo搭建博客</h1>
+        <h1 itemprop="name">FATAL Fatal error during KafkaServerStartable startup. java.lang.OutOfMemoryError Java heap space</h1>
     </a>
     <div class="post-meta">
-        2016-12-04
+        2016-12-18
     </div>
     <a class="ds-thread-count">暂无评论</a>
     <div class="post-content">
         
             
-                <p itemprop="description" >Welcome to Hexo! This is your very first post. Check documentation for more info. If you get any problems when using Hexo, you can find the </p>
+                <p itemprop="description" >今天搭建了kafka单机版用于测试，配置好以后启动kafka时出现了内存溢出的问题，如下： 
+[2016-10-22 10:39:39,112] INFO [Kafka Server 0], shut down completed (kafka.server.KafkaServe</p>
             
         
     </div>
     <div class="readmore">
         
-            <a href="/2016/12/04/hello-world/" title="使用Hexo搭建博客" itemprop="url">阅读更多</a>
+            <a href="/2016/12/18/csdn/FATAL Fatal error during KafkaServerStartable startup. java.lang.OutOfMemoryError Java heap space/" title="FATAL Fatal error during KafkaServerStartable startup. java.lang.OutOfMemoryError Java heap space" itemprop="url">阅读更多</a>
         
     </div>
-    <!--<time datetime="2016-12-04T10:38:27.000Z" itemprop="datePublished">2016-12-04</time>-->
+    <!--<time datetime="2016-12-18T09:34:18.000Z" itemprop="datePublished">2016-12-18</time>-->
     <div class="clear"></div>
 
 </section>
   
+    <section class="post" itemscope itemprop="blogPost">
+  
+    <a href="/2016/12/18/csdn/HighCharts点击柱形或饼块加URL或Click事件/" title="HighCharts点击柱形或饼块加URL或Click事件" itemprop="url">
+  
+        <h1 itemprop="name">HighCharts点击柱形或饼块加URL或Click事件</h1>
+    </a>
+    <div class="post-meta">
+        2016-12-18
+    </div>
+    <a class="ds-thread-count">暂无评论</a>
+    <div class="post-content">
+        
+            
+                <p itemprop="description" >我们在做图表的时候，有时候需要在单个数据上加链接或点击事件，是在plotOptions里的events里设置的01``plotOptions:
+ {``02``    ``pie:
+ {``03``        ``cursor: ``&amp;#39;pointer&amp;#39;``,`</p>
+            
+        
+    </div>
+    <div class="readmore">
+        
+            <a href="/2016/12/18/csdn/HighCharts点击柱形或饼块加URL或Click事件/" title="HighCharts点击柱形或饼块加URL或Click事件" itemprop="url">阅读更多</a>
+        
+    </div>
+    <!--<time datetime="2016-12-18T09:34:18.000Z" itemprop="datePublished">2016-12-18</time>-->
+    <div class="clear"></div>
+
+</section>
+  
+    <section class="post" itemscope itemprop="blogPost">
+  
+    <a href="/2016/12/18/csdn/ImportError No module named apt_pkg/" title="ImportError No module named apt_pkg" itemprop="url">
+  
+        <h1 itemprop="name">ImportError No module named apt_pkg</h1>
+    </a>
+    <div class="post-meta">
+        2016-12-18
+    </div>
+    <a class="ds-thread-count">暂无评论</a>
+    <div class="post-content">
+        
+            
+                <p itemprop="description" >Traceback (most recent call last):
+  File &amp;quot;/usr/bin/apt-listchanges&amp;quot;, line 28, in &amp;lt;module&amp;gt;
+    import apt_pkg
+ImportError: N</p>
+            
+        
+    </div>
+    <div class="readmore">
+        
+            <a href="/2016/12/18/csdn/ImportError No module named apt_pkg/" title="ImportError No module named apt_pkg" itemprop="url">阅读更多</a>
+        
+    </div>
+    <!--<time datetime="2016-12-18T09:34:18.000Z" itemprop="datePublished">2016-12-18</time>-->
+    <div class="clear"></div>
+
+</section>
+  
+    <section class="post" itemscope itemprop="blogPost">
+  
+    <a href="/2016/12/18/csdn/IntelliJ IDEA 15 Released 破解 注册码/" title="IntelliJ IDEA 15 Released 破解 注册码" itemprop="url">
+  
+        <h1 itemprop="name">IntelliJ IDEA 15 Released 破解 注册码</h1>
+    </a>
+    <div class="post-meta">
+        2016-12-18
+    </div>
+    <a class="ds-thread-count">暂无评论</a>
+    <div class="post-content">
+        
+            
+                <p itemprop="description" >拿来主义，试了，确实好用哈。。。注册方法:   注册码可以沿用14的,只是在 注册时选择 License server ，填 http://idea.lanyus.com ，然后点击 OK
+https://www.jetbrains.com/idea/whatsnew/http:</p>
+            
+        
+    </div>
+    <div class="readmore">
+        
+            <a href="/2016/12/18/csdn/IntelliJ IDEA 15 Released 破解 注册码/" title="IntelliJ IDEA 15 Released 破解 注册码" itemprop="url">阅读更多</a>
+        
+    </div>
+    <!--<time datetime="2016-12-18T09:34:18.000Z" itemprop="datePublished">2016-12-18</time>-->
+    <div class="clear"></div>
+
+</section>
+  
+    <section class="post" itemscope itemprop="blogPost">
+  
+    <a href="/2016/12/18/csdn/Jquery form 插件原文档/" title="Jquery form 插件原文档" itemprop="url">
+  
+        <h1 itemprop="name">Jquery form 插件原文档</h1>
+    </a>
+    <div class="post-meta">
+        2016-12-18
+    </div>
+    <a class="ds-thread-count">暂无评论</a>
+    <div class="post-content">
+        
+            
+                <p itemprop="description" >http://malsup.com/jquery/form/#options-object</p>
+            
+        
+    </div>
+    <div class="readmore">
+        
+            <a href="/2016/12/18/csdn/Jquery form 插件原文档/" title="Jquery form 插件原文档" itemprop="url">阅读更多</a>
+        
+    </div>
+    <!--<time datetime="2016-12-18T09:34:18.000Z" itemprop="datePublished">2016-12-18</time>-->
+    <div class="clear"></div>
+
+</section>
+  
+    <section class="post" itemscope itemprop="blogPost">
+  
+    <a href="/2016/12/18/csdn/JBoss 系列一：软件安装及资料下载/" title="JBoss 系列一：软件安装及资料下载" itemprop="url">
+  
+        <h1 itemprop="name">JBoss 系列一：软件安装及资料下载</h1>
+    </a>
+    <div class="post-meta">
+        2016-12-18
+    </div>
+    <a class="ds-thread-count">暂无评论</a>
+    <div class="post-content">
+        
+            
+                <p itemprop="description" >##内容概要本部分包括本系列所需要的相关软件的安装，及资料的下载，内容列表如下：
+
+Apache httpd 安装
+
+Java 安装
+
+Maven 安装
+
+Ant 安装
+
+Git 客户端安装
+
+JBoss7 安装
+
+
+注意：Apache httpd是JBoss构建集群所必要，Ja</p>
+            
+        
+    </div>
+    <div class="readmore">
+        
+            <a href="/2016/12/18/csdn/JBoss 系列一：软件安装及资料下载/" title="JBoss 系列一：软件安装及资料下载" itemprop="url">阅读更多</a>
+        
+    </div>
+    <!--<time datetime="2016-12-18T09:34:18.000Z" itemprop="datePublished">2016-12-18</time>-->
+    <div class="clear"></div>
+
+</section>
+  
+    <section class="post" itemscope itemprop="blogPost">
+  
+    <a href="/2016/12/18/csdn/Junit测试出现异常：Exception in thread main java.lang.NoSuchMethodError org.junit.runner.Description.cre/" title="Junit测试出现异常：Exception in thread &quot;main&quot; java.lang.NoSuchMethodError org.junit.runner.Description.cre" itemprop="url">
+  
+        <h1 itemprop="name">Junit测试出现异常：Exception in thread &quot;main&quot; java.lang.NoSuchMethodError org.junit.runner.Description.cre</h1>
+    </a>
+    <div class="post-meta">
+        2016-12-18
+    </div>
+    <a class="ds-thread-count">暂无评论</a>
+    <div class="post-content">
+        
+            
+                <p itemprop="description" >先来看看错误：
+Exception in thread &amp;quot;main&amp;quot; java.lang.NoSuchMethodError: org.junit.runner.Description.createSuiteDescription(Ljava/lang/Str</p>
+            
+        
+    </div>
+    <div class="readmore">
+        
+            <a href="/2016/12/18/csdn/Junit测试出现异常：Exception in thread main java.lang.NoSuchMethodError org.junit.runner.Description.cre/" title="Junit测试出现异常：Exception in thread &quot;main&quot; java.lang.NoSuchMethodError org.junit.runner.Description.cre" itemprop="url">阅读更多</a>
+        
+    </div>
+    <!--<time datetime="2016-12-18T09:34:18.000Z" itemprop="datePublished">2016-12-18</time>-->
+    <div class="clear"></div>
+
+</section>
+  
+  
+    <nav id="page-nav" class="clearfix">
+      <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/9/">9</a><a class="extend next" rel="next" href="/page/2/">Next &raquo;</a>
+    </nav>
   
 </div>
       <div class="openaside">
@@ -202,6 +389,12 @@ if (!Array.prototype.map) {
 		<div class="categorieslist">
 			<p class="asidetitle fa fa-gui">分类</p>
 				<ul>
+				
+					<li><a href="/categories/Hibernate/" title="Hibernate">Hibernate<sup>1</sup></a></li>
+				
+					<li><a href="/categories/Hive/" title="Hive">Hive<sup>2</sup></a></li>
+				
+					<li><a href="/categories/Java/" title="Java">Java<sup>2</sup></a></li>
 				
 					<li><a href="/categories/Js/" title="Js">Js<sup>2</sup></a></li>
 				
@@ -224,7 +417,7 @@ if (!Array.prototype.map) {
         </a>
       </p>
 
-        <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">十二月 2016</a><span class="archive-list-count">4</span></li></ul>
+        <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">十二月 2016</a><span class="archive-list-count">89</span></li></ul>
     </div>
   </div>
 
@@ -237,6 +430,12 @@ if (!Array.prototype.map) {
 			<ul>
 			
 				<li><a href="/tags/Hexo/" title="Hexo">Hexo<sup>1</sup></a></li>
+			
+				<li><a href="/tags/Hibernate/" title="Hibernate">Hibernate<sup>1</sup></a></li>
+			
+				<li><a href="/tags/Hive/" title="Hive">Hive<sup>2</sup></a></li>
+			
+				<li><a href="/tags/Java/" title="Java">Java<sup>2</sup></a></li>
 			
 				<li><a href="/tags/Js/" title="Js">Js<sup>2</sup></a></li>
 			

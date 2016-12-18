@@ -1,0 +1,404 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+  <title>Linux date命令 | ITSky</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=3, minimum-scale=1">
+  
+  <meta name="author" content="JerryLiu">
+  
+  <meta name="description" content="date命令的帮助信息 [root@localhost source]# date –help用法：date [选项]… [+格式]　或：date [-u|–utc|–universal] [MMDDhhmm[[CC]YY][.ss]]以给定的格式显示当前时间，或是设置系统日期。
+  -d,–dat">
+  
+  
+  
+  
+  
+  <link rel="icon" href="/img/favicon.ico">
+  
+  
+  <link rel="apple-touch-icon" href="/img/pacman.jpg">
+  <link rel="apple-touch-icon-precomposed" href="/img/pacman.jpg">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <script src="/js/jquery-2.1.0.min.js"></script>
+  <link rel="stylesheet" href="//cdn.bootcss.com/highlight.js/8.0/styles/monokai_sublime.min.css">
+  <script type="text/javascript" src="//cdn.bootcss.com/highlight.js/8.0/highlight.min.js"></script>
+  <script type="text/javascript">
+      hljs.initHighlightingOnLoad()
+  </script>
+</head>
+
+  <body>
+    <header>
+      <div>
+	
+	<div id="textlogo">
+		<!-- <h1 class="site-name"><a href="/" title="ITSky">ITSky</a></h1>-->
+		<h1 class="site-name">ITSky</h1>
+		<h2 class="blog-motto">专注于Linux、Hadoop、Hive、Spark、Kaffka、Redis、MongoDB、ElasticSearch等技术</h2>
+	</div>
+	<div class="navbar">
+		<a class="navbutton navmobile" href="#" title="菜单"></a>
+	</div>
+	<nav class="animated">
+		<ul>
+			
+				<li><a href="/">主页</a></li>
+			
+				<li><a href="/archives">归档</a></li>
+			
+				<li><a href="/categories">分类</a></li>
+			
+				<li><a href="/about">About</a></li>
+			
+			<li>
+			
+			<!--<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+				<label>Search</label>
+				<input type="text" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+				<input type="hidden" name="q" value="site:itsky88.com">
+			</form>-->
+			
+			</li>
+		</ul>
+	</nav>
+</div>
+
+    </header>
+    <div id="container">
+      <!-- 文章内容详情模块 -->
+<div id="main" class="post" itemscope itemprop="blogPost">
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h2 itemprop="name">
+    
+      <a href="/2016/12/18/csdn/Linux date命令/" title="Linux date命令" itemprop="url">Linux date命令</a>
+    
+  </h2>
+  <p class="article-author">By
+    
+      <a href="http://itsky88.com" title="JerryLiu">JerryLiu</a>
+    </p>
+  <p class="article-time">
+    <time datetime="2016-12-18T09:34:18.000Z" itemprop="datePublished">2016-12-18</time>
+    更新日期:<time datetime="2016-12-18T09:34:18.000Z" itemprop="dateModified">2016-12-18</time>
+    
+  </p>
+</header>
+		<div class="article-content">
+			
+			
+				<div id="toc" class="toc-article">
+					<strong class="toc-title">文章目录</strong>
+				<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#如果可能，使用相反的大小写"><span class="toc-number">1.</span> <span class="toc-text">如果可能，使用相反的大小写</span></a></li></ol>
+				</div>
+			
+			<p>date命令的帮助信息<br> [root@localhost source]# date –help<br>用法：date [选项]… [+格式]<br>　或：date [-u|–utc|–universal] [MMDDhhmm[[CC]YY][.ss]]<br>以给定的格式显示当前时间，或是设置系统日期。</p>
+<p>  -d,–date=字符串              显示指定字符串所描述的时间，而非当前时间<br>  -f,–file=日期文件            类似–date，从日期文件中按行读入时间描述<br>  -r, –reference=文件          显示文件指定文件的最后修改时间<br>  -R, –rfc-2822                以RFC 2822格式输出日期和时间<br>                                例如：2006年8月7日，星期一 12:34:56 -0600<br>      –rfc-3339=TIMESPEC       以RFC 3339 格式输出日期和时间。<br>                                TIMESPEC=<code>date&#39;，</code>seconds’，或 `ns’<br>                                表示日期和时间的显示精度。<br>                                日期和时间单元由单个的空格分开：<br>                                2006-08-07 12:34:56-06:00<br>  -s, –set=字符串              设置指定字符串来分开时间<br>  -u, –utc, –universal        输出或者设置协调的通用时间<br>      –help            显示此帮助信息并退出<br>      –version         显示版本信息并退出</p>
+<p>给定的格式FORMAT 控制着输出，解释序列如下：</p>
+<p>  %%    一个文字的 %<br>  %a    当前locale 的星期名缩写(例如： 日，代表星期日)<br>  %A    当前locale 的星期名全称 (如：星期日)<br>  %b    当前locale 的月名缩写 (如：一，代表一月)<br>  %B    当前locale 的月名全称 (如：一月)<br>  %c    当前locale 的日期和时间 (如：2005年3月3日 星期四 23:05:25)<br>  %C    世纪；比如 %Y，通常为省略当前年份的后两位数字(例如：20)<br>  %d    按月计的日期(例如：01)<br>  %D    按月计的日期；等于%m/%d/%y<br>  %e    按月计的日期，添加空格，等于%_d<br>  %F    完整日期格式，等价于 %Y-%m-%d<br>  %g    ISO-8601 格式年份的最后两位 (参见%G)<br>  %G    ISO-8601 格式年份 (参见%V)，一般只和 %V 结合使用<br>  %h    等于%b<br>  %H    小时(00-23)<br>  %I    小时(00-12)<br>  %c    按年计的日期(001-366)<br>  %k    时(0-23)<br>  %l    时(1-12)<br>  %m    月份(01-12)<br>  %M    分(00-59)<br>  %n    换行<br>  %N    纳秒(000000000-999999999)<br>  %p    当前locale 下的”上午”或者”下午”，未知时输出为空<br>  %P    与%p 类似，但是输出小写字母<br>  %r    当前locale 下的 12 小时时钟时间 (如：11:11:04 下午)<br>  %R    24 小时时间的时和分，等价于 %H:%M<br>  %s    自UTC 时间 1970-01-01 00:00:00 以来所经过的秒数<br>  %S    秒(00-60)<br>  %t    输出制表符 Tab<br>  %T    时间，等于%H:%M:%S<br>  %u    星期，1 代表星期一<br>  %U    一年中的第几周，以周日为每星期第一天(00-53)<br>  %V    ISO-8601 格式规范下的一年中第几周，以周一为每星期第一天(01-53)<br>  %w    一星期中的第几日(0-6)，0 代表周一<br>  %W    一年中的第几周，以周一为每星期第一天(00-53)<br>  %x    当前locale 下的日期描述 (如：12/31/99)<br>  %X    当前locale 下的时间描述 (如：23:13:48)<br>  %y    年份最后两位数位 (00-99)<br>  %Y    年份<br>  %z +hhmm              数字时区(例如，-0400)<br>  %:z +hh:mm            数字时区(例如，-04:00)<br>  %::z +hh:mm:ss        数字时区(例如，-04:00:00)<br>  %:::z                 数字时区带有必要的精度 (例如，-04，+05:30)<br>  %Z                    按字母表排序的时区缩写 (例如，EDT)</p>
+<p>默认情况下，日期的数字区域以0 填充。<br>以下可选标记可以跟在”%”后:</p>
+<ul>
+<li>(连字符)不填充该域<br>_ (下划线)以空格填充<br>0 (数字0)以0 填充<br>^ 如果可能，使用大写字母<h1 id="如果可能，使用相反的大小写"><a href="#如果可能，使用相反的大小写" class="headerlink" title="如果可能，使用相反的大小写"></a>如果可能，使用相反的大小写</h1></li>
+</ul>
+<p>在任何标记之后还允许一个可选的域宽度指定，它是一个十进制数字。<br>作为一个可选的修饰声明，它可以是E，在可能的情况下使用本地环境关联的<br>表示方式；或者是O，在可能的情况下使用本地环境关联的数字符号。</p>
+
+		</div>
+		<footer class="article-footer clearfix">
+
+
+
+
+<div class="article-share" id="share">
+
+  <div data-url="http://itsky88.com/2016/12/18/csdn/Linux date命令/" data-title="Linux date命令 | ITSky" data-tsina="null" class="share clearfix">
+  </div>
+
+</div>
+</footer>   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2016/12/18/csdn/Junit测试出现异常：Exception in thread main java.lang.NoSuchMethodError org.junit.runner.Description.cre/" title="Junit测试出现异常：Exception in thread &quot;main&quot; java.lang.NoSuchMethodError org.junit.runner.Description.cre">
+  <strong>PREVIOUS:</strong><br/>
+  <span>
+  Junit测试出现异常：Exception in thread &quot;main&quot; java.lang.NoSuchMethodError org.junit.runner.Description.cre</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2016/12/18/csdn/Linux根据内容查找所在文件名/"  title="Linux根据内容查找所在文件名">
+ <strong>NEXT:</strong><br/> 
+ <span>Linux根据内容查找所在文件名
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+	<script type="text/javascript" src="/js/my_highlight.js"></script>
+</div>  
+      <div class="openaside">
+    <a class="navbutton" href="#" title="显示侧边栏"></a>
+</div>
+
+  <div id="toc" class="toc-aside">
+      <strong class="toc-title">文章目录</strong>
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#如果可能，使用相反的大小写"><span class="toc-number">1.</span> <span class="toc-text">如果可能，使用相反的大小写</span></a></li></ol>
+  </div>
+
+<div id="asidepart">
+    <div class="closeaside">
+        <a class="closebutton" href="#" title="隐藏侧边栏"></a>
+    </div>
+    <aside class="clearfix">
+        
+          
+	<div class="widget">
+		<div class="categorieslist">
+			<p class="asidetitle fa fa-gui">分类</p>
+				<ul>
+				
+					<li><a href="/categories/Hibernate/" title="Hibernate">Hibernate<sup>1</sup></a></li>
+				
+					<li><a href="/categories/Hive/" title="Hive">Hive<sup>2</sup></a></li>
+				
+					<li><a href="/categories/Java/" title="Java">Java<sup>2</sup></a></li>
+				
+					<li><a href="/categories/Js/" title="Js">Js<sup>2</sup></a></li>
+				
+					<li><a href="/categories/Maven/" title="Maven">Maven<sup>1</sup></a></li>
+				
+					<li><a href="/categories/Nodejs/" title="Nodejs">Nodejs<sup>1</sup></a></li>
+				
+				</ul>
+		</div>
+	</div>
+
+        
+          
+  <div class="widget">
+    <div class="archiveslist">
+      <!-- 输出 ‘归档’ 标题 -->
+      <p class="asidetitle fa fa-fei">
+        <a href="/archives">
+          归档
+        </a>
+      </p>
+
+        <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">十二月 2016</a><span class="archive-list-count">89</span></li></ul>
+    </div>
+  </div>
+
+
+        
+          
+<div class="widget">
+	<div class="linkslist">
+		<p class="asidetitle fa fa-xie">最新文章</p>
+			<ul>
+			
+				<li><a href="/tags/Hexo/" title="Hexo">Hexo<sup>1</sup></a></li>
+			
+				<li><a href="/tags/Hibernate/" title="Hibernate">Hibernate<sup>1</sup></a></li>
+			
+				<li><a href="/tags/Hive/" title="Hive">Hive<sup>2</sup></a></li>
+			
+				<li><a href="/tags/Java/" title="Java">Java<sup>2</sup></a></li>
+			
+				<li><a href="/tags/Js/" title="Js">Js<sup>2</sup></a></li>
+			
+				<li><a href="/tags/Maven/" title="Maven">Maven<sup>1</sup></a></li>
+			
+			</ul>
+	</div>
+</div>
+
+        
+          <div class="widget">
+  <div class="linkslist">
+    <p class="asidetitle fa fa-you">友情链接</p>
+      <ul>
+        <li><a href="http://www.css88.com/jqapi-1.9/" target="_blank" title="Jquery参考手册">Jquery参考手册</a></li>
+        <li><a href="http://hexo.io" target="_blank" title="Hexo">Hexo</a></li>
+      </ul>
+  </div>
+</div>
+        
+    </aside>
+</div>
+    </div>
+    <a id="totop" href="#top"></a>
+<script type="text/javascript" src="/js/totop.js?v=1", async></script>
+    <footer><div id="footer" >
+	<div class="footer-info">
+		<p>
+			<a>网站地图</a>|<a>订阅本站</a>|<a>联系博主</a>:
+			<span>
+				<a class="fa fa-github" target="_blank" href="https://github.com/jerryliu306"></a>
+				<a class="fa fa-weibo" target="_blank" href="http://weibo.com/u/2679045517/home?wvr=5"></a>
+				<a class="fa fa-email" target="_blank" href="1031757312@qq.com"></a>
+			</span>
+		</p>
+		<p>
+			<span>
+				Copyright &copy;2016&nbsp;JerryLiu
+			</span>
+			<span>
+				Powered by
+				<a target='_blank', href='https://hexo.io'>Hexo.</a>
+			</span>
+		</p>
+	</div>
+	<!--
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	-->
+</div>
+</footer>
+    <script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else
+    {
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      h  = $('article h2')
+      ah = $('article h2'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  if(ah.length==0){
+    t.css('display','none');
+  }else{
+    c.click(function(){
+      ta.css('display', 'block').addClass('fadeIn');
+    });
+    o.click(function(){
+      ta.css('display', 'none');
+    });
+    $(window).scroll(function(){
+      ta.css("top",Math.max(140,320-$(this).scrollTop()));
+    });
+  };
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina');
+  var html = [
+  '<a href="#" class="overlay" id="qrcode"></a>',
+  '<div class="qrcode clearfix"><span>扫描二维码分享到微信朋友圈</span><a class="qrclose" href="#share"></a><strong>Loading...Please wait</strong><img id="qrcode-pic" data-src="http://s.jiathis.com/qrcode.php?url=' + encodedUrl + '"/></div>',
+  '<a href="#textlogo" class="article-back-to-top" title="Top"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="QRcode"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="Weibo"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+  $('.article-share-qrcode').click(function(){
+    var imgSrc = $('#qrcode-pic').attr('data-src');
+    $('#qrcode-pic').attr('src', imgSrc);
+    $('#qrcode-pic').load(function(){
+        $('.qrcode strong').text(' ');
+    });
+  });
+});     
+</script>
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+  </body>
+</html>
+

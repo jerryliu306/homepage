@@ -8,7 +8,12 @@ $(function () {
             // .parent()
             .append($numbering);
         for(i=1;i<=lines;i++){
-            $numbering.append($('<li/>').text(i));
+            var tmp = "";
+            if(i < 10)
+                tmp = "0" + i;
+            else
+                tmp += i;
+            $numbering.append($('<li/>').text(tmp));
         }
     });
 });

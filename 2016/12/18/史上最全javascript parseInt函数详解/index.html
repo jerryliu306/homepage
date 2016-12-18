@@ -4,12 +4,12 @@
 <head>
   <meta charset="UTF-8">
   
-  <title>使用Hexo搭建博客 | ITSky</title>
+  <title>史上最全javascript parseInt函数详解 | ITSky</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=3, minimum-scale=1">
   
   <meta name="author" content="JerryLiu">
   
-  <meta name="description" content="Welcome to Hexo! This is your very first post. Check documentation for more info. If you get any problems when using Hexo, you can find the answer in ">
+  <meta name="description" content="全局 parseInt 函数的总结：parseInt(numString, redix);numString 将要被转换为Int的字符串。 注意点： 1、可为数字或字符串, 不管怎样都会使用String(numString)将其转换成字符串; 如： parseInt(010); // 8  pars">
   
   
   
@@ -74,15 +74,15 @@
 		<header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/2016/12/04/hello-world/" title="使用Hexo搭建博客" itemprop="url">使用Hexo搭建博客</a>
+      <a href="/2016/12/18/史上最全javascript parseInt函数详解/" title="史上最全javascript parseInt函数详解" itemprop="url">史上最全javascript parseInt函数详解</a>
   </h1>
   <p class="article-author">By
     
       <a href="http://itsky88.com" title="JerryLiu">JerryLiu</a>
     </p>
   <p class="article-time">
-    <time datetime="2016-12-04T10:38:27.000Z" itemprop="datePublished">2016-12-04</time>
-    更新日期:<time datetime="2016-12-04T10:38:27.000Z" itemprop="dateModified">2016-12-04</time>
+    <time datetime="2016-12-18T02:43:28.000Z" itemprop="datePublished">2016-12-18</time>
+    更新日期:<time datetime="2016-12-18T02:43:28.000Z" itemprop="dateModified">2016-12-18</time>
     
   </p>
 </header>
@@ -91,42 +91,46 @@
 		
 		<div id="toc" class="toc-article">
 			<strong class="toc-title">文章目录</strong>
-		<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Quick-Start"><span class="toc-number">1.</span> <span class="toc-text">Quick Start</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Create-a-new-post"><span class="toc-number">1.1.</span> <span class="toc-text">Create a new post</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Run-server"><span class="toc-number">1.2.</span> <span class="toc-text">Run server</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Generate-static-files"><span class="toc-number">1.3.</span> <span class="toc-text">Generate static files</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Deploy-to-remote-sites"><span class="toc-number">1.4.</span> <span class="toc-text">Deploy to remote sites</span></a></li></ol></li></ol>
+		<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#全局-parseInt-函数的总结："><span class="toc-number">1.</span> <span class="toc-text">全局 parseInt 函数的总结：</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#一、如果用户指定了该值："><span class="toc-number">1.1.</span> <span class="toc-text">一、如果用户指定了该值：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#二、如果未指定该值："><span class="toc-number">1.2.</span> <span class="toc-text">二、如果未指定该值：</span></a></li></ol></li></ol>
 		</div>
 		
-		<p>Welcome to <a href="https://hexo.io/" target="_blank" rel="external">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="external">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="external">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="external">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><pre><code class="bash">$ hexo new &quot;My New Post&quot;
+		<h2 id="全局-parseInt-函数的总结："><a href="#全局-parseInt-函数的总结：" class="headerlink" title="全局 parseInt 函数的总结："></a>全局 parseInt 函数的总结：</h2><p>parseInt(numString, redix);<br>numString 将要被转换为Int的字符串。<br> 注意点：<br> 1、可为数字或字符串, 不管怎样都会使用String(numString)将其转换成字符串; 如： parseInt(010); // 8  parseInt(“010”); // 10<br> 2、如果numString前后有空格，那么将会忽略空格，如 “ 23 “, 将会被解析成 “23”;<br> 3、如果numString以数字开头，字母结尾，解析的时候则会从字母的地方终止，并返回已解析的数字。<br>redix 要转换的进制数，该值的范围是 2 - 36。<br> 注意点：</p>
+<h3 id="一、如果用户指定了该值："><a href="#一、如果用户指定了该值：" class="headerlink" title="一、如果用户指定了该值："></a>一、如果用户指定了该值：</h3><p> 不管指定的值是数字还是字符串，parseInt底层会使用Number对其进行转换，<br> 转换后得到的值为0或者NaN，都会忽略，仍使用默认值 10，否则判断是否是否位于 2-36中，如果不是则返回NaN。<br> 如: </p>
+<pre><code class="JavaScript"> parseInt(&quot;31&quot;, 0)/parseInt(&quot;31&quot;, &quot;aaa&quot;) 等价于 parseInt(&quot;31&quot;, 10)
 </code></pre>
-<p>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="external">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><pre><code class="bash">$ hexo server
+<h3 id="二、如果未指定该值："><a href="#二、如果未指定该值：" class="headerlink" title="二、如果未指定该值："></a>二、如果未指定该值：</h3><p> 1、如果 numString 以0x开头，则该值的默认值是 16;<br> 2、如果 numString 以0开头，ECMAScript 3 环境该值默认为8，ECMAScript 5已经禁止这种做法，该值默认为10，所以视执行环境而定。<br>最佳实践： 使用parseInt时指定redix参数总是有必要的，代码可读性强，程序稳定。</p>
+<pre><code class="JavaScript">parseInt(&quot;1&quot;, 0); // 1 等价于 parseInt(&quot;1&quot;, 10)
+parseInt(&quot;1&quot;, &quot;aaa&quot;); // 1 等价于 parseInt(&quot;1&quot;, 10)
+parseInt(&quot;2&quot;, 1); // NaN ,进制解析异常
+parseInt(&quot;010&quot;); // 8/10 视环境而定 String(&quot;010&quot;);// 8/10
+parseInt(010); // 8   String(010);// 8
+parseInt(0x10); // 16 String(0x10);// 16
+parseInt(&quot;0x10&quot;); // 16  (String(&quot;0x10&quot;);// &quot;0x10&quot; ) 等价于 parseInt(&quot;0x10&quot;， 16)// 16
+parseInt(&quot; 23 &quot;); // 23
+parseInt(&quot; 23 abc&quot;); // 23
+parseInt(&quot; 23abc &quot;); // 23
+[&quot;1&quot;, &quot;2&quot;, &quot;3&quot;].map(parseInt); // [&quot;1&quot;, NaN, NaN]
 </code></pre>
-<p>More info: <a href="https://hexo.io/docs/server.html" target="_blank" rel="external">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><pre><code class="bash">$ hexo generate
-</code></pre>
-<p>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="external">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><pre><code class="bash">$ hexo deploy
-</code></pre>
-<p>More info: <a href="https://hexo.io/docs/deployment.html" target="_blank" rel="external">Deployment</a></p>
   
 	</div>
 		<footer class="article-footer clearfix">
 
   <div class="article-tags">
   
-  <span></span> <a href="/tags/Hexo/">Hexo</a>
+  <span></span> <a href="/tags/Js/">Js</a>
   </div>
 
 
 <div class="article-categories">
   <span></span>
-  <a class="article-category-link" href="/categories/Nodejs/">Nodejs</a>
+  <a class="article-category-link" href="/categories/Js/">Js</a>
 </div>
 
 
 
 <div class="article-share" id="share">
 
-  <div data-url="http://itsky88.com/2016/12/04/hello-world/" data-title="使用Hexo搭建博客 | ITSky" data-tsina="null" class="share clearfix">
+  <div data-url="http://itsky88.com/2016/12/18/史上最全javascript parseInt函数详解/" data-title="史上最全javascript parseInt函数详解 | ITSky" data-tsina="null" class="share clearfix">
   </div>
 
 </div>
@@ -136,13 +140,21 @@
 <nav class="article-nav clearfix">
  
  <div class="prev" >
- <a href="/2016/12/17/阿里云maven仓库镜像地址/" title="阿里云maven仓库镜像地址">
+ <a href="/2016/12/18/javascript Array.map 源码解读/" title="javascript Array.map 源码解读">
   <strong>PREVIOUS:</strong><br/>
   <span>
-  阿里云maven仓库镜像地址</span>
+  javascript Array.map 源码解读</span>
 </a>
 </div>
 
+
+<div class="next">
+<a href="/2016/12/17/阿里云maven仓库镜像地址/"  title="阿里云maven仓库镜像地址">
+ <strong>NEXT:</strong><br/> 
+ <span>阿里云maven仓库镜像地址
+</span>
+</a>
+</div>
 
 </nav>
 
@@ -155,7 +167,7 @@
 
   <div id="toc" class="toc-aside">
       <strong class="toc-title">文章目录</strong>
-      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Quick-Start"><span class="toc-number">1.</span> <span class="toc-text">Quick Start</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Create-a-new-post"><span class="toc-number">1.1.</span> <span class="toc-text">Create a new post</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Run-server"><span class="toc-number">1.2.</span> <span class="toc-text">Run server</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Generate-static-files"><span class="toc-number">1.3.</span> <span class="toc-text">Generate static files</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Deploy-to-remote-sites"><span class="toc-number">1.4.</span> <span class="toc-text">Deploy to remote sites</span></a></li></ol></li></ol>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#全局-parseInt-函数的总结："><span class="toc-number">1.</span> <span class="toc-text">全局 parseInt 函数的总结：</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#一、如果用户指定了该值："><span class="toc-number">1.1.</span> <span class="toc-text">一、如果用户指定了该值：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#二、如果未指定该值："><span class="toc-number">1.2.</span> <span class="toc-text">二、如果未指定该值：</span></a></li></ol></li></ol>
   </div>
 
 <div id="asidepart">

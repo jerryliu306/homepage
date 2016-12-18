@@ -34,7 +34,7 @@ function gotoTop(aSpeed, time) {
     window.setTimeout(run, time);
   }
 }
-totop.onclick = function() {
+totop.onClick = function() {
   var totop = document.getElementById('totop');
   gotoTop(0.1, 20);
   addClass(totop,"launch");

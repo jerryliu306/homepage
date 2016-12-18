@@ -602,6 +602,15 @@ header nav ul li a:hover {
   font: normal 12px/22px Arial;
   display: block;
 }
+#main section.post {
+  margin-bottom: 0.125em;
+  padding: 0.2em 1em;
+}
+@media only screen and (min-width: 768px) {
+  #main section.post {
+    padding: 0.2em 1em;
+  }
+}
 #main section.post a {
   display: block;
   border-left: 0em solid #ccc;
@@ -610,12 +619,6 @@ header nav ul li a:hover {
   -o-transition: border-left 0.45s;
   -ms-transition: border-left 0.45s;
   transition: border-left 0.45s;
-  padding: 0.2em 1em;
-}
-@media only screen and (min-width: 768px) {
-  #main section.post a {
-    padding: 0.2em 1em;
-  }
 }
 #main section.post a:hover {
   border-left: 0em solid #ff7300;
@@ -642,14 +645,6 @@ header nav ul li a:hover {
   display: block;
   margin: 0.5em 0;
   font-size: 0.5em;
-}
-#main section.post a .clear:after {
-  content: "";
-  display: block;
-  height: 0;
-  clear: both;
-  border-top: 0.5px dashed #999;
-  padding-bottom: 5px;
 }
 .moveMain {
   margin-left: 10% !important;
@@ -802,6 +797,73 @@ header nav ul li a:hover {
 /* tags&categories layout */
 .all-list-box {
   min-height: 400px;
+}
+.post,
+.page {
+  background: #fafafa;
+}
+.post .post-meta,
+.page .post-meta {
+  padding: 0;
+  margin: 10px 0 0;
+  color: #40759b;
+  float: left;
+  display: inline;
+  text-indent: 0.15em;
+}
+.post .post-meta:before,
+.page .post-meta:before {
+  font-family: "iconfont" !important;
+  content: "\e005";
+  padding-right: 0.3em;
+}
+.post .ds-thread-count,
+.page .ds-thread-count {
+  padding: 0;
+  margin: 10px 0 0;
+  color: #40759b;
+  float: right;
+  display: inline;
+  text-indent: 0.15em;
+}
+.post .ds-thread-count:before,
+.page .ds-thread-count:before {
+  font-family: "iconfont" !important;
+  content: "\e006";
+  padding-right: 0.3em;
+}
+.post .post-content,
+.page .post-content {
+  clear: left;
+  font-size: 15px;
+  line-height: 1.77;
+  color: #333;
+  padding-top: 5px;
+  text-align: justify;
+  text-justify: distribute;
+  word-break: normal;
+}
+.post .readmore a,
+.page .readmore a {
+  font-size: 14px;
+  color: #40759b;
+  margin: 8px 0 0;
+  padding: 0px 10px;
+  float: right;
+}
+.post .readmore a:after,
+.page .readmore a:after {
+  content: ">>";
+  padding-left: 0.15em;
+}
+.post .clear:after,
+.page .clear:after {
+  content: "";
+  display: block;
+  height: 0;
+  clear: both;
+  border-top: 0.5px dashed #999;
+  padding: 13px 0px;
 }
 .post a,
 .page a {
@@ -1643,7 +1705,6 @@ section.comment {
 @media only screen and (min-width: 768px) {
   .tagslist {
     width: 45%;
-    float: left;
     margin: 0 5% 0 0;
   }
 }
@@ -1812,7 +1873,6 @@ section.comment {
   transition: color 0.25s;
 }
 footer {
-  width: 100%;
   margin-top: 1em;
   padding: 0 2% 0.5em;
 }
@@ -1820,7 +1880,6 @@ footer {
   width: 100%;
   margin: 0 auto;
   overflow: hidden;
-  position: relative;
 }
 #footer .footer-info {
   line-height: 10px;
@@ -2061,6 +2120,51 @@ footer {
     opacity: 1;
     -ms-filter: none;
     filter: none;
+  }
+}
+.has-numbering {
+  padding-left: 1.5em;
+  word-wrap: normal;
+  word-break: keep-all;
+  white-space: pre;
+  position: relative;
+  background: #23241f;
+  overflow: hidden;
+}
+@media (max-width: 767px) {
+  .has-numbering {
+    margin-left: -10px !important;
+    word-wrap: break-world !important;
+    white-space: pre-wrap !important;
+  }
+}
+article .article-content ul.pre-numbering {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1em;
+  height: 100%;
+  padding: 0.5em 0.2em 0.5em 0.2em;
+  border-right: 1px solid #c3ccd0;
+  border-radius: 3px 0 0 3px;
+  background-color: #eee;
+  text-align: right;
+  font-size: 1em;
+  color: #aaa;
+  list-style: none;
+  background: #23241f;
+  color: #fff;
+  list-style: none;
+}
+article .article-content ul.pre-numbering li {
+  list-style: none;
+  margin: 0;
+  padding-left: 0;
+}
+@media (max-width: 768px) {
+  article .article-content ul.pre-numbering {
+    display: none;
+    padding: 0.5em 0.2em 0.5em 0;
   }
 }
 .article-gallery {

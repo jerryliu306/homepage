@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://itsky88.com/"/>
-  <updated>2016-12-04T10:38:50.000Z</updated>
+  <updated>2016-12-18T02:47:24.000Z</updated>
   <id>http://itsky88.com/</id>
   
   <author>
@@ -16,33 +16,140 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
-    <title>使用Hexo搭建博客</title>
-    <link href="http://itsky88.com/2016/12/04/hello-jade/"/>
-    <id>http://itsky88.com/2016/12/04/hello-jade/</id>
-    <published>2016-12-04T10:38:50.000Z</published>
-    <updated>2016-12-04T10:38:50.000Z</updated>
+    <title>javascript Array.map 源码解读</title>
+    <link href="http://itsky88.com/2016/12/18/javascript%20Array.map%20%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB/"/>
+    <id>http://itsky88.com/2016/12/18/javascript Array.map 源码解读/</id>
+    <published>2016-12-18T02:47:24.000Z</published>
+    <updated>2016-12-18T02:47:24.000Z</updated>
     
-    <content type="html"><![CDATA[<p>Welcome to <a href="https://hexo.io/" target="_blank" rel="external">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="external">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="external">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="external">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo new <span class="string">"My New Post"</span></div></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="external">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo server</div></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/server.html" target="_blank" rel="external">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo generate</div></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="external">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo deploy</div></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/deployment.html" target="_blank" rel="external">Deployment</a></p>
+    <content type="html"><![CDATA[<pre><code class="JavaScript">// 实现 ECMA-262, Edition 5, 15.4.4.19  
+// 参考: http://es5.github.com/#x15.4.4.19  
+if (!Array.prototype.map) {  
+  Array.prototype.map = function(callback, thisArg) {  
+    var T, A, k;  
+    if (this == null) {  
+      throw new TypeError(&quot; this is null or not defined&quot;);  
+    }  
+    // 1. 将O赋值为调用map方法的数组.  
+    var O = Object(this);  
+    // 2.将len赋值为数组O的长度.  
+    var len = O.length &gt;&gt;&gt; 0;  
+    // 3.如果callback不是函数,则抛出TypeError异常.  
+    if (Object.prototype.toString.call(callback) != &quot;[object Function]&quot;) {  
+      throw new TypeError(callback + &quot; is not a function&quot;);  
+    }  
+    // 4. 如果参数thisArg有值,则将T赋值为thisArg;否则T为undefined.  
+    if (thisArg) {  
+      T = thisArg;  
+    }  
+    // 5. 创建新数组A,长度为原数组O长度len  
+    A = new Array(len);  
+    // 6. 将k赋值为0  
+    k = 0;  
+    // 7. 当 k &lt; len 时,执行循环.  
+    while(k &lt; len) {  
+      var kValue, mappedValue;  
+      //遍历O,k为原数组索引  
+      if (k in O) {  
+        //kValue为索引k对应的值.  
+        kValue = O[ k ];  
+        // 执行callback,this指向T,参数有三个.分别是kValue:值,k:索引,O:原数组.  
+        mappedValue = callback.call(T, kValue, k, O);  
+        // 返回值添加到新数组A中.  
+        A[ k ] = mappedValue;  
+      }  
+      // k自增1  
+      k++;  
+    }  
+    // 8. 返回新数组A  
+    return A;  
+  };        
+}
+</code></pre>
 ]]></content>
     
     <summary type="html">
     
-      &lt;p&gt;Welcome to &lt;a href=&quot;https://hexo.io/&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;Hexo&lt;/a&gt;! This is your very first post. Check &lt;a href=&quot;https://hexo.
+      &lt;pre&gt;&lt;code class=&quot;JavaScript&quot;&gt;// 实现 ECMA-262, Edition 5, 15.4.4.19  
+// 参考: http://es5.github.com/#x15.4.4.19  
+if (!Array.prototype.map) { 
     
     </summary>
     
-      <category term="Nodejs1" scheme="http://itsky88.com/categories/Nodejs1/"/>
+      <category term="Js" scheme="http://itsky88.com/categories/Js/"/>
     
     
-      <category term="Hexo1" scheme="http://itsky88.com/tags/Hexo1/"/>
+      <category term="Js" scheme="http://itsky88.com/tags/Js/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>史上最全javascript parseInt函数详解</title>
+    <link href="http://itsky88.com/2016/12/18/%E5%8F%B2%E4%B8%8A%E6%9C%80%E5%85%A8javascript%20parseInt%E5%87%BD%E6%95%B0%E8%AF%A6%E8%A7%A3/"/>
+    <id>http://itsky88.com/2016/12/18/史上最全javascript parseInt函数详解/</id>
+    <published>2016-12-18T02:43:28.000Z</published>
+    <updated>2016-12-18T02:43:28.000Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="全局-parseInt-函数的总结："><a href="#全局-parseInt-函数的总结：" class="headerlink" title="全局 parseInt 函数的总结："></a>全局 parseInt 函数的总结：</h2><p>parseInt(numString, redix);<br>numString 将要被转换为Int的字符串。<br> 注意点：<br> 1、可为数字或字符串, 不管怎样都会使用String(numString)将其转换成字符串; 如： parseInt(010); // 8  parseInt(“010”); // 10<br> 2、如果numString前后有空格，那么将会忽略空格，如 “ 23 “, 将会被解析成 “23”;<br> 3、如果numString以数字开头，字母结尾，解析的时候则会从字母的地方终止，并返回已解析的数字。<br>redix 要转换的进制数，该值的范围是 2 - 36。<br> 注意点：</p>
+<h3 id="一、如果用户指定了该值："><a href="#一、如果用户指定了该值：" class="headerlink" title="一、如果用户指定了该值："></a>一、如果用户指定了该值：</h3><p> 不管指定的值是数字还是字符串，parseInt底层会使用Number对其进行转换，<br> 转换后得到的值为0或者NaN，都会忽略，仍使用默认值 10，否则判断是否是否位于 2-36中，如果不是则返回NaN。<br> 如: </p>
+<pre><code class="JavaScript"> parseInt(&quot;31&quot;, 0)/parseInt(&quot;31&quot;, &quot;aaa&quot;) 等价于 parseInt(&quot;31&quot;, 10)
+</code></pre>
+<h3 id="二、如果未指定该值："><a href="#二、如果未指定该值：" class="headerlink" title="二、如果未指定该值："></a>二、如果未指定该值：</h3><p> 1、如果 numString 以0x开头，则该值的默认值是 16;<br> 2、如果 numString 以0开头，ECMAScript 3 环境该值默认为8，ECMAScript 5已经禁止这种做法，该值默认为10，所以视执行环境而定。<br>最佳实践： 使用parseInt时指定redix参数总是有必要的，代码可读性强，程序稳定。</p>
+<pre><code class="JavaScript">parseInt(&quot;1&quot;, 0); // 1 等价于 parseInt(&quot;1&quot;, 10)
+parseInt(&quot;1&quot;, &quot;aaa&quot;); // 1 等价于 parseInt(&quot;1&quot;, 10)
+parseInt(&quot;2&quot;, 1); // NaN ,进制解析异常
+parseInt(&quot;010&quot;); // 8/10 视环境而定 String(&quot;010&quot;);// 8/10
+parseInt(010); // 8   String(010);// 8
+parseInt(0x10); // 16 String(0x10);// 16
+parseInt(&quot;0x10&quot;); // 16  (String(&quot;0x10&quot;);// &quot;0x10&quot; ) 等价于 parseInt(&quot;0x10&quot;， 16)// 16
+parseInt(&quot; 23 &quot;); // 23
+parseInt(&quot; 23 abc&quot;); // 23
+parseInt(&quot; 23abc &quot;); // 23
+[&quot;1&quot;, &quot;2&quot;, &quot;3&quot;].map(parseInt); // [&quot;1&quot;, NaN, NaN]
+</code></pre>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;h2 id=&quot;全局-parseInt-函数的总结：&quot;&gt;&lt;a href=&quot;#全局-parseInt-函数的总结：&quot; class=&quot;headerlink&quot; title=&quot;全局 parseInt 函数的总结：&quot;&gt;&lt;/a&gt;全局 parseInt 函数的总结：&lt;/h2&gt;&lt;p&gt;parseI
+    
+    </summary>
+    
+      <category term="Js" scheme="http://itsky88.com/categories/Js/"/>
+    
+    
+      <category term="Js" scheme="http://itsky88.com/tags/Js/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>阿里云maven仓库镜像地址</title>
+    <link href="http://itsky88.com/2016/12/17/%E9%98%BF%E9%87%8C%E4%BA%91maven%E4%BB%93%E5%BA%93%E9%95%9C%E5%83%8F%E5%9C%B0%E5%9D%80/"/>
+    <id>http://itsky88.com/2016/12/17/阿里云maven仓库镜像地址/</id>
+    <published>2016-12-17T14:26:29.000Z</published>
+    <updated>2016-12-17T14:26:29.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>maven确实是一个好东西，但是在国内下载官方仓库的jar却是个大问题，速度不敢恭维，现在oschina的国内maven镜像服务已关闭，无奈之下只能另寻门路。<br>今天突然发现了阿里云maven国内镜像，修改完以后速度飞一般的感觉，超赞，这个激动啊。。。<br>修改方法：在~/.m2目录下的settings.xml文件中，（如果该文件不存在，则需要从maven/conf目录下拷贝一份），找到<mirrors>标签，添加如下子标签：</mirrors></p>
+<pre><code class="xml">&lt;mirror&gt;
+    &lt;id&gt;alimaven&lt;/id&gt;
+    &lt;name&gt;aliyun maven&lt;/name&gt;
+    &lt;url&gt;http://maven.aliyun.com/nexus/content/groups/public/&lt;/url&gt;
+    &lt;mirrorOf&gt;central&lt;/mirrorOf&gt;
+&lt;/mirror&gt;
+</code></pre>
+<p>保存即可。<br>试试吧。。。</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;maven确实是一个好东西，但是在国内下载官方仓库的jar却是个大问题，速度不敢恭维，现在oschina的国内maven镜像服务已关闭，无奈之下只能另寻门路。&lt;br&gt;今天突然发现了阿里云maven国内镜像，修改完以后速度飞一般的感觉，超赞，这个激动啊。。。&lt;br&gt;修改方法：
+    
+    </summary>
+    
+      <category term="Maven" scheme="http://itsky88.com/categories/Maven/"/>
+    
+    
+      <category term="Maven" scheme="http://itsky88.com/tags/Maven/"/>
     
   </entry>
   
@@ -54,13 +161,17 @@
     <updated>2016-12-04T10:38:27.000Z</updated>
     
     <content type="html"><![CDATA[<p>Welcome to <a href="https://hexo.io/" target="_blank" rel="external">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="external">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="external">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="external">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo new <span class="string">"My New Post"</span></div></pre></td></tr></table></figure>
+<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><pre><code class="bash">$ hexo new &quot;My New Post&quot;
+</code></pre>
 <p>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="external">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo server</div></pre></td></tr></table></figure>
+<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><pre><code class="bash">$ hexo server
+</code></pre>
 <p>More info: <a href="https://hexo.io/docs/server.html" target="_blank" rel="external">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo generate</div></pre></td></tr></table></figure>
+<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><pre><code class="bash">$ hexo generate
+</code></pre>
 <p>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="external">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo deploy</div></pre></td></tr></table></figure>
+<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><pre><code class="bash">$ hexo deploy
+</code></pre>
 <p>More info: <a href="https://hexo.io/docs/deployment.html" target="_blank" rel="external">Deployment</a></p>
 ]]></content>
     

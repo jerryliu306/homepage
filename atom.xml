@@ -77,37 +77,26 @@ Settings.Builder settings = Settings.builde
   </entry>
   
   <entry>
-    <title>马士兵Hibernate学习笔记</title>
-    <link href="http://itsky88.com/2016/12/18/csdn/%E9%A9%AC%E5%A3%AB%E5%85%B5Hibernate%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"/>
-    <id>http://itsky88.com/2016/12/18/csdn/马士兵Hibernate学习笔记/</id>
+    <title>获得父类中的泛型参数的实际类型</title>
+    <link href="http://itsky88.com/2016/12/18/csdn/%E8%8E%B7%E5%BE%97%E7%88%B6%E7%B1%BB%E4%B8%AD%E7%9A%84%E6%B3%9B%E5%9E%8B%E5%8F%82%E6%95%B0%E7%9A%84%E5%AE%9E%E9%99%85%E7%B1%BB%E5%9E%8B/"/>
+    <id>http://itsky88.com/2016/12/18/csdn/获得父类中的泛型参数的实际类型/</id>
     <published>2016-12-18T09:34:18.000Z</published>
     <updated>2016-12-18T09:34:18.000Z</updated>
     
-    <content type="html"><![CDATA[<p><a href="http://blog.csdn.net/tanyit/article/details/6987279" target="_blank" rel="external">http://blog.csdn.net/tanyit/article/details/6987279</a></p>
+    <content type="html"><![CDATA[<p>在编写通用性框架的时候，最顶层的类中一般在编译时是无法获得具体的类型的，因此，我们要使用泛型，使应用程序在运行时获得泛型的具体类型。</p>
+<p>具体实现如下：</p>
+<p>最顶层的类：<br>public class BaseClass<t, m=""><br>{<br>public Class<t> getEntityClass()<br>{<br>ParameterizedType parameterizedType = (ParameterizedType) getClass().getGenericSuperclass();<br>Class<t> result = (Class<t>) (parameterizedType.getActualTypeArguments()[0]);// 0表示获得第一个泛型的具体类型<br>return result;<br>}<br>}</t></t></t></t,></p>
+<p>子类：<br>public class SubClass extends BaseClass<string, integer=""><br>{</string,></p>
+<p>}</p>
+<p>测试：<br>public class Test<br>{<br>public static void main(String[] args)<br>{<br>SubClass base = new SubClass();</p>
+<p>System.out.println(base.getEntityClass().getName());// 输出泛型的实际类型<br>}<br>}</p>
 ]]></content>
     
     <summary type="html">
     
-      &lt;p&gt;&lt;a href=&quot;http://blog.csdn.net/tanyit/article/details/6987279&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;http://blog.csdn.net/tanyit/article/details/
-    
-    </summary>
-    
-    
-  </entry>
-  
-  <entry>
-    <title>Eclipse快捷键的使用，很实用</title>
-    <link href="http://itsky88.com/2016/12/18/csdn/Eclipse%E5%BF%AB%E6%8D%B7%E9%94%AE%E7%9A%84%E4%BD%BF%E7%94%A8%EF%BC%8C%E5%BE%88%E5%AE%9E%E7%94%A8/"/>
-    <id>http://itsky88.com/2016/12/18/csdn/Eclipse快捷键的使用，很实用/</id>
-    <published>2016-12-18T09:34:18.000Z</published>
-    <updated>2016-12-18T09:34:18.000Z</updated>
-    
-    <content type="html"><![CDATA[<p><a href="http://www.open-open.com/bbs/view/1320934157953" target="_blank" rel="external">http://www.open-open.com/bbs/view/1320934157953</a></p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;&lt;a href=&quot;http://www.open-open.com/bbs/view/1320934157953&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;http://www.open-open.com/bbs/view/1320934157953&lt;
+      &lt;p&gt;在编写通用性框架的时候，最顶层的类中一般在编译时是无法获得具体的类型的，因此，我们要使用泛型，使应用程序在运行时获得泛型的具体类型。&lt;/p&gt;
+&lt;p&gt;具体实现如下：&lt;/p&gt;
+&lt;p&gt;最顶层的类：&lt;br&gt;public class BaseClass&lt;t, m=&quot;&quot;&gt;&lt;br&gt;{&lt;b
     
     </summary>
     
@@ -144,39 +133,25 @@ Settings.Builder settings = Settings.builde
   </entry>
   
   <entry>
-    <title>HighCharts点击柱形或饼块加URL或Click事件</title>
-    <link href="http://itsky88.com/2016/12/18/csdn/HighCharts%E7%82%B9%E5%87%BB%E6%9F%B1%E5%BD%A2%E6%88%96%E9%A5%BC%E5%9D%97%E5%8A%A0URL%E6%88%96Click%E4%BA%8B%E4%BB%B6/"/>
-    <id>http://itsky88.com/2016/12/18/csdn/HighCharts点击柱形或饼块加URL或Click事件/</id>
+    <title>杀死Linux Shell进程</title>
+    <link href="http://itsky88.com/2016/12/18/csdn/%E6%9D%80%E6%AD%BBLinux%20Shell%E8%BF%9B%E7%A8%8B/"/>
+    <id>http://itsky88.com/2016/12/18/csdn/杀死Linux Shell进程/</id>
     <published>2016-12-18T09:34:18.000Z</published>
     <updated>2016-12-18T09:34:18.000Z</updated>
     
-    <content type="html"><![CDATA[<p>我们在做图表的时候，有时候需要在单个数据上加链接或点击事件，是在plotOptions里的events里设置的<br><code>01``plotOptions:
- {``02``    ``pie:
- {``03``        ``cursor: ``&#39;pointer&#39;``,``04``        ``events:
- {``05``            ``click: ``function``(e)
- {``06``        ``location.href
- = e.point.url;&lt;span&gt;&lt;/span&gt; ``//上面是当前页跳转，如果是要跳出新页面，那就用``07``                ``//window.open(e.point.url);``08``                ``//这里的url要后面的data里给出``09``        ``}``10``    ``},``11``    ``}``12``},``13``series:
- [{``14``    ``data:
- [``15``        ``{name:``&#39;地产组&#39;``,y:76,url:``&#39;http://www.baidu.com&#39;``},``16``   
-     ``{name:``&#39;能源组&#39;``,y:54,url:``&#39;&lt;span&gt;&lt;/span&gt;http://www.google.com&lt;span&gt;&lt;/span&gt;&#39;``},&lt;span&gt;&lt;/span&gt;
-             {``17``   
-     ``{name:``&#39;互联网&#39;``,y:20,url:``&#39;http://www.sohu.com&#39;``}``18``}]</code>以上是针对饼图的，如果是柱形图那就把pie:{}换成column : {}当然如果换成series:{}那就不用管是饼图还是柱形图或是其他图形了</p>
-<p><code>01``plotOptions:
- {``02``    ``series:
- {``03``        ``cursor: ``&#39;pointer&#39;``,``04``        ``events:
- {``05``            ``click: ``function``(e)
- {``06``        ``location.href
- = e.point.url;``07``                ``//上面是当前页跳转，如果是要跳出新页面，那就用``08``                ``//window.open(e.point.url);``09``                ``//这里的url要后面的data里给出``10``        ``}``11``    ``},``12``    ``}``13``},``14``series:
- [{``15``    ``data:
- [``16``        ``{name:``&#39;地产组&#39;``,y:76,url:``&#39;http://www.baidu.com&#39;``},``17``        ``{name:``&#39;能源组&#39;``,y:54,url:``&#39;http://www.google.com&#39;``},            
- {``18``        ``{name:``&#39;互联网&#39;``,y:20,url:``&#39;http://www.sohu.com&#39;``}``19``}]</code></p>
+    <content type="html"><![CDATA[<p>1、查找目标shell进程：<br>例如：我想要查找 odm_clean 脚本运行进程<br>    ps -ef | grep “odm_clean”<br>hadoop    3702 46809  0 17:17 pts/16   00:00:00 grep odm_clean<br>hadoop   28376 28349  0 13:47 pts/11   00:00:00 bash ./odm_clean.sh 2015-06-16 2015-06-20<br>用户名     pid<br>2、杀死进程：<br>kill -9 28376<br>Killed</p>
+<p>详细介绍：</p>
+<ol>
+<li><p>ps简介<br>　　ps命令就是最根本相应情况下也是相当强大地进程查看命令.运用该命令可以确定有哪些进程正在运行和运行地状态、进程是否结束、进程有没有僵死、哪些进程占用了过多地资源等等.总之大部分信息均为可以通过执行该命令得到地.<br>　　2. ps命令及其参数<br>　　ps命令最经常使用地还是用于监控后台进程地工作情况,因为后台进程是不和屏幕键盘这些标准输入/输出设<br>　　备进行通信地,所以如果需要检测其情况,便可以运用ps命令了.<br>　　该命令语法格式如下：<br>　　ps [选项]<br>　　-e 显示所有进程,环境变量<br>　　-f 全格式<br>　　-h 不显示标题<br>　　-l 长格式<br>　　-w 宽输出<br>　　a 显示终端上地所有进程,包括其他用户地进程<br>　　r 只显示正在运行地进程<br>　　x 显示没有控制终端地进程<br>　　O[+|-] k1 [,[+|-] k2 [,…]] 根据SHORT KEYS、k1、k2中快捷键指定地多级排序顺序显示进程列表.<br>　　对于ps地不同格式都存在着默认地顺序指定.这些默认顺序可以被用户地指定所覆盖.在这里面“+”字符是可选地,“-”字符是倒转指定键地方向.<br>　　pids只列出进程标识符,之间运用逗号分隔.该进程列表必须在命令行参数地最后一个选项后面紧接着给出,中间不能插入空格.比如：ps -f1,4,5.<br>　　以下介绍长命令行选项,这些选项都运用“–”开头：<br>　　–sort X[+|-] key [,[+|-] key [,…]] 从SORT KEYS段中选一个多字母键.“+”字符是可选地,因为默认地方向就是按数字升序或者词典顺序.比如： ps -jax -sort=uid,-ppid,+pid.<br>　　–help 显示帮助信息.<br>　　–version 显示该命令地版本信息.<br>　　在前面地选项说明中提到了排序键,接下来对排序键作进一步说明.需要注意地是排序中运用地值是ps运用地内部值,并非仅用于某些输出格式地伪值.排序键列表见表4-3.<br>　　表4-3　排序键列表<br>　　c<br>　　cmd<br>　　可执行地简单名称<br>　　C<br>　　cmdline<br>　　完整命令行<br>　　f<br>　　flags<br>　　长模式标志<br>　　g<br>　　pgrp<br>　　进程地组ID<br>　　G<br>　　tpgid<br>　　控制tty进程组ID<br>　　j<br>　　cutime<br>　　累计用户时间<br>　　J<br>　　cstime<br>　　累计系统时间<br>　　k<br>　　utime<br>　　用户时间<br>　　K<br>　　stime<br>　　系统时间<br>　　m<br>　　min_flt<br>　　次要页错误地数量<br>　　M<br>　　maj_flt<br>　　重点页错误地数量<br>　　n<br>　　cmin_flt<br>　　累计次要页错误<br>　　N<br>　　cmaj_flt<br>　　累计重点页错误<br>　　o<br>　　session<br>　　对话ID<br>　　p<br>　　pid<br>　　进程ID<br>　　P<br>　　ppid<br>　　父进程ID<br>　　r<br>　　rss<br>　　驻留大小<br>　　R<br>　　resident<br>　　驻留页<br>　　s<br>　　size<br>　　内存大小(千字节)<br>　　S<br>　　share<br>　　共享页地数量<br>　　t<br>　　tty<br>　　tty次要设备号<br>　　T<br>　　start_time<br>　　进程启动地时间<br>　　U<br>　　uid<br>　　UID<br>　　u<br>　　user<br>　　用户名<br>　　v<br>　　vsize<br>　　总地虚拟内存数量(字节)<br>　　y<br>　　priority<br>　　内核调度优先级</p>
+</li>
+<li><p>经常使用ps命令参数<br>　　最经常使用地三个参数是u、a、x,下面将通过例子来说明其具体用法.<br>　　[例20] 以root身份登录系统,查看当前进程状况<br>　　$ ps<br>　　PID TTY TIME COMMAND<br>　　5800 ttyp0 00:00:00 bash<br>　　5835 ttyp0 00:00:00 ps<br>　　可以看到,显示地项目共分为四项,依次为PID(进程ID)、TTY(终端名称)、TIME(进程执行时间)<br>　　、COMMAND(该进程地命令行输入).<br>　　可以运用u选项来查看进程所有者及其他少许详细信息,如下所示：<br>　　$ ps u<br>　　USER PID %CPU %MEM USZ RSS TTY STAT START TIME COMMAND<br>　　test 5800 0.0 0.4 1892 1040 ttyp0 S Nov27 0:00 -bash<br>　　test 5836 0.0 0.3 2528 856 ttyp0 R Nov27 0:00 ps u<br>　　在bash进程前面有条横线,意味着该进程便是用户地登录shell,所以对于一个登录用户来说带短横线地进程只有一个.还可以看到%CPU、%MEM两个选项,前者指该进程占用地CPU时间和总时间地百分比;后者指该进程占用地内存和总内存地百分比.<br>　　在这种情况下看到了所有控制终端地进程;当然对于其他那些没有控制终端地进程还是没有观察到,所以这时就需要运用x选项.运用x选项可以观察到所有地进程情况.<br>　　———————————————————————————–<br>　　KILL<br>　　———————————————————————————–<br>　　由于职责的要求，你不得不费力地阅读那些令你感到费解的晦涩的Linux应用程序的说明文件。然后，你将运行指令和编辑设置文件。一切都在正常 运行，生活真美好。但是，你知道，好时光不会永远持续下去。当你遇到令人恐惧的“send the process a SIGHUP”提示时，好时光结束了。<br>　　什么是“SIGHUP（启动信号）”，你如何发送它?它像是你送给你的恋人的一束花吗?虽然你可以肯定这不是一个命令行指令，不过，你还是试着 键入它。当然，这没有结果。然后，你检查一下键盘。哦，没有SIGHUP键。于是你又重新阅读这个应用程序的参考指南，看到下面这段文字:<br>　　当收到一个hangup（进程结束）信号时，sshd程序会重新阅读配置文件。通过执行启动程序时的命令及选项来发送SIGHUP信号，如:/usr/sbin/sshd。<br>　　哦，原来是这样。<br>　　程序员 VS 使用者<br>　　LINUX程序的在线参考指南作者一般都要既照顾到最终用户的需求也要照顾到高级程序员的需求。因此，有些说明比较难懂。不过，不要担心。现在我们就要揭开覆盖在这些让人迷惑的内容上面那神秘的面纱。<br>　　信号与进程控制<br>　　这个问题主要属于信号和进程控制的范畴。对于我们系统管理员和普通用户来说，我们主要关心的是启动、停止和重新启动服务、停止失控的进程和被挂起的进程，并且尽可能不中断系统运行。因为不同的<br>　　操作系统和不同的命令外壳处理信号的方式都不相同，我们这里只介绍Linux操作系统和bash外壳。<br>　　信号是用来与守护程序和进程通信的。任何活动任务都是一个进程，而守护程序是等待对某些事件做出反应或者按照日程安排执行任务的后台服务。一个 程序必须有建在其中的信号处理程序用于捕获和应答信号。在LINUX中的signal 参考指南解释了各种不同信号和这些信号的用途。信号是由“kill”命令发出的。kill -l命令可以显示一个可用信号列表及其编号。<br>　　所有的守护程序和进程都有一个进程ID(PID)，例如使用ps命名所显示的内容：<br>　　$ ps aux<br>　　USER PID %CPU %MEM TTY STAT COMMAND<br>　　root 1 0.0 0.1 ? S init [2]<br>　　105 7783 0.0 0.2 ? Ss /usr/bin/dbus-daemon –system<br>　　hal 7796 0.0 0.7 ? Ss /usr/sbin/hald<br>　　postfix 7957 0.0 0.2 ? S qmgr -l -t fifo -u -c<br>　　nagios 8371 0.0 0.2 ? SNs /usr/sbin/nagios /etc/nagios/nagios.cfg<br>　　这个输出是经过简化的。你在系统中可以看到更多的行和栏目。如果某些进程消耗了你的全部CPU或者内存，你可以在这个输出的%CPU和%MEM 列中发现它们。找到失控的进程的一种更快捷的方法是使用top命令，因为按照默认的设置，使用占用CPU资源最多的进程在最上面显示。我们可以使用一条 “yes”命令来<a href="http://softtest.chinaitlab.com/" target="_blank" rel="external">测试</a>一下:<br>　　$ yes carla is teh awesum<br>　　这个命令将以很高的速度反复显示“carla is teh awesum”，直到你停止它运行。这将使你的CPU使用率达到警戒线。<br>　　$ top<br>　　…<br>　　PID USER PR NI VIRT RES SHR S %CPU %MEM TIME+ COMMAND<br>　　12144 carla 25 0 31592 17m 13m R 93.4 3.5 0:50.26 konsole<br>　　22236 carla 15 0 2860 468 400 S 4.3 0.1 0:00.97 yes<br>　　分析一下这个结果，你会发现一些有趣的事，你会发现，占用CPU最多的程序是konsole虚拟终端程序，而不是“yes”命令，这是因为 “yes”命令是在konsole终端程序中运行的。如果在一个“真正的”控制台(按Ctrl+alt+f2键)中运行同样的命令序列，你将看到 “yes”命令被排在第一位。<br>　　有许多停止“yes”命令运行的方式。如果你要回到运行它的shell中，按CTRL+c键就可以了。或者你可以在另一个shell中用“kill”命令停止“yes”命令的运行，Kill命令后面跟PID或者命令名称，如下如示:<br>　　$ kill 22236<br>　　或者<br>　　$ killall yes<br>　　按CTRL+c键发出一个SIGINT（信号2），这个信号是键盘要求取得控制权的中断信号。kill和killall这两个命令按照默认的设 置都发出一个SIGTERM信号(编号15)。程序中可以设置对SIGTERM信号(15)是捕捉或者忽略，或者以不同的方式解释。因此，如果你的程序对 于 KILL命令的反应与你预期不同，很可能是被KILL的目标程序的问题。<br>　　终止一个父进程通常也终止了它的子进程。不过，情况并不总是如此。你知道子进程是什么吗?使用ps命令加上-f选项就可以看到，如下所示:<br>　　$ ps axf<br>　　22371 ? R 2:35 <em> konsole [kdeinit]<br>　　22372 pts/3 Ss 0:00 | </em> /bin/bash<br>　　24322 pts/3 S+ 0:00 | | <em> yes carla is teh awesum<br>　　22381 pts/4 Rs 0:00 | </em> /bin/bash<br>　　24323 pts/4 R+ 0:00 | | _ ps axf<br>　　现在，回到SIGHUP的话题<br>　　SIGHUP的发音是“sig-hup”，是signal hangup的缩写，含义是“中止信号”。你如何发送一个SIGHUP信号呢?这里有几种方式:<br>　　# kill -HUP [pid]<br>　　# killall -HUP [process-name]<br>　　# kill -1 [pid]<br>　　# killall -1 [process-name]<br>　　因此，你可以使用PID或者名称，信号名称或者号码。那么为什么要这样做而不使用/etc/init.d/foo命令重新启动呢?使用它们自己 的 init(初始化)文件来控制服务是优先选择的方式，因为这些文件通常包含健全和错误检查以及额外的功能。使用“kill”命令和信号的主要原因是尽可能 明确地终止挂起和失控的进程，而不必重新启动或者登出。<br>　　终止进程<br>　　正如你在关于信号的man page中所看到的，有十几种控制进程的方法。下面是一些常用的方法:<br>　　kill -STOP [pid]<br>　　发送SIGSTOP (17,19,23)停止一个进程，而并不消灭这个进程。<br>　　kill -CONT [pid]<br>　　发送SIGCONT (19,18,25)重新开始一个停止的进程。<br>　　kill -KILL [pid]<br>　　发送SIGKILL (9)强迫进程立即停止，并且不实施清理操作。<br>　　kill -9 -1<br>　　终止你拥有的全部进程。<br>　　SIGKILL和SIGSTOP信号不能被捕捉、封锁或者忽略，但是，其它的信号可以。所以这是你的终极武器。<br>　　Bash shell的Kil命令l<br>　　Bash外壳包含一个内置的kill命令，当执行下面命令:<br>　　$ type -all kill<br>　　kill is a shell built-in<br>　　kill is /bin/kill<br>　　命令的结果表明有两个kill命令，一个是BASH的内置命令，另一个是/bin/kill可执行程序。一般来说这两个命令不太可能遇到冲突的情况，不过，如果你确实遇到了kill命令行为异常时，你可以明确的指定/bin/kill命令。<br>　　你一定要进一步查阅下面的资源中列出的参考资源来了解Linux中kill的妙用，因为这是你进入维护Linux系统领域的门票。这些知识能够让你像做外科手术一样对系统进行维护，而不用在遇到问题时每一次都重新启动系统，就像我们知道的某些蹩脚的<br>　　操作系统那样。<br>　　资源<br>　　Linux Cookbook一书的第七章“开始和终止Linux”<br>　　bash (1) - GNU Bourne-Again Shell<br>　　yes (1) - 在被终止前反复打印字符<br>　　signal (7) - 可用信号列表<br>　　ps (1) - 报告当前进程的快照<br>　　kill (1) - 向一个进程发出信号<br>　　killall (1) - 按名字消灭进程<br>　　pkill (1) - 根据名字和其它属性查看或者发出进程信号<br>　　skill (1) - 发送一个信号或者报告进程状态<br>　　xkill (1) - 按照X资源消灭一个客户程序</p>
+</li>
+</ol>
 ]]></content>
     
     <summary type="html">
     
-      &lt;p&gt;我们在做图表的时候，有时候需要在单个数据上加链接或点击事件，是在plotOptions里的events里设置的&lt;br&gt;&lt;code&gt;01``plotOptions:
- {``02``    ``pie:
- {``03``        ``cursor: ``&amp;#39;poi
+      &lt;p&gt;1、查找目标shell进程：&lt;br&gt;例如：我想要查找 odm_clean 脚本运行进程&lt;br&gt;    ps -ef | grep “odm_clean”&lt;br&gt;hadoop    3702 46809  0 17:17 pts/16   00:00:00 grep odm_
     
     </summary>
     
@@ -184,30 +159,44 @@ Settings.Builder settings = Settings.builde
   </entry>
   
   <entry>
-    <title>ImportError No module named apt_pkg</title>
-    <link href="http://itsky88.com/2016/12/18/csdn/ImportError%20No%20module%20named%20apt_pkg/"/>
-    <id>http://itsky88.com/2016/12/18/csdn/ImportError No module named apt_pkg/</id>
+    <title>FATAL Fatal error during KafkaServerStartable startup. java.lang.OutOfMemoryError Java heap space</title>
+    <link href="http://itsky88.com/2016/12/18/csdn/FATAL%20Fatal%20error%20during%20KafkaServerStartable%20startup.%20java.lang.OutOfMemoryError%20Java%20heap%20space/"/>
+    <id>http://itsky88.com/2016/12/18/csdn/FATAL Fatal error during KafkaServerStartable startup. java.lang.OutOfMemoryError Java heap space/</id>
     <published>2016-12-18T09:34:18.000Z</published>
     <updated>2016-12-18T09:34:18.000Z</updated>
     
-    <content type="html"><![CDATA[<pre><code class="python">
+    <content type="html"><![CDATA[<p>今天搭建了kafka单机版用于测试，配置好以后启动kafka时出现了内存溢出的问题，如下： </p>
+<pre><code class="java">[2016-10-22 10:39:39,112] INFO [Kafka Server 0], shut down completed (kafka.server.KafkaServer)
+[2016-10-22 10:39:39,113] FATAL Fatal error during KafkaServerStartable startup. Prepare to shutdown (kafka.server.KafkaServerStartable)
+java.lang.OutOfMemoryError: Java heap space
+    at java.nio.HeapByteBuffer.&lt;init&gt;(HeapByteBuffer.java:57)
+    at java.nio.ByteBuffer.allocate(ByteBuffer.java:335)
+    at kafka.log.SkimpyOffsetMap.&lt;init&gt;(OffsetMap.scala:42)
+    at kafka.log.LogCleaner$CleanerThread.&lt;init&gt;(LogCleaner.scala:177)
+    at kafka.log.LogCleaner$$anonfun$1.apply(LogCleaner.scala:86)
+    at kafka.log.LogCleaner$$anonfun$1.apply(LogCleaner.scala:86)
+    at scala.collection.TraversableLike$$anonfun$map$1.apply(TraversableLike.scala:244)
+    at scala.collection.TraversableLike$$anonfun$map$1.apply(TraversableLike.scala:244)
+    at scala.collection.immutable.Range.foreach(Range.scala:141)
+    at scala.collection.TraversableLike$class.map(TraversableLike.scala:244)
+    at scala.collection.AbstractTraversable.map(Traversable.scala:105)
+    at kafka.log.LogCleaner.&lt;init&gt;(LogCleaner.scala:86)
+    at kafka.log.LogManager.&lt;init&gt;(LogManager.scala:64)
+    at kafka.server.KafkaServer.createLogManager(KafkaServer.scala:335)
+    at kafka.server.KafkaServer.startup(KafkaServer.scala:85)
+    at kafka.server.KafkaServerStartable.startup(KafkaServerStartable.scala:29)
+    at kafka.Kafka$.main(Kafka.scala:46)
+    at kafka.Kafka.main(Kafka.scala)
+[2016-10-22 10:39:39,114] INFO EventThread shut down (org.apache.zookeeper.ClientCnxn)
+[2016-10-22 10:39:39,116] INFO [Kafka Server 0], shutting down (kafka.server.KafkaServer)
 </code></pre>
-<pre><code class="python">Traceback (most recent call last):
-  File &quot;/usr/bin/apt-listchanges&quot;, line 28, in &lt;module&gt;
-    import apt_pkg
-ImportError: No module named apt_pkg
-
-sudo apt-get remove --purge python-apt
-sudo apt-get install python-apt
-</code></pre>
+<p>解决方法：<br>编辑 kafka/kafka-server-start.sh 这个启动文件，修改 KAFKA_HEAP_OPTS 这个参数，默认的参数是 export KAFKA_HEAP_OPTS=”-Xmx512m -Xms512m”，增大内存即可，export KAFKA_HEAP_OPTS=”-Xmx1g -Xms1g”，再次启动问题解决。</p>
 ]]></content>
     
     <summary type="html">
     
-      &lt;pre&gt;&lt;code class=&quot;python&quot;&gt;
-&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code class=&quot;python&quot;&gt;Traceback (most recent call last):
-  File &amp;quot;/usr/bin/apt-listchanges&amp;
+      &lt;p&gt;今天搭建了kafka单机版用于测试，配置好以后启动kafka时出现了内存溢出的问题，如下： &lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;java&quot;&gt;[2016-10-22 10:39:39,112] INFO [Kafka Server 0], shut down com
     
     </summary>
     
@@ -286,6 +275,46 @@ sudo apt-get install python-apt
   </entry>
   
   <entry>
+    <title>HighCharts点击柱形或饼块加URL或Click事件</title>
+    <link href="http://itsky88.com/2016/12/18/csdn/HighCharts%E7%82%B9%E5%87%BB%E6%9F%B1%E5%BD%A2%E6%88%96%E9%A5%BC%E5%9D%97%E5%8A%A0URL%E6%88%96Click%E4%BA%8B%E4%BB%B6/"/>
+    <id>http://itsky88.com/2016/12/18/csdn/HighCharts点击柱形或饼块加URL或Click事件/</id>
+    <published>2016-12-18T09:34:18.000Z</published>
+    <updated>2016-12-18T09:34:18.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>我们在做图表的时候，有时候需要在单个数据上加链接或点击事件，是在plotOptions里的events里设置的<br><code>01``plotOptions:
+ {``02``    ``pie:
+ {``03``        ``cursor: ``&#39;pointer&#39;``,``04``        ``events:
+ {``05``            ``click: ``function``(e)
+ {``06``        ``location.href
+ = e.point.url;&lt;span&gt;&lt;/span&gt; ``//上面是当前页跳转，如果是要跳出新页面，那就用``07``                ``//window.open(e.point.url);``08``                ``//这里的url要后面的data里给出``09``        ``}``10``    ``},``11``    ``}``12``},``13``series:
+ [{``14``    ``data:
+ [``15``        ``{name:``&#39;地产组&#39;``,y:76,url:``&#39;http://www.baidu.com&#39;``},``16``   
+     ``{name:``&#39;能源组&#39;``,y:54,url:``&#39;&lt;span&gt;&lt;/span&gt;http://www.google.com&lt;span&gt;&lt;/span&gt;&#39;``},&lt;span&gt;&lt;/span&gt;
+             {``17``   
+     ``{name:``&#39;互联网&#39;``,y:20,url:``&#39;http://www.sohu.com&#39;``}``18``}]</code>以上是针对饼图的，如果是柱形图那就把pie:{}换成column : {}当然如果换成series:{}那就不用管是饼图还是柱形图或是其他图形了</p>
+<p><code>01``plotOptions:
+ {``02``    ``series:
+ {``03``        ``cursor: ``&#39;pointer&#39;``,``04``        ``events:
+ {``05``            ``click: ``function``(e)
+ {``06``        ``location.href
+ = e.point.url;``07``                ``//上面是当前页跳转，如果是要跳出新页面，那就用``08``                ``//window.open(e.point.url);``09``                ``//这里的url要后面的data里给出``10``        ``}``11``    ``},``12``    ``}``13``},``14``series:
+ [{``15``    ``data:
+ [``16``        ``{name:``&#39;地产组&#39;``,y:76,url:``&#39;http://www.baidu.com&#39;``},``17``        ``{name:``&#39;能源组&#39;``,y:54,url:``&#39;http://www.google.com&#39;``},            
+ {``18``        ``{name:``&#39;互联网&#39;``,y:20,url:``&#39;http://www.sohu.com&#39;``}``19``}]</code></p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;我们在做图表的时候，有时候需要在单个数据上加链接或点击事件，是在plotOptions里的events里设置的&lt;br&gt;&lt;code&gt;01``plotOptions:
+ {``02``    ``pie:
+ {``03``        ``cursor: ``&amp;#39;poi
+    
+    </summary>
+    
+    
+  </entry>
+  
+  <entry>
     <title>Jquery form 插件原文档</title>
     <link href="http://itsky88.com/2016/12/18/csdn/Jquery%20form%20%E6%8F%92%E4%BB%B6%E5%8E%9F%E6%96%87%E6%A1%A3/"/>
     <id>http://itsky88.com/2016/12/18/csdn/Jquery form 插件原文档/</id>
@@ -298,6 +327,37 @@ sudo apt-get install python-apt
     <summary type="html">
     
       &lt;p&gt;&lt;a href=&quot;http://malsup.com/jquery/form/#options-object&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;http://malsup.com/jquery/form/#options-object&lt;/a&gt;&lt;
+    
+    </summary>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>ImportError No module named apt_pkg</title>
+    <link href="http://itsky88.com/2016/12/18/csdn/ImportError%20No%20module%20named%20apt_pkg/"/>
+    <id>http://itsky88.com/2016/12/18/csdn/ImportError No module named apt_pkg/</id>
+    <published>2016-12-18T09:34:18.000Z</published>
+    <updated>2016-12-18T09:34:18.000Z</updated>
+    
+    <content type="html"><![CDATA[<pre><code class="python">
+</code></pre>
+<pre><code class="python">Traceback (most recent call last):
+  File &quot;/usr/bin/apt-listchanges&quot;, line 28, in &lt;module&gt;
+    import apt_pkg
+ImportError: No module named apt_pkg
+
+sudo apt-get remove --purge python-apt
+sudo apt-get install python-apt
+</code></pre>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;pre&gt;&lt;code class=&quot;python&quot;&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code class=&quot;python&quot;&gt;Traceback (most recent call last):
+  File &amp;quot;/usr/bin/apt-listchanges&amp;
     
     </summary>
     
@@ -531,6 +591,53 @@ sudo apt-get install python-apt
   </entry>
   
   <entry>
+    <title>Linux根据内容查找所在文件名</title>
+    <link href="http://itsky88.com/2016/12/18/csdn/Linux%E6%A0%B9%E6%8D%AE%E5%86%85%E5%AE%B9%E6%9F%A5%E6%89%BE%E6%89%80%E5%9C%A8%E6%96%87%E4%BB%B6%E5%90%8D/"/>
+    <id>http://itsky88.com/2016/12/18/csdn/Linux根据内容查找所在文件名/</id>
+    <published>2016-12-18T09:34:18.000Z</published>
+    <updated>2016-12-18T09:34:18.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>今天遇到要查找一个表名在哪个python文件中，网上搜了下命令，运行没问题，所以拿出来跟大家分享下：</p>
+<p>案例：查找表名为 rs_all_user_pv_category 的内容在哪个python文件中</p>
+<pre><code class="python">find . -name &quot;*.py&quot; | xargs grep &quot;rs_all_user_pv_category&quot;
+</code></pre>
+<p>命令含义： 在当前目录下查找  rs_all_user_pv_category  在哪个以.py结尾的文件中输出结果：<br>./rs_all_user_pv_category.py:print ‘&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt; BEGIN rs_all_user_pv_category.py’<br>./rs_all_user_pv_category.py:# python rs_all_user_pv_category.py $(date +%Y-%m-%d -d ‘-1 day’)</p>
+<p>有待研究的：过滤掉重复的文件名，并只显示文件名称，，，，，，</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;今天遇到要查找一个表名在哪个python文件中，网上搜了下命令，运行没问题，所以拿出来跟大家分享下：&lt;/p&gt;
+&lt;p&gt;案例：查找表名为 rs_all_user_pv_category 的内容在哪个python文件中&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;python&quot;&gt;
+    
+    </summary>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>Maven安装远程仓库没有的依赖库</title>
+    <link href="http://itsky88.com/2016/12/18/csdn/Maven%E5%AE%89%E8%A3%85%E8%BF%9C%E7%A8%8B%E4%BB%93%E5%BA%93%E6%B2%A1%E6%9C%89%E7%9A%84%E4%BE%9D%E8%B5%96%E5%BA%93/"/>
+    <id>http://itsky88.com/2016/12/18/csdn/Maven安装远程仓库没有的依赖库/</id>
+    <published>2016-12-18T09:34:18.000Z</published>
+    <updated>2016-12-18T09:34:18.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>有时候maven远程仓库不存在我们要的依赖库，那么就需要自己将需要的jar安装到本地仓库，maven安装依赖到本地有两种方式：<br>1、手动方式安装已经存在的jar：</p>
+<p>安装命令：<br>          mvn install:install-file -Dfile=<strong>{</strong>Path<strong>/</strong>to<strong>/</strong>your<strong>/</strong>ojdbc.jar<strong>}</strong>-DgroupId=com.oracle -DartifactId=ojdbc6 -Dversion=11.2.0 -Dpackaging=jar<br>    例子：安装IKAnalyzer.jar<br>    目录：<br>    <img src="http://img.blog.csdn.net/20151103173323250?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" alt=""><br>    安装命令：mvn install:install-file -Dfile=D:\Users\Administrator\Desktop\IKAnalyzer2012_u6 -DgroupId=org.wltea.analyzer -DartifactId=IKAnalyzer -Dversion=12.06 -Dpackaging=jar<br>    打开cmd命令终端，输入执行结果：<br>    <img src="http://img.blog.csdn.net/20151103173344478" alt=""><br>    本地仓库：<br>    <img src="http://img.blog.csdn.net/20151103173503995" alt=""><br>    在使用的项目中添加maven依赖：<br>    <img src="http://img.blog.csdn.net/20151103173709557" alt=""><br>    此时还不行，还需要将刚才的jar重命名成 IKAnalyzer-12.06.jar ，让后放到maven本地仓库目录下：<br>    <img src="http://img.blog.csdn.net/20151103173847723" alt=""><br>    ok了<br>2、安装maven项目：<br>执行命令：mvn install -Dmaven.test.skip=true<br>执行结果：<br><img src="http://img.blog.csdn.net/20151104172610416?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" alt=""><br>网速有点慢执行，的时间稍微有点长。<br>然后在项目中添加依赖即可。<br><img src="http://img.blog.csdn.net/20151104172803354?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" alt=""><br>大功告成。</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;有时候maven远程仓库不存在我们要的依赖库，那么就需要自己将需要的jar安装到本地仓库，maven安装依赖到本地有两种方式：&lt;br&gt;1、手动方式安装已经存在的jar：&lt;/p&gt;
+&lt;p&gt;安装命令：&lt;br&gt;          mvn install:install-file -
+    
+    </summary>
+    
+    
+  </entry>
+  
+  <entry>
     <title>Lucene4.4与IKAnalyzer冲突</title>
     <link href="http://itsky88.com/2016/12/18/csdn/Lucene4.4%E4%B8%8EIKAnalyzer%E5%86%B2%E7%AA%81/"/>
     <id>http://itsky88.com/2016/12/18/csdn/Lucene4.4与IKAnalyzer冲突/</id>
@@ -573,27 +680,6 @@ Exception in thread &quot;main&quot; java.lang.VerifyError: class org.wltea.anal
     
       &lt;p&gt;先来看异常：&lt;/p&gt;
 &lt;pre&gt;&lt;code class=&quot;java&quot;&gt;&amp;quot;D:\Program Files\Java\jdk1.7.0_67\bin\java&amp;quot; -ea -Didea.launcher.port=7537 &amp;quot;-Didea.laun
-    
-    </summary>
-    
-    
-  </entry>
-  
-  <entry>
-    <title>Maven安装远程仓库没有的依赖库</title>
-    <link href="http://itsky88.com/2016/12/18/csdn/Maven%E5%AE%89%E8%A3%85%E8%BF%9C%E7%A8%8B%E4%BB%93%E5%BA%93%E6%B2%A1%E6%9C%89%E7%9A%84%E4%BE%9D%E8%B5%96%E5%BA%93/"/>
-    <id>http://itsky88.com/2016/12/18/csdn/Maven安装远程仓库没有的依赖库/</id>
-    <published>2016-12-18T09:34:18.000Z</published>
-    <updated>2016-12-18T09:34:18.000Z</updated>
-    
-    <content type="html"><![CDATA[<p>有时候maven远程仓库不存在我们要的依赖库，那么就需要自己将需要的jar安装到本地仓库，maven安装依赖到本地有两种方式：<br>1、手动方式安装已经存在的jar：</p>
-<p>安装命令：<br>          mvn install:install-file -Dfile=<strong>{</strong>Path<strong>/</strong>to<strong>/</strong>your<strong>/</strong>ojdbc.jar<strong>}</strong>-DgroupId=com.oracle -DartifactId=ojdbc6 -Dversion=11.2.0 -Dpackaging=jar<br>    例子：安装IKAnalyzer.jar<br>    目录：<br>    <img src="http://img.blog.csdn.net/20151103173323250?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" alt=""><br>    安装命令：mvn install:install-file -Dfile=D:\Users\Administrator\Desktop\IKAnalyzer2012_u6 -DgroupId=org.wltea.analyzer -DartifactId=IKAnalyzer -Dversion=12.06 -Dpackaging=jar<br>    打开cmd命令终端，输入执行结果：<br>    <img src="http://img.blog.csdn.net/20151103173344478" alt=""><br>    本地仓库：<br>    <img src="http://img.blog.csdn.net/20151103173503995" alt=""><br>    在使用的项目中添加maven依赖：<br>    <img src="http://img.blog.csdn.net/20151103173709557" alt=""><br>    此时还不行，还需要将刚才的jar重命名成 IKAnalyzer-12.06.jar ，让后放到maven本地仓库目录下：<br>    <img src="http://img.blog.csdn.net/20151103173847723" alt=""><br>    ok了<br>2、安装maven项目：<br>执行命令：mvn install -Dmaven.test.skip=true<br>执行结果：<br><img src="http://img.blog.csdn.net/20151104172610416?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" alt=""><br>网速有点慢执行，的时间稍微有点长。<br>然后在项目中添加依赖即可。<br><img src="http://img.blog.csdn.net/20151104172803354?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" alt=""><br>大功告成。</p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;有时候maven远程仓库不存在我们要的依赖库，那么就需要自己将需要的jar安装到本地仓库，maven安装依赖到本地有两种方式：&lt;br&gt;1、手动方式安装已经存在的jar：&lt;/p&gt;
-&lt;p&gt;安装命令：&lt;br&gt;          mvn install:install-file -
     
     </summary>
     
@@ -654,25 +740,21 @@ Exception in thread &quot;main&quot; java.lang.VerifyError: class org.wltea.anal
   </entry>
   
   <entry>
-    <title>Linux根据内容查找所在文件名</title>
-    <link href="http://itsky88.com/2016/12/18/csdn/Linux%E6%A0%B9%E6%8D%AE%E5%86%85%E5%AE%B9%E6%9F%A5%E6%89%BE%E6%89%80%E5%9C%A8%E6%96%87%E4%BB%B6%E5%90%8D/"/>
-    <id>http://itsky88.com/2016/12/18/csdn/Linux根据内容查找所在文件名/</id>
+    <title>Number of dynamic partitions exceeded hive.exec.max.dynamic.partitions.pernode</title>
+    <link href="http://itsky88.com/2016/12/18/csdn/Number%20of%20dynamic%20partitions%20exceeded%20hive.exec.max.dynamic.partitions.pernode/"/>
+    <id>http://itsky88.com/2016/12/18/csdn/Number of dynamic partitions exceeded hive.exec.max.dynamic.partitions.pernode/</id>
     <published>2016-12-18T09:34:18.000Z</published>
     <updated>2016-12-18T09:34:18.000Z</updated>
     
-    <content type="html"><![CDATA[<p>今天遇到要查找一个表名在哪个python文件中，网上搜了下命令，运行没问题，所以拿出来跟大家分享下：</p>
-<p>案例：查找表名为 rs_all_user_pv_category 的内容在哪个python文件中</p>
-<pre><code class="python">find . -name &quot;*.py&quot; | xargs grep &quot;rs_all_user_pv_category&quot;
-</code></pre>
-<p>命令含义： 在当前目录下查找  rs_all_user_pv_category  在哪个以.py结尾的文件中输出结果：<br>./rs_all_user_pv_category.py:print ‘&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt; BEGIN rs_all_user_pv_category.py’<br>./rs_all_user_pv_category.py:# python rs_all_user_pv_category.py $(date +%Y-%m-%d -d ‘-1 day’)</p>
-<p>有待研究的：过滤掉重复的文件名，并只显示文件名称，，，，，，</p>
+    <content type="html"><![CDATA[<p>动态分区数太大的问题：[Fatal Error] Operator FS_2 (id=2): Number of dynamic partitions exceeded hive.exec.max.dynamic.partitions.pernode.</p>
+<p>hive&gt; insert into table sogouq_test partition(query_time) select user_id,query_word,query_order,click_order,url,query_time from sogouq_test_tmp;<br>Total MapReduce jobs = 3<br>Launching Job 1 out of 3<br>Number of reduce tasks is set to 0 since there’s no reduce operator<br>Starting Job = job_1409113942738_0026, Tracking URL = <a href="http://centos1:8088/proxy/application_1409113942738_0026/" target="_blank" rel="external">http://centos1:8088/proxy/application_1409113942738_0026/</a><br>Kill Command = /home/hadoop-2.2/bin/hadoop job  -kill job_1409113942738_0026<br>Hadoop job information for Stage-1: number of mappers: 1; number of reducers: 0<br>2014-08-27 03:55:16,868 Stage-1 map = 0%,  reduce = 0%<br>[Fatal Error] Operator FS_2 (id=2): Number of dynamic partitions exceeded hive.exec.max.dynamic.partitions.pernode.<br>Sample of 100 partitions created under hdfs://centos1:8020/hive/scratchdir/hive_2014-08-27_03-55-09_118_348369539322185503-1/_tmp.-ext-10002:<br>        …/query_time=20111230000005<br>        …/query_time=20111230000007<br>        …/query_time=20111230000008<br>        …/query_time=20111230000009<br>        …/query_time=20111230000010<br>        …/query_time=20111230000011</p>
+<p>查看最大分区数：<br>hive&gt; set hive.exec.max.dynamic.partitions.pernode;<br>hive.exec.max.dynamic.partitions.pernode=100<br>将该参数设置的大一点，问题即解决。</p>
 ]]></content>
     
     <summary type="html">
     
-      &lt;p&gt;今天遇到要查找一个表名在哪个python文件中，网上搜了下命令，运行没问题，所以拿出来跟大家分享下：&lt;/p&gt;
-&lt;p&gt;案例：查找表名为 rs_all_user_pv_category 的内容在哪个python文件中&lt;/p&gt;
-&lt;pre&gt;&lt;code class=&quot;python&quot;&gt;
+      &lt;p&gt;动态分区数太大的问题：[Fatal Error] Operator FS_2 (id=2): Number of dynamic partitions exceeded hive.exec.max.dynamic.partitions.pernode.&lt;/p&gt;
+&lt;p&gt;hiv
     
     </summary>
     
@@ -680,23 +762,19 @@ Exception in thread &quot;main&quot; java.lang.VerifyError: class org.wltea.anal
   </entry>
   
   <entry>
-    <title>Oracle TIMESTAMP的处理</title>
-    <link href="http://itsky88.com/2016/12/18/csdn/Oracle%20TIMESTAMP%E7%9A%84%E5%A4%84%E7%90%86/"/>
-    <id>http://itsky88.com/2016/12/18/csdn/Oracle TIMESTAMP的处理/</id>
+    <title>MySQL的字符串函数截取字符</title>
+    <link href="http://itsky88.com/2016/12/18/csdn/MySQL%E7%9A%84%E5%AD%97%E7%AC%A6%E4%B8%B2%E5%87%BD%E6%95%B0%E6%88%AA%E5%8F%96%E5%AD%97%E7%AC%A6/"/>
+    <id>http://itsky88.com/2016/12/18/csdn/MySQL的字符串函数截取字符/</id>
     <published>2016-12-18T09:34:18.000Z</published>
     <updated>2016-12-18T09:34:18.000Z</updated>
     
-    <content type="html"><![CDATA[<p>public class Test {<br>private static final SimpleDateFormat FORMAT = new SimpleDateFormat(“yyyy-MM-dd HH:mm:dd”);</p>
-<p>public static void main(String[] args) throws SQLException {<br>oracle.sql.TIMESTAMP temp = new oracle.sql.TIMESTAMP();</p>
-<p>System.out.println(convertOrclTimestemp2String(temp, null));<br>}</p>
-<p>public static String convertOrclTimestemp2String(oracle.sql.TIMESTAMP temp, String pattern) throws SQLException {<br>java.sql.Timestamp tt = (java.sql.Timestamp) temp.toJdbc();<br>if(StringUtils.isNotBlank(pattern)) {<br>FORMAT.applyPattern(pattern);<br>}<br>return FORMAT.format(new Date(tt.getTime()));<br>}<br>}</p>
-<p>输出结果：1970-01-01 00:00:01</p>
+    <content type="html"><![CDATA[<p>函数：<br><strong>1、从左开始截取字符串</strong><br>left（str, length）<br>说明：left（被截取字段，截取长度）<br>例：select left（content,200） as abstract from my_content_t<br><strong>2、从右开始截取字符串</strong><br>right（str, length）<br>说明：right（被截取字段，截取长度）<br>例：select right（content,200） as abstract from my_content_t<br><strong>3、截取字符串 
+</strong>substring（str, pos）<br>substring（str, pos, length）<br>说明：substring（被截取字段，从第几位开始截取）<br>substring（被截取字段，从第几位开始截取，截取长度）<br>例：select substring（content,5） as abstract from my_content_t<br>select substring（content,5,200） as abstract from my_content_t<br>（注：如果位数是负数 如-5 则是从后倒数位数，到字符串结束或截取的长度）<br><strong>4、按关键字截取字符串</strong><br>substring_index（str,delim,count）<br>说明：substring_index（被截取字段，关键字，关键字出现的次数）<br>例：select substring_index（”blog.jb51.net”，”。”，2） as abstract from my_content_t<br>结果：blog.jb51<br>（注：如果关键字出现的次数是负数 如-2 则是从后倒数，到字符串结束）<br>函数简介：<br>SUBSTRING(<em>str</em>,<em>pos</em>) , SUBSTRING(<em>str</em> FROM <em>pos</em>) SUBSTRING(<em>str</em>,<em>pos</em>,<em>len</em>)<br> , SUBSTRING(<em>str</em> FROM <em>pos</em> FOR <em>len</em>)<br>不带有<em>len</em> 参数的格式从字符串<em>str</em>返回一个子字符串，起始于位置 <em>pos</em>。带有<em>len</em>参数的格式从字符串<em>str</em>返回一个长度同<em>len</em>字符相同的子字符串，起始于位置 <em>pos</em>。<br> 使用 FROM的格式为标准 SQL 语法。也可能对<em>pos</em>使用一个负值。假若这样，则子字符串的位置起始于字符串结尾的<em>pos</em> 字符，而不是字符串的开头位置。在以下格式的函数中可以对<em>pos</em> 使用一个负值。</p>
 ]]></content>
     
     <summary type="html">
     
-      &lt;p&gt;public class Test {&lt;br&gt;private static final SimpleDateFormat FORMAT = new SimpleDateFormat(“yyyy-MM-dd HH:mm:dd”);&lt;/p&gt;
-&lt;p&gt;public static v
+      &lt;p&gt;函数：&lt;br&gt;&lt;strong&gt;1、从左开始截取字符串&lt;/strong&gt;&lt;br&gt;left（str, length）&lt;br&gt;说明：left（被截取字段，截取长度）&lt;br&gt;例：select left（content,200） as abstract from my_content
     
     </summary>
     
@@ -725,48 +803,6 @@ Exception in thread &quot;main&quot; java.lang.VerifyError: class org.wltea.anal
     
       &lt;p&gt;PyCharm好心的PEP8提示却有碍代码观感，怎样才能关闭我不需要的警告信息呢？&lt;br&gt;&lt;img src=&quot;http://img.blog.csdn.net/20151116110517097&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
 &lt;p&gt;通过Google发现了如下信息：&lt;br&gt;&lt;em
-    
-    </summary>
-    
-    
-  </entry>
-  
-  <entry>
-    <title>MySQL的字符串函数截取字符</title>
-    <link href="http://itsky88.com/2016/12/18/csdn/MySQL%E7%9A%84%E5%AD%97%E7%AC%A6%E4%B8%B2%E5%87%BD%E6%95%B0%E6%88%AA%E5%8F%96%E5%AD%97%E7%AC%A6/"/>
-    <id>http://itsky88.com/2016/12/18/csdn/MySQL的字符串函数截取字符/</id>
-    <published>2016-12-18T09:34:18.000Z</published>
-    <updated>2016-12-18T09:34:18.000Z</updated>
-    
-    <content type="html"><![CDATA[<p>函数：<br><strong>1、从左开始截取字符串</strong><br>left（str, length）<br>说明：left（被截取字段，截取长度）<br>例：select left（content,200） as abstract from my_content_t<br><strong>2、从右开始截取字符串</strong><br>right（str, length）<br>说明：right（被截取字段，截取长度）<br>例：select right（content,200） as abstract from my_content_t<br><strong>3、截取字符串 
-</strong>substring（str, pos）<br>substring（str, pos, length）<br>说明：substring（被截取字段，从第几位开始截取）<br>substring（被截取字段，从第几位开始截取，截取长度）<br>例：select substring（content,5） as abstract from my_content_t<br>select substring（content,5,200） as abstract from my_content_t<br>（注：如果位数是负数 如-5 则是从后倒数位数，到字符串结束或截取的长度）<br><strong>4、按关键字截取字符串</strong><br>substring_index（str,delim,count）<br>说明：substring_index（被截取字段，关键字，关键字出现的次数）<br>例：select substring_index（”blog.jb51.net”，”。”，2） as abstract from my_content_t<br>结果：blog.jb51<br>（注：如果关键字出现的次数是负数 如-2 则是从后倒数，到字符串结束）<br>函数简介：<br>SUBSTRING(<em>str</em>,<em>pos</em>) , SUBSTRING(<em>str</em> FROM <em>pos</em>) SUBSTRING(<em>str</em>,<em>pos</em>,<em>len</em>)<br> , SUBSTRING(<em>str</em> FROM <em>pos</em> FOR <em>len</em>)<br>不带有<em>len</em> 参数的格式从字符串<em>str</em>返回一个子字符串，起始于位置 <em>pos</em>。带有<em>len</em>参数的格式从字符串<em>str</em>返回一个长度同<em>len</em>字符相同的子字符串，起始于位置 <em>pos</em>。<br> 使用 FROM的格式为标准 SQL 语法。也可能对<em>pos</em>使用一个负值。假若这样，则子字符串的位置起始于字符串结尾的<em>pos</em> 字符，而不是字符串的开头位置。在以下格式的函数中可以对<em>pos</em> 使用一个负值。</p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;函数：&lt;br&gt;&lt;strong&gt;1、从左开始截取字符串&lt;/strong&gt;&lt;br&gt;left（str, length）&lt;br&gt;说明：left（被截取字段，截取长度）&lt;br&gt;例：select left（content,200） as abstract from my_content
-    
-    </summary>
-    
-    
-  </entry>
-  
-  <entry>
-    <title>Number of dynamic partitions exceeded hive.exec.max.dynamic.partitions.pernode</title>
-    <link href="http://itsky88.com/2016/12/18/csdn/Number%20of%20dynamic%20partitions%20exceeded%20hive.exec.max.dynamic.partitions.pernode/"/>
-    <id>http://itsky88.com/2016/12/18/csdn/Number of dynamic partitions exceeded hive.exec.max.dynamic.partitions.pernode/</id>
-    <published>2016-12-18T09:34:18.000Z</published>
-    <updated>2016-12-18T09:34:18.000Z</updated>
-    
-    <content type="html"><![CDATA[<p>动态分区数太大的问题：[Fatal Error] Operator FS_2 (id=2): Number of dynamic partitions exceeded hive.exec.max.dynamic.partitions.pernode.</p>
-<p>hive&gt; insert into table sogouq_test partition(query_time) select user_id,query_word,query_order,click_order,url,query_time from sogouq_test_tmp;<br>Total MapReduce jobs = 3<br>Launching Job 1 out of 3<br>Number of reduce tasks is set to 0 since there’s no reduce operator<br>Starting Job = job_1409113942738_0026, Tracking URL = <a href="http://centos1:8088/proxy/application_1409113942738_0026/" target="_blank" rel="external">http://centos1:8088/proxy/application_1409113942738_0026/</a><br>Kill Command = /home/hadoop-2.2/bin/hadoop job  -kill job_1409113942738_0026<br>Hadoop job information for Stage-1: number of mappers: 1; number of reducers: 0<br>2014-08-27 03:55:16,868 Stage-1 map = 0%,  reduce = 0%<br>[Fatal Error] Operator FS_2 (id=2): Number of dynamic partitions exceeded hive.exec.max.dynamic.partitions.pernode.<br>Sample of 100 partitions created under hdfs://centos1:8020/hive/scratchdir/hive_2014-08-27_03-55-09_118_348369539322185503-1/_tmp.-ext-10002:<br>        …/query_time=20111230000005<br>        …/query_time=20111230000007<br>        …/query_time=20111230000008<br>        …/query_time=20111230000009<br>        …/query_time=20111230000010<br>        …/query_time=20111230000011</p>
-<p>查看最大分区数：<br>hive&gt; set hive.exec.max.dynamic.partitions.pernode;<br>hive.exec.max.dynamic.partitions.pernode=100<br>将该参数设置的大一点，问题即解决。</p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;动态分区数太大的问题：[Fatal Error] Operator FS_2 (id=2): Number of dynamic partitions exceeded hive.exec.max.dynamic.partitions.pernode.&lt;/p&gt;
-&lt;p&gt;hiv
     
     </summary>
     

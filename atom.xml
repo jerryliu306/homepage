@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://itsky88.com/"/>
-  <updated>2016-12-18T09:34:18.000Z</updated>
+  <updated>2016-12-21T11:31:26.000Z</updated>
   <id>http://itsky88.com/</id>
   
   <author>
@@ -14,6 +14,315 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Netty教程(二)之传递字符串消息</title>
+    <link href="http://itsky88.com/2016/12/21/netty/Netty%E6%95%99%E7%A8%8B(%E4%BA%8C)%E4%B9%8B%E4%BC%A0%E9%80%92%E5%AD%97%E7%AC%A6%E4%B8%B2%E6%B6%88%E6%81%AF/"/>
+    <id>http://itsky88.com/2016/12/21/netty/Netty教程(二)之传递字符串消息/</id>
+    <published>2016-12-21T11:31:26.000Z</published>
+    <updated>2016-12-21T11:31:26.000Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="服务端代码"><a href="#服务端代码" class="headerlink" title="服务端代码"></a>服务端代码</h2><pre><code class="java">package com.netty.test.server
+
+import java.net.InetSocketAddress
+import java.nio.charset.Charset
+import java.util.concurrent.Executors
+
+import org.jboss.netty.bootstrap.ServerBootstrap
+import org.jboss.netty.buffer.ChannelBuffer
+import org.jboss.netty.channel._
+import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory
+
+/**
+  * Created by jerry on 16-12-21.
+  * 字符串消息服务端程序
+  */
+object StrMessageServer extends App {
+  val serverBootstrap = new ServerBootstrap(
+    new NioServerSocketChannelFactory(
+      Executors.newCachedThreadPool(), Executors.newCachedThreadPool()))
+  serverBootstrap.setPipelineFactory(new ChannelPipelineFactory {
+    override def getPipeline: ChannelPipeline = Channels.pipeline(new StrMessageServerHandler())
+  })
+  serverBootstrap.bind(new InetSocketAddress(8888))
+  // 异步绑定
+  //  serverBootstrap.bindAsync(new InetSocketAddress(8888))
+}
+
+/**
+  * 客户端发送字符串
+  */
+class StrMessageServerHandler extends SimpleChannelHandler {
+  override def messageReceived(ctx: ChannelHandlerContext, e: MessageEvent) = {
+    println(&quot;server receive msg success .......&quot;)
+    val buff = e.getMessage.asInstanceOf[ChannelBuffer]
+    println(buff.toString(Charset.defaultCharset()))
+    println(&quot;receive end ........&quot;)
+  }
+}
+</code></pre>
+<h2 id="客户端代码"><a href="#客户端代码" class="headerlink" title="客户端代码"></a>客户端代码</h2><pre><code class="java">package com.netty.test.client
+
+import java.net.InetSocketAddress
+import java.util.concurrent.Executors
+
+import org.jboss.netty.bootstrap.ClientBootstrap
+import org.jboss.netty.buffer.ChannelBuffers
+import org.jboss.netty.channel._
+import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory
+
+/**
+  * Created by jerry on 16-12-21.
+  * 字符串消息客户端程序
+  */
+object StrMessageClient extends App {
+  val clientBootstrap = new ClientBootstrap(
+    new NioClientSocketChannelFactory(
+      Executors.newCachedThreadPool(), Executors.newCachedThreadPool()))
+  clientBootstrap.setPipelineFactory(new ChannelPipelineFactory {
+    override def getPipeline: ChannelPipeline = Channels.pipeline(new StrMessageClientHandler())
+  })
+  clientBootstrap.connect(new InetSocketAddress(&quot;localhost&quot;, 8888))
+}
+
+/**
+  * 字符串
+  */
+class StrMessageClientHandler() extends SimpleChannelHandler {
+  override def channelConnected(ctx: ChannelHandlerContext, e: ChannelStateEvent) = {
+    println(&quot;connected success .....&quot;)
+    val msg = &quot;hello server&quot;
+    val buff = ChannelBuffers.buffer(msg.length) // netty中默认采用ChannelBuffer进行数据传输
+    buff.writeBytes(msg.getBytes())
+    e.getChannel.write(buff)
+    println(&quot;send string msg to server success .......&quot;)
+  }
+}
+</code></pre>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;h2 id=&quot;服务端代码&quot;&gt;&lt;a href=&quot;#服务端代码&quot; class=&quot;headerlink&quot; title=&quot;服务端代码&quot;&gt;&lt;/a&gt;服务端代码&lt;/h2&gt;&lt;pre&gt;&lt;code class=&quot;java&quot;&gt;package com.netty.test.server
+
+import
+    
+    </summary>
+    
+      <category term="Netty" scheme="http://itsky88.com/categories/Netty/"/>
+    
+    
+      <category term="Netty" scheme="http://itsky88.com/tags/Netty/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Netty教程(一)之HelloWorld</title>
+    <link href="http://itsky88.com/2016/12/21/netty/Netty%E6%95%99%E7%A8%8B(%E4%B8%80)%E4%B9%8BHelloWorld/"/>
+    <id>http://itsky88.com/2016/12/21/netty/Netty教程(一)之HelloWorld/</id>
+    <published>2016-12-21T11:31:26.000Z</published>
+    <updated>2016-12-21T11:31:26.000Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>程序员最直接的学习方式是代码, 任何程序的基础就是HelloWorld, 例子如下：</p>
+<h3 id="服务端代码"><a href="#服务端代码" class="headerlink" title="服务端代码"></a>服务端代码</h3><pre><code class="java">package com.netty.test.server
+
+import java.net.InetSocketAddress
+import java.util.concurrent.Executors
+
+import org.jboss.netty.bootstrap.ServerBootstrap
+import org.jboss.netty.channel._
+import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory
+
+/**
+  * Created by jerry on 16-12-21.
+  * Netty服务端程序
+  */
+object HelloWorldServer extends App {
+  // 服务端启动程序(入口)
+  val serverBootstrap = new ServerBootstrap(
+    new NioServerSocketChannelFactory( // 创建服务端连接的工厂
+      Executors.newCachedThreadPool(), Executors.newCachedThreadPool()))
+  /** 设置服务端业务处理逻辑(客户端和服务端的通用代码部分, 只是对应不同的Handler) */
+  serverBootstrap.setPipelineFactory(new ChannelPipelineFactory {
+    override def getPipeline: ChannelPipeline = Channels.pipeline(new ServerHandler())
+  })
+  /** 绑定服务端端口号 */
+  serverBootstrap.bindAsync(new InetSocketAddress(8888))
+}
+
+/**
+  * 服务端连接成功后的处理
+  */
+class ServerHandler() extends SimpleChannelHandler {
+  override def channelConnected(ctx: ChannelHandlerContext, e: ChannelStateEvent) = {
+    println(&quot;hello world, server........&quot;)
+  }
+}
+</code></pre>
+<h3 id="客户端代码"><a href="#客户端代码" class="headerlink" title="客户端代码"></a>客户端代码</h3><pre><code class="java">package com.netty.test.client
+
+import java.net.InetSocketAddress
+import java.util.concurrent.Executors
+
+import org.jboss.netty.bootstrap.ClientBootstrap
+import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory
+import org.jboss.netty.channel._
+
+/**
+  * Created by jerry on 16-12-21.
+  * Netty 客户端程序
+  */
+object HelloWorldClient extends App {
+  /** 客户端启动程序 */
+  val clientBootstrap = new ClientBootstrap(
+    /** 客户端连接的创建工厂 */
+    new NioClientSocketChannelFactory(
+      Executors.newCachedThreadPool(), Executors.newCachedThreadPool()))
+  /** 设置客户端业务处理逻辑(客户端和服务端的通用代码部分, 只是对应不同的Handler) */
+  clientBootstrap.setPipelineFactory(new ChannelPipelineFactory {
+    override def getPipeline: ChannelPipeline = Channels.pipeline(new ClientHandler())
+  })
+  /** 连接服务器 */
+  clientBootstrap.connect(new InetSocketAddress(&quot;localhost&quot;, 8888))
+}
+
+/**
+  * 客户端连接成功后的处理逻辑
+  */
+class ClientHandler extends SimpleChannelHandler {
+  override def channelConnected(ctx: ChannelHandlerContext, e: ChannelStateEvent) = {
+    println(&quot;hello world, client.......&quot;)
+  }
+}
+</code></pre>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;h2 id=&quot;概述&quot;&gt;&lt;a href=&quot;#概述&quot; class=&quot;headerlink&quot; title=&quot;概述&quot;&gt;&lt;/a&gt;概述&lt;/h2&gt;&lt;p&gt;程序员最直接的学习方式是代码, 任何程序的基础就是HelloWorld, 例子如下：&lt;/p&gt;
+&lt;h3 id=&quot;服务端代码&quot;&gt;&lt;a href=
+    
+    </summary>
+    
+      <category term="Netty" scheme="http://itsky88.com/categories/Netty/"/>
+    
+    
+      <category term="Netty" scheme="http://itsky88.com/tags/Netty/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>method execute has incompatible type</title>
+    <link href="http://itsky88.com/2016/12/21/scala/method%20execute%20has%20incompatible%20type/"/>
+    <id>http://itsky88.com/2016/12/21/scala/method execute has incompatible type/</id>
+    <published>2016-12-21T11:31:26.000Z</published>
+    <updated>2016-12-21T11:31:26.000Z</updated>
+    
+    <content type="html"><![CDATA[<h3 id="Scala泛型的一个异常"><a href="#Scala泛型的一个异常" class="headerlink" title="Scala泛型的一个异常"></a>Scala泛型的一个异常</h3><p>异常代码:</p>
+<pre><code class="java">def set(key: Array[Byte], value: Array[Byte]) = {
+    new JedisClusterCommand(connectionHandler, maxRedirections) {
+      override def execute(connection: Jedis): String = connection.set(key, value)
+    }.run(new String(key, &quot;utf-8&quot;))
+}
+</code></pre>
+<p>结果在编译的时候出现了如下异常:</p>
+<pre><code class="java">Error:(26, 20) overriding method execute in class JedisClusterCommand of type (x$1: redis.clients.jedis.Jedis)Nothing;
+ method execute has incompatible type
+      override def execute(connection: Jedis): String = connection.set(key, value)
+                   ^
+</code></pre>
+<p>到JedisClusterCommand类的源码中发现该类是一个泛型, 而我创建对象的时候没有使用泛型, 编译的时候不认识execute方法的返回值类型(Nothing与String产生了矛盾), 类源码如下:</p>
+<pre><code class="java">public abstract class JedisClusterCommand&lt;T&gt; {
+    private JedisClusterConnectionHandler connectionHandler;
+    private int redirections;
+    private ThreadLocal&lt;Jedis&gt; askConnection = new ThreadLocal();
+    private StringBuilder hostTrace;
+
+    public JedisClusterCommand(JedisClusterConnectionHandler connectionHandler, int maxRedirections) {
+        this.connectionHandler = connectionHandler;
+        this.redirections = maxRedirections;
+    }
+
+    public abstract T execute(Jedis var1);
+
+    public T run(String key) {
+        if(key == null) {
+            throw new JedisClusterException(&quot;No way to dispatch this command to Redis Cluster.&quot;);
+        } else {
+            this.hostTrace = new StringBuilder();
+            return this.runWithRetries(key, this.redirections, false, false);
+        }
+    }
+}
+</code></pre>
+<p>解决方法: 创建JedisClusterCommand对象时增加一个泛型即可。<br>修改后的代码如下:</p>
+<pre><code class="java">def set(key: Array[Byte], value: Array[Byte]) = {
+    new JedisClusterCommand[String](connectionHandler, maxRedirections) {
+      override def execute(connection: Jedis): String = connection.set(key, value)
+    }.run(new String(key, &quot;utf-8&quot;))
+}
+</code></pre>
+<p>再次编译则通过率!!!!!!!<br>参考: <a href="http://stackoverflow.com/questions/17089760/scala-implementing-java-interface-results-in-incompatible-type" target="_blank" rel="external">http://stackoverflow.com/questions/17089760/scala-implementing-java-interface-results-in-incompatible-type</a></p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;h3 id=&quot;Scala泛型的一个异常&quot;&gt;&lt;a href=&quot;#Scala泛型的一个异常&quot; class=&quot;headerlink&quot; title=&quot;Scala泛型的一个异常&quot;&gt;&lt;/a&gt;Scala泛型的一个异常&lt;/h3&gt;&lt;p&gt;异常代码:&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;ja
+    
+    </summary>
+    
+      <category term="Scala" scheme="http://itsky88.com/categories/Scala/"/>
+    
+    
+      <category term="Scala" scheme="http://itsky88.com/tags/Scala/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>FATAL Fatal error during KafkaServerStartable startup. java.lang.OutOfMemoryError Java heap space</title>
+    <link href="http://itsky88.com/2016/12/18/csdn/FATAL%20Fatal%20error%20during%20KafkaServerStartable%20startup.%20java.lang.OutOfMemoryError%20Java%20heap%20space/"/>
+    <id>http://itsky88.com/2016/12/18/csdn/FATAL Fatal error during KafkaServerStartable startup. java.lang.OutOfMemoryError Java heap space/</id>
+    <published>2016-12-18T09:34:18.000Z</published>
+    <updated>2016-12-18T09:34:18.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>今天搭建了kafka单机版用于测试，配置好以后启动kafka时出现了内存溢出的问题，如下： </p>
+<pre><code class="java">[2016-10-22 10:39:39,112] INFO [Kafka Server 0], shut down completed (kafka.server.KafkaServer)
+[2016-10-22 10:39:39,113] FATAL Fatal error during KafkaServerStartable startup. Prepare to shutdown (kafka.server.KafkaServerStartable)
+java.lang.OutOfMemoryError: Java heap space
+    at java.nio.HeapByteBuffer.&lt;init&gt;(HeapByteBuffer.java:57)
+    at java.nio.ByteBuffer.allocate(ByteBuffer.java:335)
+    at kafka.log.SkimpyOffsetMap.&lt;init&gt;(OffsetMap.scala:42)
+    at kafka.log.LogCleaner$CleanerThread.&lt;init&gt;(LogCleaner.scala:177)
+    at kafka.log.LogCleaner$$anonfun$1.apply(LogCleaner.scala:86)
+    at kafka.log.LogCleaner$$anonfun$1.apply(LogCleaner.scala:86)
+    at scala.collection.TraversableLike$$anonfun$map$1.apply(TraversableLike.scala:244)
+    at scala.collection.TraversableLike$$anonfun$map$1.apply(TraversableLike.scala:244)
+    at scala.collection.immutable.Range.foreach(Range.scala:141)
+    at scala.collection.TraversableLike$class.map(TraversableLike.scala:244)
+    at scala.collection.AbstractTraversable.map(Traversable.scala:105)
+    at kafka.log.LogCleaner.&lt;init&gt;(LogCleaner.scala:86)
+    at kafka.log.LogManager.&lt;init&gt;(LogManager.scala:64)
+    at kafka.server.KafkaServer.createLogManager(KafkaServer.scala:335)
+    at kafka.server.KafkaServer.startup(KafkaServer.scala:85)
+    at kafka.server.KafkaServerStartable.startup(KafkaServerStartable.scala:29)
+    at kafka.Kafka$.main(Kafka.scala:46)
+    at kafka.Kafka.main(Kafka.scala)
+[2016-10-22 10:39:39,114] INFO EventThread shut down (org.apache.zookeeper.ClientCnxn)
+[2016-10-22 10:39:39,116] INFO [Kafka Server 0], shutting down (kafka.server.KafkaServer)
+</code></pre>
+<p>解决方法：<br>编辑 kafka/kafka-server-start.sh 这个启动文件，修改 KAFKA_HEAP_OPTS 这个参数，默认的参数是 export KAFKA_HEAP_OPTS=”-Xmx512m -Xms512m”，增大内存即可，export KAFKA_HEAP_OPTS=”-Xmx1g -Xms1g”，再次启动问题解决。</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;今天搭建了kafka单机版用于测试，配置好以后启动kafka时出现了内存溢出的问题，如下： &lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;java&quot;&gt;[2016-10-22 10:39:39,112] INFO [Kafka Server 0], shut down com
+    
+    </summary>
+    
+    
+  </entry>
   
   <entry>
     <title>Eclipse快捷键的使用，很实用</title>
@@ -28,25 +337,6 @@
     <summary type="html">
     
       &lt;p&gt;&lt;a href=&quot;http://www.open-open.com/bbs/view/1320934157953&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;http://www.open-open.com/bbs/view/1320934157953&lt;
-    
-    </summary>
-    
-    
-  </entry>
-  
-  <entry>
-    <title>马士兵Hibernate学习笔记</title>
-    <link href="http://itsky88.com/2016/12/18/csdn/%E9%A9%AC%E5%A3%AB%E5%85%B5Hibernate%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"/>
-    <id>http://itsky88.com/2016/12/18/csdn/马士兵Hibernate学习笔记/</id>
-    <published>2016-12-18T09:34:18.000Z</published>
-    <updated>2016-12-18T09:34:18.000Z</updated>
-    
-    <content type="html"><![CDATA[<p><a href="http://blog.csdn.net/tanyit/article/details/6987279" target="_blank" rel="external">http://blog.csdn.net/tanyit/article/details/6987279</a></p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;&lt;a href=&quot;http://blog.csdn.net/tanyit/article/details/6987279&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;http://blog.csdn.net/tanyit/article/details/
     
     </summary>
     
@@ -108,91 +398,6 @@ Client client = TransportClient.builder().settings(settings).build()
       &lt;p&gt;elasticsearch2.3.4&lt;/p&gt;
 &lt;pre&gt;&lt;code class=&quot;java&quot;&gt;Map&amp;lt;String, String&amp;gt; map = new HashMap();
 Settings.Builder settings = Settings.builde
-    
-    </summary>
-    
-    
-  </entry>
-  
-  <entry>
-    <title>FATAL Fatal error during KafkaServerStartable startup. java.lang.OutOfMemoryError Java heap space</title>
-    <link href="http://itsky88.com/2016/12/18/csdn/FATAL%20Fatal%20error%20during%20KafkaServerStartable%20startup.%20java.lang.OutOfMemoryError%20Java%20heap%20space/"/>
-    <id>http://itsky88.com/2016/12/18/csdn/FATAL Fatal error during KafkaServerStartable startup. java.lang.OutOfMemoryError Java heap space/</id>
-    <published>2016-12-18T09:34:18.000Z</published>
-    <updated>2016-12-18T09:34:18.000Z</updated>
-    
-    <content type="html"><![CDATA[<p>今天搭建了kafka单机版用于测试，配置好以后启动kafka时出现了内存溢出的问题，如下： </p>
-<pre><code class="java">[2016-10-22 10:39:39,112] INFO [Kafka Server 0], shut down completed (kafka.server.KafkaServer)
-[2016-10-22 10:39:39,113] FATAL Fatal error during KafkaServerStartable startup. Prepare to shutdown (kafka.server.KafkaServerStartable)
-java.lang.OutOfMemoryError: Java heap space
-    at java.nio.HeapByteBuffer.&lt;init&gt;(HeapByteBuffer.java:57)
-    at java.nio.ByteBuffer.allocate(ByteBuffer.java:335)
-    at kafka.log.SkimpyOffsetMap.&lt;init&gt;(OffsetMap.scala:42)
-    at kafka.log.LogCleaner$CleanerThread.&lt;init&gt;(LogCleaner.scala:177)
-    at kafka.log.LogCleaner$$anonfun$1.apply(LogCleaner.scala:86)
-    at kafka.log.LogCleaner$$anonfun$1.apply(LogCleaner.scala:86)
-    at scala.collection.TraversableLike$$anonfun$map$1.apply(TraversableLike.scala:244)
-    at scala.collection.TraversableLike$$anonfun$map$1.apply(TraversableLike.scala:244)
-    at scala.collection.immutable.Range.foreach(Range.scala:141)
-    at scala.collection.TraversableLike$class.map(TraversableLike.scala:244)
-    at scala.collection.AbstractTraversable.map(Traversable.scala:105)
-    at kafka.log.LogCleaner.&lt;init&gt;(LogCleaner.scala:86)
-    at kafka.log.LogManager.&lt;init&gt;(LogManager.scala:64)
-    at kafka.server.KafkaServer.createLogManager(KafkaServer.scala:335)
-    at kafka.server.KafkaServer.startup(KafkaServer.scala:85)
-    at kafka.server.KafkaServerStartable.startup(KafkaServerStartable.scala:29)
-    at kafka.Kafka$.main(Kafka.scala:46)
-    at kafka.Kafka.main(Kafka.scala)
-[2016-10-22 10:39:39,114] INFO EventThread shut down (org.apache.zookeeper.ClientCnxn)
-[2016-10-22 10:39:39,116] INFO [Kafka Server 0], shutting down (kafka.server.KafkaServer)
-</code></pre>
-<p>解决方法：<br>编辑 kafka/kafka-server-start.sh 这个启动文件，修改 KAFKA_HEAP_OPTS 这个参数，默认的参数是 export KAFKA_HEAP_OPTS=”-Xmx512m -Xms512m”，增大内存即可，export KAFKA_HEAP_OPTS=”-Xmx1g -Xms1g”，再次启动问题解决。</p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;今天搭建了kafka单机版用于测试，配置好以后启动kafka时出现了内存溢出的问题，如下： &lt;/p&gt;
-&lt;pre&gt;&lt;code class=&quot;java&quot;&gt;[2016-10-22 10:39:39,112] INFO [Kafka Server 0], shut down com
-    
-    </summary>
-    
-    
-  </entry>
-  
-  <entry>
-    <title>HighCharts点击柱形或饼块加URL或Click事件</title>
-    <link href="http://itsky88.com/2016/12/18/csdn/HighCharts%E7%82%B9%E5%87%BB%E6%9F%B1%E5%BD%A2%E6%88%96%E9%A5%BC%E5%9D%97%E5%8A%A0URL%E6%88%96Click%E4%BA%8B%E4%BB%B6/"/>
-    <id>http://itsky88.com/2016/12/18/csdn/HighCharts点击柱形或饼块加URL或Click事件/</id>
-    <published>2016-12-18T09:34:18.000Z</published>
-    <updated>2016-12-18T09:34:18.000Z</updated>
-    
-    <content type="html"><![CDATA[<p>我们在做图表的时候，有时候需要在单个数据上加链接或点击事件，是在plotOptions里的events里设置的<br><code>01``plotOptions:
- {``02``    ``pie:
- {``03``        ``cursor: ``&#39;pointer&#39;``,``04``        ``events:
- {``05``            ``click: ``function``(e)
- {``06``        ``location.href
- = e.point.url;&lt;span&gt;&lt;/span&gt; ``//上面是当前页跳转，如果是要跳出新页面，那就用``07``                ``//window.open(e.point.url);``08``                ``//这里的url要后面的data里给出``09``        ``}``10``    ``},``11``    ``}``12``},``13``series:
- [{``14``    ``data:
- [``15``        ``{name:``&#39;地产组&#39;``,y:76,url:``&#39;http://www.baidu.com&#39;``},``16``   
-     ``{name:``&#39;能源组&#39;``,y:54,url:``&#39;&lt;span&gt;&lt;/span&gt;http://www.google.com&lt;span&gt;&lt;/span&gt;&#39;``},&lt;span&gt;&lt;/span&gt;
-             {``17``   
-     ``{name:``&#39;互联网&#39;``,y:20,url:``&#39;http://www.sohu.com&#39;``}``18``}]</code>以上是针对饼图的，如果是柱形图那就把pie:{}换成column : {}当然如果换成series:{}那就不用管是饼图还是柱形图或是其他图形了</p>
-<p><code>01``plotOptions:
- {``02``    ``series:
- {``03``        ``cursor: ``&#39;pointer&#39;``,``04``        ``events:
- {``05``            ``click: ``function``(e)
- {``06``        ``location.href
- = e.point.url;``07``                ``//上面是当前页跳转，如果是要跳出新页面，那就用``08``                ``//window.open(e.point.url);``09``                ``//这里的url要后面的data里给出``10``        ``}``11``    ``},``12``    ``}``13``},``14``series:
- [{``15``    ``data:
- [``16``        ``{name:``&#39;地产组&#39;``,y:76,url:``&#39;http://www.baidu.com&#39;``},``17``        ``{name:``&#39;能源组&#39;``,y:54,url:``&#39;http://www.google.com&#39;``},            
- {``18``        ``{name:``&#39;互联网&#39;``,y:20,url:``&#39;http://www.sohu.com&#39;``}``19``}]</code></p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;我们在做图表的时候，有时候需要在单个数据上加链接或点击事件，是在plotOptions里的events里设置的&lt;br&gt;&lt;code&gt;01``plotOptions:
- {``02``    ``pie:
- {``03``        ``cursor: ``&amp;#39;poi
     
     </summary>
     
@@ -295,6 +500,213 @@ sudo apt-get install python-apt
     <summary type="html">
     
       &lt;p&gt;拿来主义，试了，确实好用哈。。。&lt;br&gt;注册方法:   注册码可以沿用14的,只是在 注册时选择 License server ，填 &lt;a href=&quot;http://idea.lanyus.com&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;http:/
+    
+    </summary>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>Junit测试出现异常：Exception in thread &quot;main&quot; java.lang.NoSuchMethodError org.junit.runner.Description.cre</title>
+    <link href="http://itsky88.com/2016/12/18/csdn/Junit%E6%B5%8B%E8%AF%95%E5%87%BA%E7%8E%B0%E5%BC%82%E5%B8%B8%EF%BC%9AException%20in%20thread%20main%20java.lang.NoSuchMethodError%20org.junit.runner.Description.cre/"/>
+    <id>http://itsky88.com/2016/12/18/csdn/Junit测试出现异常：Exception in thread main java.lang.NoSuchMethodError org.junit.runner.Description.cre/</id>
+    <published>2016-12-18T09:34:18.000Z</published>
+    <updated>2016-12-18T09:34:18.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>先来看看错误：</p>
+<pre><code class="java">Exception in thread &quot;main&quot; java.lang.NoSuchMethodError: org.junit.runner.Description.createSuiteDescription(Ljava/lang/String;[Ljava/lang/annotation/Annotation;)Lorg/junit/runner/Description;
+    at com.intellij.junit4.JUnit4TestListener.testStarted(JUnit4TestListener.java:96)
+    at org.junit.runner.notification.RunNotifier$3.notifyListener(RunNotifier.java:83)
+    at org.junit.runner.notification.RunNotifier$SafeNotifier.run(RunNotifier.java:37)
+    at org.junit.runner.notification.RunNotifier.fireTestStarted(RunNotifier.java:80)
+    at org.junit.internal.runners.TestMethodRunner.run(TestMethodRunner.java:39)
+    at org.junit.internal.runners.TestClassMethodsRunner.invokeTestMethod(TestClassMethodsRunner.java:75)
+    at org.junit.internal.runners.TestClassMethodsRunner.run(TestClassMethodsRunner.java:36)
+    at org.junit.internal.runners.TestClassRunner$1.runUnprotected(TestClassRunner.java:42)
+    at org.junit.internal.runners.BeforeAndAfterRunner.runProtected(BeforeAndAfterRunner.java:34)
+    at org.junit.internal.runners.TestClassRunner.run(TestClassRunner.java:52)
+    at org.junit.runner.JUnitCore.run(JUnitCore.java:130)
+    at com.intellij.junit4.JUnit4IdeaTestRunner.startRunnerWithArgs(JUnit4IdeaTestRunner.java:117)
+    at com.intellij.rt.execution.junit.JUnitStarter.prepareStreamsAndStart(JUnitStarter.java:234)
+    at com.intellij.rt.execution.junit.JUnitStarter.main(JUnitStarter.java:74)
+    at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+    at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:57)
+    at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+    at java.lang.reflect.Method.invoke(Method.java:606)
+    at com.intellij.rt.execution.application.AppMain.main(AppMain.java:144)
+</code></pre>
+<p>经过资料查询，发现是junit版本的问题，改成4.11即恢复正常，现在是4.2版本。运行结果：<br><img src="http://img.blog.csdn.net/20151118112634813?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" alt=""><br><img src="http://img.blog.csdn.net/20151118112816775?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" alt=""></p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;先来看看错误：&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;java&quot;&gt;Exception in thread &amp;quot;main&amp;quot; java.lang.NoSuchMethodError: org.junit.runner.Description.create
+    
+    </summary>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>Jquery form 插件原文档</title>
+    <link href="http://itsky88.com/2016/12/18/csdn/Jquery%20form%20%E6%8F%92%E4%BB%B6%E5%8E%9F%E6%96%87%E6%A1%A3/"/>
+    <id>http://itsky88.com/2016/12/18/csdn/Jquery form 插件原文档/</id>
+    <published>2016-12-18T09:34:18.000Z</published>
+    <updated>2016-12-18T09:34:18.000Z</updated>
+    
+    <content type="html"><![CDATA[<p><a href="http://malsup.com/jquery/form/#options-object" target="_blank" rel="external">http://malsup.com/jquery/form/#options-object</a></p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;&lt;a href=&quot;http://malsup.com/jquery/form/#options-object&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;http://malsup.com/jquery/form/#options-object&lt;/a&gt;&lt;
+    
+    </summary>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>HighCharts点击柱形或饼块加URL或Click事件</title>
+    <link href="http://itsky88.com/2016/12/18/csdn/HighCharts%E7%82%B9%E5%87%BB%E6%9F%B1%E5%BD%A2%E6%88%96%E9%A5%BC%E5%9D%97%E5%8A%A0URL%E6%88%96Click%E4%BA%8B%E4%BB%B6/"/>
+    <id>http://itsky88.com/2016/12/18/csdn/HighCharts点击柱形或饼块加URL或Click事件/</id>
+    <published>2016-12-18T09:34:18.000Z</published>
+    <updated>2016-12-18T09:34:18.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>我们在做图表的时候，有时候需要在单个数据上加链接或点击事件，是在plotOptions里的events里设置的<br><code>01``plotOptions:
+ {``02``    ``pie:
+ {``03``        ``cursor: ``&#39;pointer&#39;``,``04``        ``events:
+ {``05``            ``click: ``function``(e)
+ {``06``        ``location.href
+ = e.point.url;&lt;span&gt;&lt;/span&gt; ``//上面是当前页跳转，如果是要跳出新页面，那就用``07``                ``//window.open(e.point.url);``08``                ``//这里的url要后面的data里给出``09``        ``}``10``    ``},``11``    ``}``12``},``13``series:
+ [{``14``    ``data:
+ [``15``        ``{name:``&#39;地产组&#39;``,y:76,url:``&#39;http://www.baidu.com&#39;``},``16``   
+     ``{name:``&#39;能源组&#39;``,y:54,url:``&#39;&lt;span&gt;&lt;/span&gt;http://www.google.com&lt;span&gt;&lt;/span&gt;&#39;``},&lt;span&gt;&lt;/span&gt;
+             {``17``   
+     ``{name:``&#39;互联网&#39;``,y:20,url:``&#39;http://www.sohu.com&#39;``}``18``}]</code>以上是针对饼图的，如果是柱形图那就把pie:{}换成column : {}当然如果换成series:{}那就不用管是饼图还是柱形图或是其他图形了</p>
+<p><code>01``plotOptions:
+ {``02``    ``series:
+ {``03``        ``cursor: ``&#39;pointer&#39;``,``04``        ``events:
+ {``05``            ``click: ``function``(e)
+ {``06``        ``location.href
+ = e.point.url;``07``                ``//上面是当前页跳转，如果是要跳出新页面，那就用``08``                ``//window.open(e.point.url);``09``                ``//这里的url要后面的data里给出``10``        ``}``11``    ``},``12``    ``}``13``},``14``series:
+ [{``15``    ``data:
+ [``16``        ``{name:``&#39;地产组&#39;``,y:76,url:``&#39;http://www.baidu.com&#39;``},``17``        ``{name:``&#39;能源组&#39;``,y:54,url:``&#39;http://www.google.com&#39;``},            
+ {``18``        ``{name:``&#39;互联网&#39;``,y:20,url:``&#39;http://www.sohu.com&#39;``}``19``}]</code></p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;我们在做图表的时候，有时候需要在单个数据上加链接或点击事件，是在plotOptions里的events里设置的&lt;br&gt;&lt;code&gt;01``plotOptions:
+ {``02``    ``pie:
+ {``03``        ``cursor: ``&amp;#39;poi
+    
+    </summary>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>Linux环境下查看jar包的归档目录</title>
+    <link href="http://itsky88.com/2016/12/18/csdn/Linux%E7%8E%AF%E5%A2%83%E4%B8%8B%E6%9F%A5%E7%9C%8Bjar%E5%8C%85%E7%9A%84%E5%BD%92%E6%A1%A3%E7%9B%AE%E5%BD%95/"/>
+    <id>http://itsky88.com/2016/12/18/csdn/Linux环境下查看jar包的归档目录/</id>
+    <published>2016-12-18T09:34:18.000Z</published>
+    <updated>2016-12-18T09:34:18.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>Linux环境下使用java自带的jar命令进行归档，及归档目录的查看。<br>首先使用 jar –help 查看帮助文档：</p>
+<pre><code class="javascript">jerry@debian0:~/testdata$ jar --help
+非法选项: -
+用法: jar {ctxui}[vfm0Me] [jar-file] [manifest-file] [entry-point] [-C dir] files ...
+选项包括: 
+    -c  创建新的归档文件
+    -t  列出归档目录
+    -x  从档案中提取指定的 (或所有) 文件
+    -u  更新现有的归档文件
+    -v  在标准输出中生成详细输出
+    -f  指定归档文件名
+    -m  包含指定清单文件中的清单信息
+    -e  为捆绑到可执行 jar 文件的独立应用程序
+        指定应用程序入口点
+    -0  仅存储; 不使用情况任何 ZIP 压缩
+    -M  不创建条目的清单文件
+    -i  为指定的 jar 文件生成索引信息
+    -C  更改为指定的目录并包含其中的文件
+如果有任何目录文件, 则对其进行递归处理。
+清单文件名, 归档文件名和入口点名称的指定顺序
+与 &#39;m&#39;, &#39;f&#39; 和 &#39;e&#39; 标记的指定顺序相同。
+
+示例 1: 将两个类文件归档到一个名为 classes.jar 的归档文件中: 
+       jar cvf classes.jar Foo.class Bar.class 
+示例 2: 使用现有的清单文件 &#39;mymanifest&#39; 并
+           将 foo/ 目录中的所有文件归档到 &#39;classes.jar&#39; 中: 
+       jar cvfm classes.jar mymanifest -C foo/ .
+</code></pre>
+<p>上个例子：查看归档的jar包中是否包含我们想要的class文件：</p>
+<pre><code class="javascript">jerry@debian0:~/testdata$ jar vtf /home/jerry/data/data1/workspace/intellij/spark_test_project/target/spark_test_project-1.0-SNAPSHOT.jar | grep com.spark.test.udf
+     0 Sun Jul 10 17:58:56 CST 2016 com/spark/test/udf/
+   741 Sun Jul 10 17:58:56 CST 2016 com/spark/test/udf/HelloUDF.class
+</code></pre>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;Linux环境下使用java自带的jar命令进行归档，及归档目录的查看。&lt;br&gt;首先使用 jar –help 查看帮助文档：&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;javascript&quot;&gt;jerry@debian0:~/testdata$ jar --help
+非法选
+    
+    </summary>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>Linux date命令</title>
+    <link href="http://itsky88.com/2016/12/18/csdn/Linux%20date%E5%91%BD%E4%BB%A4/"/>
+    <id>http://itsky88.com/2016/12/18/csdn/Linux date命令/</id>
+    <published>2016-12-18T09:34:18.000Z</published>
+    <updated>2016-12-18T09:34:18.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>date命令的帮助信息<br> [root@localhost source]# date –help<br>用法：date [选项]… [+格式]<br>　或：date [-u|–utc|–universal] [MMDDhhmm[[CC]YY][.ss]]<br>以给定的格式显示当前时间，或是设置系统日期。</p>
+<p>  -d,–date=字符串              显示指定字符串所描述的时间，而非当前时间<br>  -f,–file=日期文件            类似–date，从日期文件中按行读入时间描述<br>  -r, –reference=文件          显示文件指定文件的最后修改时间<br>  -R, –rfc-2822                以RFC 2822格式输出日期和时间<br>                                例如：2006年8月7日，星期一 12:34:56 -0600<br>      –rfc-3339=TIMESPEC       以RFC 3339 格式输出日期和时间。<br>                                TIMESPEC=<code>date&#39;，</code>seconds’，或 `ns’<br>                                表示日期和时间的显示精度。<br>                                日期和时间单元由单个的空格分开：<br>                                2006-08-07 12:34:56-06:00<br>  -s, –set=字符串              设置指定字符串来分开时间<br>  -u, –utc, –universal        输出或者设置协调的通用时间<br>      –help            显示此帮助信息并退出<br>      –version         显示版本信息并退出</p>
+<p>给定的格式FORMAT 控制着输出，解释序列如下：</p>
+<p>  %%    一个文字的 %<br>  %a    当前locale 的星期名缩写(例如： 日，代表星期日)<br>  %A    当前locale 的星期名全称 (如：星期日)<br>  %b    当前locale 的月名缩写 (如：一，代表一月)<br>  %B    当前locale 的月名全称 (如：一月)<br>  %c    当前locale 的日期和时间 (如：2005年3月3日 星期四 23:05:25)<br>  %C    世纪；比如 %Y，通常为省略当前年份的后两位数字(例如：20)<br>  %d    按月计的日期(例如：01)<br>  %D    按月计的日期；等于%m/%d/%y<br>  %e    按月计的日期，添加空格，等于%_d<br>  %F    完整日期格式，等价于 %Y-%m-%d<br>  %g    ISO-8601 格式年份的最后两位 (参见%G)<br>  %G    ISO-8601 格式年份 (参见%V)，一般只和 %V 结合使用<br>  %h    等于%b<br>  %H    小时(00-23)<br>  %I    小时(00-12)<br>  %c    按年计的日期(001-366)<br>  %k    时(0-23)<br>  %l    时(1-12)<br>  %m    月份(01-12)<br>  %M    分(00-59)<br>  %n    换行<br>  %N    纳秒(000000000-999999999)<br>  %p    当前locale 下的”上午”或者”下午”，未知时输出为空<br>  %P    与%p 类似，但是输出小写字母<br>  %r    当前locale 下的 12 小时时钟时间 (如：11:11:04 下午)<br>  %R    24 小时时间的时和分，等价于 %H:%M<br>  %s    自UTC 时间 1970-01-01 00:00:00 以来所经过的秒数<br>  %S    秒(00-60)<br>  %t    输出制表符 Tab<br>  %T    时间，等于%H:%M:%S<br>  %u    星期，1 代表星期一<br>  %U    一年中的第几周，以周日为每星期第一天(00-53)<br>  %V    ISO-8601 格式规范下的一年中第几周，以周一为每星期第一天(01-53)<br>  %w    一星期中的第几日(0-6)，0 代表周一<br>  %W    一年中的第几周，以周一为每星期第一天(00-53)<br>  %x    当前locale 下的日期描述 (如：12/31/99)<br>  %X    当前locale 下的时间描述 (如：23:13:48)<br>  %y    年份最后两位数位 (00-99)<br>  %Y    年份<br>  %z +hhmm              数字时区(例如，-0400)<br>  %:z +hh:mm            数字时区(例如，-04:00)<br>  %::z +hh:mm:ss        数字时区(例如，-04:00:00)<br>  %:::z                 数字时区带有必要的精度 (例如，-04，+05:30)<br>  %Z                    按字母表排序的时区缩写 (例如，EDT)</p>
+<p>默认情况下，日期的数字区域以0 填充。<br>以下可选标记可以跟在”%”后:</p>
+<ul>
+<li>(连字符)不填充该域<br>_ (下划线)以空格填充<br>0 (数字0)以0 填充<br>^ 如果可能，使用大写字母<h1 id="如果可能，使用相反的大小写"><a href="#如果可能，使用相反的大小写" class="headerlink" title="如果可能，使用相反的大小写"></a>如果可能，使用相反的大小写</h1></li>
+</ul>
+<p>在任何标记之后还允许一个可选的域宽度指定，它是一个十进制数字。<br>作为一个可选的修饰声明，它可以是E，在可能的情况下使用本地环境关联的<br>表示方式；或者是O，在可能的情况下使用本地环境关联的数字符号。</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;date命令的帮助信息&lt;br&gt; [root@localhost source]# date –help&lt;br&gt;用法：date [选项]… [+格式]&lt;br&gt;　或：date [-u|–utc|–universal] [MMDDhhmm[[CC]YY][.ss]]&lt;br&gt;以给定
+    
+    </summary>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>Linux根据内容查找所在文件名</title>
+    <link href="http://itsky88.com/2016/12/18/csdn/Linux%E6%A0%B9%E6%8D%AE%E5%86%85%E5%AE%B9%E6%9F%A5%E6%89%BE%E6%89%80%E5%9C%A8%E6%96%87%E4%BB%B6%E5%90%8D/"/>
+    <id>http://itsky88.com/2016/12/18/csdn/Linux根据内容查找所在文件名/</id>
+    <published>2016-12-18T09:34:18.000Z</published>
+    <updated>2016-12-18T09:34:18.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>今天遇到要查找一个表名在哪个python文件中，网上搜了下命令，运行没问题，所以拿出来跟大家分享下：</p>
+<p>案例：查找表名为 rs_all_user_pv_category 的内容在哪个python文件中</p>
+<pre><code class="python">find . -name &quot;*.py&quot; | xargs grep &quot;rs_all_user_pv_category&quot;
+</code></pre>
+<p>命令含义： 在当前目录下查找  rs_all_user_pv_category  在哪个以.py结尾的文件中输出结果：<br>./rs_all_user_pv_category.py:print ‘&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt; BEGIN rs_all_user_pv_category.py’<br>./rs_all_user_pv_category.py:# python rs_all_user_pv_category.py $(date +%Y-%m-%d -d ‘-1 day’)</p>
+<p>有待研究的：过滤掉重复的文件名，并只显示文件名称，，，，，，</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;今天遇到要查找一个表名在哪个python文件中，网上搜了下命令，运行没问题，所以拿出来跟大家分享下：&lt;/p&gt;
+&lt;p&gt;案例：查找表名为 rs_all_user_pv_category 的内容在哪个python文件中&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;python&quot;&gt;
     
     </summary>
     
@@ -459,222 +871,6 @@ sudo apt-get install python-apt
   </entry>
   
   <entry>
-    <title>Jquery form 插件原文档</title>
-    <link href="http://itsky88.com/2016/12/18/csdn/Jquery%20form%20%E6%8F%92%E4%BB%B6%E5%8E%9F%E6%96%87%E6%A1%A3/"/>
-    <id>http://itsky88.com/2016/12/18/csdn/Jquery form 插件原文档/</id>
-    <published>2016-12-18T09:34:18.000Z</published>
-    <updated>2016-12-18T09:34:18.000Z</updated>
-    
-    <content type="html"><![CDATA[<p><a href="http://malsup.com/jquery/form/#options-object" target="_blank" rel="external">http://malsup.com/jquery/form/#options-object</a></p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;&lt;a href=&quot;http://malsup.com/jquery/form/#options-object&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;http://malsup.com/jquery/form/#options-object&lt;/a&gt;&lt;
-    
-    </summary>
-    
-    
-  </entry>
-  
-  <entry>
-    <title>Junit测试出现异常：Exception in thread &quot;main&quot; java.lang.NoSuchMethodError org.junit.runner.Description.cre</title>
-    <link href="http://itsky88.com/2016/12/18/csdn/Junit%E6%B5%8B%E8%AF%95%E5%87%BA%E7%8E%B0%E5%BC%82%E5%B8%B8%EF%BC%9AException%20in%20thread%20main%20java.lang.NoSuchMethodError%20org.junit.runner.Description.cre/"/>
-    <id>http://itsky88.com/2016/12/18/csdn/Junit测试出现异常：Exception in thread main java.lang.NoSuchMethodError org.junit.runner.Description.cre/</id>
-    <published>2016-12-18T09:34:18.000Z</published>
-    <updated>2016-12-18T09:34:18.000Z</updated>
-    
-    <content type="html"><![CDATA[<p>先来看看错误：</p>
-<pre><code class="java">Exception in thread &quot;main&quot; java.lang.NoSuchMethodError: org.junit.runner.Description.createSuiteDescription(Ljava/lang/String;[Ljava/lang/annotation/Annotation;)Lorg/junit/runner/Description;
-    at com.intellij.junit4.JUnit4TestListener.testStarted(JUnit4TestListener.java:96)
-    at org.junit.runner.notification.RunNotifier$3.notifyListener(RunNotifier.java:83)
-    at org.junit.runner.notification.RunNotifier$SafeNotifier.run(RunNotifier.java:37)
-    at org.junit.runner.notification.RunNotifier.fireTestStarted(RunNotifier.java:80)
-    at org.junit.internal.runners.TestMethodRunner.run(TestMethodRunner.java:39)
-    at org.junit.internal.runners.TestClassMethodsRunner.invokeTestMethod(TestClassMethodsRunner.java:75)
-    at org.junit.internal.runners.TestClassMethodsRunner.run(TestClassMethodsRunner.java:36)
-    at org.junit.internal.runners.TestClassRunner$1.runUnprotected(TestClassRunner.java:42)
-    at org.junit.internal.runners.BeforeAndAfterRunner.runProtected(BeforeAndAfterRunner.java:34)
-    at org.junit.internal.runners.TestClassRunner.run(TestClassRunner.java:52)
-    at org.junit.runner.JUnitCore.run(JUnitCore.java:130)
-    at com.intellij.junit4.JUnit4IdeaTestRunner.startRunnerWithArgs(JUnit4IdeaTestRunner.java:117)
-    at com.intellij.rt.execution.junit.JUnitStarter.prepareStreamsAndStart(JUnitStarter.java:234)
-    at com.intellij.rt.execution.junit.JUnitStarter.main(JUnitStarter.java:74)
-    at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
-    at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:57)
-    at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
-    at java.lang.reflect.Method.invoke(Method.java:606)
-    at com.intellij.rt.execution.application.AppMain.main(AppMain.java:144)
-</code></pre>
-<p>经过资料查询，发现是junit版本的问题，改成4.11即恢复正常，现在是4.2版本。运行结果：<br><img src="http://img.blog.csdn.net/20151118112634813?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" alt=""><br><img src="http://img.blog.csdn.net/20151118112816775?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" alt=""></p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;先来看看错误：&lt;/p&gt;
-&lt;pre&gt;&lt;code class=&quot;java&quot;&gt;Exception in thread &amp;quot;main&amp;quot; java.lang.NoSuchMethodError: org.junit.runner.Description.create
-    
-    </summary>
-    
-    
-  </entry>
-  
-  <entry>
-    <title>Linux date命令</title>
-    <link href="http://itsky88.com/2016/12/18/csdn/Linux%20date%E5%91%BD%E4%BB%A4/"/>
-    <id>http://itsky88.com/2016/12/18/csdn/Linux date命令/</id>
-    <published>2016-12-18T09:34:18.000Z</published>
-    <updated>2016-12-18T09:34:18.000Z</updated>
-    
-    <content type="html"><![CDATA[<p>date命令的帮助信息<br> [root@localhost source]# date –help<br>用法：date [选项]… [+格式]<br>　或：date [-u|–utc|–universal] [MMDDhhmm[[CC]YY][.ss]]<br>以给定的格式显示当前时间，或是设置系统日期。</p>
-<p>  -d,–date=字符串              显示指定字符串所描述的时间，而非当前时间<br>  -f,–file=日期文件            类似–date，从日期文件中按行读入时间描述<br>  -r, –reference=文件          显示文件指定文件的最后修改时间<br>  -R, –rfc-2822                以RFC 2822格式输出日期和时间<br>                                例如：2006年8月7日，星期一 12:34:56 -0600<br>      –rfc-3339=TIMESPEC       以RFC 3339 格式输出日期和时间。<br>                                TIMESPEC=<code>date&#39;，</code>seconds’，或 `ns’<br>                                表示日期和时间的显示精度。<br>                                日期和时间单元由单个的空格分开：<br>                                2006-08-07 12:34:56-06:00<br>  -s, –set=字符串              设置指定字符串来分开时间<br>  -u, –utc, –universal        输出或者设置协调的通用时间<br>      –help            显示此帮助信息并退出<br>      –version         显示版本信息并退出</p>
-<p>给定的格式FORMAT 控制着输出，解释序列如下：</p>
-<p>  %%    一个文字的 %<br>  %a    当前locale 的星期名缩写(例如： 日，代表星期日)<br>  %A    当前locale 的星期名全称 (如：星期日)<br>  %b    当前locale 的月名缩写 (如：一，代表一月)<br>  %B    当前locale 的月名全称 (如：一月)<br>  %c    当前locale 的日期和时间 (如：2005年3月3日 星期四 23:05:25)<br>  %C    世纪；比如 %Y，通常为省略当前年份的后两位数字(例如：20)<br>  %d    按月计的日期(例如：01)<br>  %D    按月计的日期；等于%m/%d/%y<br>  %e    按月计的日期，添加空格，等于%_d<br>  %F    完整日期格式，等价于 %Y-%m-%d<br>  %g    ISO-8601 格式年份的最后两位 (参见%G)<br>  %G    ISO-8601 格式年份 (参见%V)，一般只和 %V 结合使用<br>  %h    等于%b<br>  %H    小时(00-23)<br>  %I    小时(00-12)<br>  %c    按年计的日期(001-366)<br>  %k    时(0-23)<br>  %l    时(1-12)<br>  %m    月份(01-12)<br>  %M    分(00-59)<br>  %n    换行<br>  %N    纳秒(000000000-999999999)<br>  %p    当前locale 下的”上午”或者”下午”，未知时输出为空<br>  %P    与%p 类似，但是输出小写字母<br>  %r    当前locale 下的 12 小时时钟时间 (如：11:11:04 下午)<br>  %R    24 小时时间的时和分，等价于 %H:%M<br>  %s    自UTC 时间 1970-01-01 00:00:00 以来所经过的秒数<br>  %S    秒(00-60)<br>  %t    输出制表符 Tab<br>  %T    时间，等于%H:%M:%S<br>  %u    星期，1 代表星期一<br>  %U    一年中的第几周，以周日为每星期第一天(00-53)<br>  %V    ISO-8601 格式规范下的一年中第几周，以周一为每星期第一天(01-53)<br>  %w    一星期中的第几日(0-6)，0 代表周一<br>  %W    一年中的第几周，以周一为每星期第一天(00-53)<br>  %x    当前locale 下的日期描述 (如：12/31/99)<br>  %X    当前locale 下的时间描述 (如：23:13:48)<br>  %y    年份最后两位数位 (00-99)<br>  %Y    年份<br>  %z +hhmm              数字时区(例如，-0400)<br>  %:z +hh:mm            数字时区(例如，-04:00)<br>  %::z +hh:mm:ss        数字时区(例如，-04:00:00)<br>  %:::z                 数字时区带有必要的精度 (例如，-04，+05:30)<br>  %Z                    按字母表排序的时区缩写 (例如，EDT)</p>
-<p>默认情况下，日期的数字区域以0 填充。<br>以下可选标记可以跟在”%”后:</p>
-<ul>
-<li>(连字符)不填充该域<br>_ (下划线)以空格填充<br>0 (数字0)以0 填充<br>^ 如果可能，使用大写字母<h1 id="如果可能，使用相反的大小写"><a href="#如果可能，使用相反的大小写" class="headerlink" title="如果可能，使用相反的大小写"></a>如果可能，使用相反的大小写</h1></li>
-</ul>
-<p>在任何标记之后还允许一个可选的域宽度指定，它是一个十进制数字。<br>作为一个可选的修饰声明，它可以是E，在可能的情况下使用本地环境关联的<br>表示方式；或者是O，在可能的情况下使用本地环境关联的数字符号。</p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;date命令的帮助信息&lt;br&gt; [root@localhost source]# date –help&lt;br&gt;用法：date [选项]… [+格式]&lt;br&gt;　或：date [-u|–utc|–universal] [MMDDhhmm[[CC]YY][.ss]]&lt;br&gt;以给定
-    
-    </summary>
-    
-    
-  </entry>
-  
-  <entry>
-    <title>Linux根据内容查找所在文件名</title>
-    <link href="http://itsky88.com/2016/12/18/csdn/Linux%E6%A0%B9%E6%8D%AE%E5%86%85%E5%AE%B9%E6%9F%A5%E6%89%BE%E6%89%80%E5%9C%A8%E6%96%87%E4%BB%B6%E5%90%8D/"/>
-    <id>http://itsky88.com/2016/12/18/csdn/Linux根据内容查找所在文件名/</id>
-    <published>2016-12-18T09:34:18.000Z</published>
-    <updated>2016-12-18T09:34:18.000Z</updated>
-    
-    <content type="html"><![CDATA[<p>今天遇到要查找一个表名在哪个python文件中，网上搜了下命令，运行没问题，所以拿出来跟大家分享下：</p>
-<p>案例：查找表名为 rs_all_user_pv_category 的内容在哪个python文件中</p>
-<pre><code class="python">find . -name &quot;*.py&quot; | xargs grep &quot;rs_all_user_pv_category&quot;
-</code></pre>
-<p>命令含义： 在当前目录下查找  rs_all_user_pv_category  在哪个以.py结尾的文件中输出结果：<br>./rs_all_user_pv_category.py:print ‘&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt; BEGIN rs_all_user_pv_category.py’<br>./rs_all_user_pv_category.py:# python rs_all_user_pv_category.py $(date +%Y-%m-%d -d ‘-1 day’)</p>
-<p>有待研究的：过滤掉重复的文件名，并只显示文件名称，，，，，，</p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;今天遇到要查找一个表名在哪个python文件中，网上搜了下命令，运行没问题，所以拿出来跟大家分享下：&lt;/p&gt;
-&lt;p&gt;案例：查找表名为 rs_all_user_pv_category 的内容在哪个python文件中&lt;/p&gt;
-&lt;pre&gt;&lt;code class=&quot;python&quot;&gt;
-    
-    </summary>
-    
-    
-  </entry>
-  
-  <entry>
-    <title>Linux环境下查看jar包的归档目录</title>
-    <link href="http://itsky88.com/2016/12/18/csdn/Linux%E7%8E%AF%E5%A2%83%E4%B8%8B%E6%9F%A5%E7%9C%8Bjar%E5%8C%85%E7%9A%84%E5%BD%92%E6%A1%A3%E7%9B%AE%E5%BD%95/"/>
-    <id>http://itsky88.com/2016/12/18/csdn/Linux环境下查看jar包的归档目录/</id>
-    <published>2016-12-18T09:34:18.000Z</published>
-    <updated>2016-12-18T09:34:18.000Z</updated>
-    
-    <content type="html"><![CDATA[<p>Linux环境下使用java自带的jar命令进行归档，及归档目录的查看。<br>首先使用 jar –help 查看帮助文档：</p>
-<pre><code class="javascript">jerry@debian0:~/testdata$ jar --help
-非法选项: -
-用法: jar {ctxui}[vfm0Me] [jar-file] [manifest-file] [entry-point] [-C dir] files ...
-选项包括: 
-    -c  创建新的归档文件
-    -t  列出归档目录
-    -x  从档案中提取指定的 (或所有) 文件
-    -u  更新现有的归档文件
-    -v  在标准输出中生成详细输出
-    -f  指定归档文件名
-    -m  包含指定清单文件中的清单信息
-    -e  为捆绑到可执行 jar 文件的独立应用程序
-        指定应用程序入口点
-    -0  仅存储; 不使用情况任何 ZIP 压缩
-    -M  不创建条目的清单文件
-    -i  为指定的 jar 文件生成索引信息
-    -C  更改为指定的目录并包含其中的文件
-如果有任何目录文件, 则对其进行递归处理。
-清单文件名, 归档文件名和入口点名称的指定顺序
-与 &#39;m&#39;, &#39;f&#39; 和 &#39;e&#39; 标记的指定顺序相同。
-
-示例 1: 将两个类文件归档到一个名为 classes.jar 的归档文件中: 
-       jar cvf classes.jar Foo.class Bar.class 
-示例 2: 使用现有的清单文件 &#39;mymanifest&#39; 并
-           将 foo/ 目录中的所有文件归档到 &#39;classes.jar&#39; 中: 
-       jar cvfm classes.jar mymanifest -C foo/ .
-</code></pre>
-<p>上个例子：查看归档的jar包中是否包含我们想要的class文件：</p>
-<pre><code class="javascript">jerry@debian0:~/testdata$ jar vtf /home/jerry/data/data1/workspace/intellij/spark_test_project/target/spark_test_project-1.0-SNAPSHOT.jar | grep com.spark.test.udf
-     0 Sun Jul 10 17:58:56 CST 2016 com/spark/test/udf/
-   741 Sun Jul 10 17:58:56 CST 2016 com/spark/test/udf/HelloUDF.class
-</code></pre>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;Linux环境下使用java自带的jar命令进行归档，及归档目录的查看。&lt;br&gt;首先使用 jar –help 查看帮助文档：&lt;/p&gt;
-&lt;pre&gt;&lt;code class=&quot;javascript&quot;&gt;jerry@debian0:~/testdata$ jar --help
-非法选
-    
-    </summary>
-    
-    
-  </entry>
-  
-  <entry>
-    <title>Lucene4.4与IKAnalyzer冲突</title>
-    <link href="http://itsky88.com/2016/12/18/csdn/Lucene4.4%E4%B8%8EIKAnalyzer%E5%86%B2%E7%AA%81/"/>
-    <id>http://itsky88.com/2016/12/18/csdn/Lucene4.4与IKAnalyzer冲突/</id>
-    <published>2016-12-18T09:34:18.000Z</published>
-    <updated>2016-12-18T09:34:18.000Z</updated>
-    
-    <content type="html"><![CDATA[<p>先来看异常：</p>
-<pre><code class="java">&quot;D:\Program Files\Java\jdk1.7.0_67\bin\java&quot; -ea -Didea.launcher.port=7537 &quot;-Didea.launcher.bin.path=D:\Program Files\JetBrains\IntelliJ IDEA Community Edition 14.1.2\bin&quot; -Dfile.encoding=GBK -classpath &quot;D:\Program Files\JetBrains\IntelliJ IDEA Community Edition 14.1.2\lib\idea_rt.jar;D:\Program Files\JetBrains\IntelliJ IDEA Community Edition 14.1.2\plugins\junit\lib\junit-rt.jar;D:\Program Files\Java\jdk1.7.0_67\jre\lib\charsets.jar;D:\Program Files\Java\jdk1.7.0_67\jre\lib\deploy.jar;D:\Program Files\Java\jdk1.7.0_67\jre\lib\javaws.jar;D:\Program Files\Java\jdk1.7.0_67\jre\lib\jce.jar;D:\Program Files\Java\jdk1.7.0_67\jre\lib\jfr.jar;D:\Program Files\Java\jdk1.7.0_67\jre\lib\jfxrt.jar;D:\Program Files\Java\jdk1.7.0_67\jre\lib\jsse.jar;D:\Program Files\Java\jdk1.7.0_67\jre\lib\management-agent.jar;D:\Program Files\Java\jdk1.7.0_67\jre\lib\plugin.jar;D:\Program Files\Java\jdk1.7.0_67\jre\lib\resources.jar;D:\Program Files\Java\jdk1.7.0_67\jre\lib\rt.jar;D:\Program Files\Java\jdk1.7.0_67\jre\lib\ext\access-bridge-64.jar;D:\Program Files\Java\jdk1.7.0_67\jre\lib\ext\dnsns.jar;D:\Program Files\Java\jdk1.7.0_67\jre\lib\ext\jaccess.jar;D:\Program Files\Java\jdk1.7.0_67\jre\lib\ext\localedata.jar;D:\Program Files\Java\jdk1.7.0_67\jre\lib\ext\sunec.jar;D:\Program Files\Java\jdk1.7.0_67\jre\lib\ext\sunjce_provider.jar;D:\Program Files\Java\jdk1.7.0_67\jre\lib\ext\sunmscapi.jar;D:\Program Files\Java\jdk1.7.0_67\jre\lib\ext\zipfs.jar;D:\workspace\Intellij\lucenetest\target\test-classes;D:\workspace\Intellij\lucenetest\target\classes;C:\Users\Administrator\.m2\repository\org\apache\lucene\lucene-core\4.2.1\lucene-core-4.2.1.jar;C:\Users\Administrator\.m2\repository\org\apache\lucene\lucene-analyzers-common\4.2.1\lucene-analyzers-common-4.2.1.jar;C:\Users\Administrator\.m2\repository\org\apache\lucene\lucene-queryparser\4.2.1\lucene-queryparser-4.2.1.jar;C:\Users\Administrator\.m2\repository\org\apache\lucene\lucene-queries\4.2.1\lucene-queries-4.2.1.jar;C:\Users\Administrator\.m2\repository\org\apache\lucene\lucene-sandbox\4.2.1\lucene-sandbox-4.2.1.jar;C:\Users\Administrator\.m2\repository\jakarta-regexp\jakarta-regexp\1.4\jakarta-regexp-1.4.jar;C:\Users\Administrator\.m2\repository\org\wltea\analyzer\IKAnalyzer\12.06\IKAnalyzer-12.06.jar;C:\Users\Administrator\.m2\repository\junit\junit\4.2\junit-4.2.jar&quot; com.intellij.rt.execution.application.AppMain com.intellij.rt.execution.junit.JUnitStarter -ideVersion5 com.my.test.analyzer.AnalyzerTest,AnalyzerTest
-Exception in thread &quot;main&quot; java.lang.VerifyError: class org.wltea.analyzer.lucene.IKAnalyzer overrides final method tokenStream.(Ljava/lang/String;Ljava/io/Reader;)Lorg/apache/lucene/analysis/TokenStream;
-    at java.lang.ClassLoader.defineClass1(Native Method)
-    at java.lang.ClassLoader.defineClass(ClassLoader.java:800)
-    at java.security.SecureClassLoader.defineClass(SecureClassLoader.java:142)
-    at java.net.URLClassLoader.defineClass(URLClassLoader.java:449)
-    at java.net.URLClassLoader.access$100(URLClassLoader.java:71)
-    at java.net.URLClassLoader$1.run(URLClassLoader.java:361)
-    at java.net.URLClassLoader$1.run(URLClassLoader.java:355)
-    at java.security.AccessController.doPrivileged(Native Method)
-    at java.net.URLClassLoader.findClass(URLClassLoader.java:354)
-    at java.lang.ClassLoader.loadClass(ClassLoader.java:425)
-    at sun.misc.Launcher$AppClassLoader.loadClass(Launcher.java:308)
-    at java.lang.ClassLoader.loadClass(ClassLoader.java:358)
-    at java.lang.Class.getDeclaredMethods0(Native Method)
-    at java.lang.Class.privateGetDeclaredMethods(Class.java:2570)
-    at java.lang.Class.getMethod0(Class.java:2813)
-    at java.lang.Class.getMethod(Class.java:1663)
-    at com.intellij.junit4.JUnit4TestRunnerUtil.buildRequest(JUnit4TestRunnerUtil.java:133)
-    at com.intellij.junit4.JUnit4IdeaTestRunner.startRunnerWithArgs(JUnit4IdeaTestRunner.java:39)
-    at com.intellij.rt.execution.junit.JUnitStarter.prepareStreamsAndStart(JUnitStarter.java:212)
-    at com.intellij.rt.execution.junit.JUnitStarter.main(JUnitStarter.java:68)
-    at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
-    at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:57)
-    at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
-    at java.lang.reflect.Method.invoke(Method.java:606)
-    at com.intellij.rt.execution.application.AppMain.main(AppMain.java:140)
-</code></pre>
-<p>谷歌查询以后发现是分词器与Lucene的冲突引起的。<br>然后使用了 IKAnalyzer2012FF_u1.jar 后问题得到解决。<br>下载地址：<a href="http://download.csdn.net/detail/liuhui_306/9238039" target="_blank" rel="external">http://download.csdn.net/detail/liuhui_306/9238039</a>   <a href="http://download.csdn.net/detail/liuhui_306/9238039" target="_blank" rel="external">点击打开链接</a></p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;先来看异常：&lt;/p&gt;
-&lt;pre&gt;&lt;code class=&quot;java&quot;&gt;&amp;quot;D:\Program Files\Java\jdk1.7.0_67\bin\java&amp;quot; -ea -Didea.launcher.port=7537 &amp;quot;-Didea.laun
-    
-    </summary>
-    
-    
-  </entry>
-  
-  <entry>
     <title>Maven安装远程仓库没有的依赖库</title>
     <link href="http://itsky88.com/2016/12/18/csdn/Maven%E5%AE%89%E8%A3%85%E8%BF%9C%E7%A8%8B%E4%BB%93%E5%BA%93%E6%B2%A1%E6%9C%89%E7%9A%84%E4%BE%9D%E8%B5%96%E5%BA%93/"/>
     <id>http://itsky88.com/2016/12/18/csdn/Maven安装远程仓库没有的依赖库/</id>
@@ -716,6 +912,28 @@ Exception in thread &quot;main&quot; java.lang.VerifyError: class org.wltea.anal
   </entry>
   
   <entry>
+    <title>Number of dynamic partitions exceeded hive.exec.max.dynamic.partitions.pernode</title>
+    <link href="http://itsky88.com/2016/12/18/csdn/Number%20of%20dynamic%20partitions%20exceeded%20hive.exec.max.dynamic.partitions.pernode/"/>
+    <id>http://itsky88.com/2016/12/18/csdn/Number of dynamic partitions exceeded hive.exec.max.dynamic.partitions.pernode/</id>
+    <published>2016-12-18T09:34:18.000Z</published>
+    <updated>2016-12-18T09:34:18.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>动态分区数太大的问题：[Fatal Error] Operator FS_2 (id=2): Number of dynamic partitions exceeded hive.exec.max.dynamic.partitions.pernode.</p>
+<p>hive&gt; insert into table sogouq_test partition(query_time) select user_id,query_word,query_order,click_order,url,query_time from sogouq_test_tmp;<br>Total MapReduce jobs = 3<br>Launching Job 1 out of 3<br>Number of reduce tasks is set to 0 since there’s no reduce operator<br>Starting Job = job_1409113942738_0026, Tracking URL = <a href="http://centos1:8088/proxy/application_1409113942738_0026/" target="_blank" rel="external">http://centos1:8088/proxy/application_1409113942738_0026/</a><br>Kill Command = /home/hadoop-2.2/bin/hadoop job  -kill job_1409113942738_0026<br>Hadoop job information for Stage-1: number of mappers: 1; number of reducers: 0<br>2014-08-27 03:55:16,868 Stage-1 map = 0%,  reduce = 0%<br>[Fatal Error] Operator FS_2 (id=2): Number of dynamic partitions exceeded hive.exec.max.dynamic.partitions.pernode.<br>Sample of 100 partitions created under hdfs://centos1:8020/hive/scratchdir/hive_2014-08-27_03-55-09_118_348369539322185503-1/_tmp.-ext-10002:<br>        …/query_time=20111230000005<br>        …/query_time=20111230000007<br>        …/query_time=20111230000008<br>        …/query_time=20111230000009<br>        …/query_time=20111230000010<br>        …/query_time=20111230000011</p>
+<p>查看最大分区数：<br>hive&gt; set hive.exec.max.dynamic.partitions.pernode;<br>hive.exec.max.dynamic.partitions.pernode=100<br>将该参数设置的大一点，问题即解决。</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;动态分区数太大的问题：[Fatal Error] Operator FS_2 (id=2): Number of dynamic partitions exceeded hive.exec.max.dynamic.partitions.pernode.&lt;/p&gt;
+&lt;p&gt;hiv
+    
+    </summary>
+    
+    
+  </entry>
+  
+  <entry>
     <title>Oracle TIMESTAMP的处理</title>
     <link href="http://itsky88.com/2016/12/18/csdn/Oracle%20TIMESTAMP%E7%9A%84%E5%A4%84%E7%90%86/"/>
     <id>http://itsky88.com/2016/12/18/csdn/Oracle TIMESTAMP的处理/</id>
@@ -733,88 +951,6 @@ Exception in thread &quot;main&quot; java.lang.VerifyError: class org.wltea.anal
     
       &lt;p&gt;public class Test {&lt;br&gt;private static final SimpleDateFormat FORMAT = new SimpleDateFormat(“yyyy-MM-dd HH:mm:dd”);&lt;/p&gt;
 &lt;p&gt;public static v
-    
-    </summary>
-    
-    
-  </entry>
-  
-  <entry>
-    <title>Python解析xml文件遇到的编码解析的问题</title>
-    <link href="http://itsky88.com/2016/12/18/csdn/Python%E8%A7%A3%E6%9E%90xml%E6%96%87%E4%BB%B6%E9%81%87%E5%88%B0%E7%9A%84%E7%BC%96%E7%A0%81%E8%A7%A3%E6%9E%90%E7%9A%84%E9%97%AE%E9%A2%98/"/>
-    <id>http://itsky88.com/2016/12/18/csdn/Python解析xml文件遇到的编码解析的问题/</id>
-    <published>2016-12-18T09:34:18.000Z</published>
-    <updated>2016-12-18T09:34:18.000Z</updated>
-    
-    <content type="html"><![CDATA[<p>使用python对xml文件进行解析的时候，如果xml文件的头文件是utf-8格式的编码，那么解析是ok的，但如果是其他格式将会出现如下异常：<br>xml.parsers.expat.ExpatError: unknown encoding</p>
-<p>因此，为了保证程序的正常运行，我们需要对读取的文件进行编码处理。<br>1、首先将读取的字符从原来的编码解析，并编码成utf-8；<br>2、修改xml的encoding；<br>代码如下：</p>
-<pre><code class="python">import sys
-import os
-import datetime
-import time
-import string
-from urllib import unquote
-import MySQLdb
-
-import xml.parsers.expat
-
-import xml.etree.ElementTree as Etree
-
-import types
-import httplib
-import urllib2
-import urllib
-import json
-import re
-
-
-def readDataFromNetwork(url):
-    req = urllib2.Request(url)
-    rd = urllib2.urlopen(req)
-    readData = rd.read()
-    return readData
-
-# &lt;![CDATA[ http://j.xywy.com/il_sii_27.htm ]]&gt;
-def parseXmlStr(_str):    
-    try:
-        # 将字符串进行解码编码
-        _str = unquote(_str)
-        _str = _str.decode(&#39;gbk&#39;).encode(&#39;utf-8&#39;)
-        print _str[0:100]
-    except Exception,ex:
-        print &#39;error&#39;
-
-    # 修改xml文件的编码方式
-    _str = re.sub(&#39;gbk&#39;, &#39;utf-8&#39;, _str)
-
-
-    xmlDoc = Etree.fromstring(_str)
-    childList = xmlDoc.getchildren()
-
-    for node in childList:
-        str_value = node.find(&quot;display/url&quot;).text
-        if str_value.find(&#39;CDATA&#39;) != -1:
-            print &#39;haha&#39;
-</code></pre>
-<p>输出结果如下：</p>
-<pre><code class="html">&lt;?xml version=&quot;1.0&quot; encoding=&quot;gbk&quot; ?&gt;
-&lt;DOCUMENT&gt;
-&lt;item&gt;
-&lt;key&gt;百日咳&lt;/key&gt;
-&lt;display&gt;
-&lt;title&gt;
-&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot; ?&gt;
-&lt;DOCUMENT&gt;
-&lt;item&gt;
-&lt;key&gt;百日咳&lt;/key&gt;
-&lt;display&gt;
-</code></pre>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;使用python对xml文件进行解析的时候，如果xml文件的头文件是utf-8格式的编码，那么解析是ok的，但如果是其他格式将会出现如下异常：&lt;br&gt;xml.parsers.expat.ExpatError: unknown encoding&lt;/p&gt;
-&lt;p&gt;因此，为了保证程
     
     </summary>
     
@@ -1025,28 +1161,6 @@ print json.load(f)
     <summary type="html">
     
       &lt;p&gt;概念&lt;br&gt;序列化（Serialization）：将对象的状态信息转换为可以存储或可以通过网络传输的过程，传输的格式可以是JSON、XML等。反序列化就是从存储区域（JSON，XML）读取反序列化对象的状态，重新创建该对象。&lt;br&gt;JSON（JavaScript Objec
-    
-    </summary>
-    
-    
-  </entry>
-  
-  <entry>
-    <title>Number of dynamic partitions exceeded hive.exec.max.dynamic.partitions.pernode</title>
-    <link href="http://itsky88.com/2016/12/18/csdn/Number%20of%20dynamic%20partitions%20exceeded%20hive.exec.max.dynamic.partitions.pernode/"/>
-    <id>http://itsky88.com/2016/12/18/csdn/Number of dynamic partitions exceeded hive.exec.max.dynamic.partitions.pernode/</id>
-    <published>2016-12-18T09:34:18.000Z</published>
-    <updated>2016-12-18T09:34:18.000Z</updated>
-    
-    <content type="html"><![CDATA[<p>动态分区数太大的问题：[Fatal Error] Operator FS_2 (id=2): Number of dynamic partitions exceeded hive.exec.max.dynamic.partitions.pernode.</p>
-<p>hive&gt; insert into table sogouq_test partition(query_time) select user_id,query_word,query_order,click_order,url,query_time from sogouq_test_tmp;<br>Total MapReduce jobs = 3<br>Launching Job 1 out of 3<br>Number of reduce tasks is set to 0 since there’s no reduce operator<br>Starting Job = job_1409113942738_0026, Tracking URL = <a href="http://centos1:8088/proxy/application_1409113942738_0026/" target="_blank" rel="external">http://centos1:8088/proxy/application_1409113942738_0026/</a><br>Kill Command = /home/hadoop-2.2/bin/hadoop job  -kill job_1409113942738_0026<br>Hadoop job information for Stage-1: number of mappers: 1; number of reducers: 0<br>2014-08-27 03:55:16,868 Stage-1 map = 0%,  reduce = 0%<br>[Fatal Error] Operator FS_2 (id=2): Number of dynamic partitions exceeded hive.exec.max.dynamic.partitions.pernode.<br>Sample of 100 partitions created under hdfs://centos1:8020/hive/scratchdir/hive_2014-08-27_03-55-09_118_348369539322185503-1/_tmp.-ext-10002:<br>        …/query_time=20111230000005<br>        …/query_time=20111230000007<br>        …/query_time=20111230000008<br>        …/query_time=20111230000009<br>        …/query_time=20111230000010<br>        …/query_time=20111230000011</p>
-<p>查看最大分区数：<br>hive&gt; set hive.exec.max.dynamic.partitions.pernode;<br>hive.exec.max.dynamic.partitions.pernode=100<br>将该参数设置的大一点，问题即解决。</p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;动态分区数太大的问题：[Fatal Error] Operator FS_2 (id=2): Number of dynamic partitions exceeded hive.exec.max.dynamic.partitions.pernode.&lt;/p&gt;
-&lt;p&gt;hiv
     
     </summary>
     

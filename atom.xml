@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://itsky88.com/"/>
-  <updated>2016-12-21T11:31:26.000Z</updated>
+  <updated>2016-12-24T01:22:36.000Z</updated>
   <id>http://itsky88.com/</id>
   
   <author>
@@ -14,6 +14,446 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>method execute has incompatible type</title>
+    <link href="http://itsky88.com/2016/12/24/scala/method%20execute%20has%20incompatible%20type/"/>
+    <id>http://itsky88.com/2016/12/24/scala/method execute has incompatible type/</id>
+    <published>2016-12-24T01:22:36.000Z</published>
+    <updated>2016-12-24T01:22:36.000Z</updated>
+    
+    <content type="html"><![CDATA[<h3 id="Scala泛型的一个异常"><a href="#Scala泛型的一个异常" class="headerlink" title="Scala泛型的一个异常"></a>Scala泛型的一个异常</h3><p>异常代码:</p>
+<pre><code class="java">def set(key: Array[Byte], value: Array[Byte]) = {
+    new JedisClusterCommand(connectionHandler, maxRedirections) {
+      override def execute(connection: Jedis): String = connection.set(key, value)
+    }.run(new String(key, &quot;utf-8&quot;))
+}
+</code></pre>
+<p>结果在编译的时候出现了如下异常:</p>
+<pre><code class="java">Error:(26, 20) overriding method execute in class JedisClusterCommand of type (x$1: redis.clients.jedis.Jedis)Nothing;
+ method execute has incompatible type
+      override def execute(connection: Jedis): String = connection.set(key, value)
+                   ^
+</code></pre>
+<p>到JedisClusterCommand类的源码中发现该类是一个泛型, 而我创建对象的时候没有使用泛型, 编译的时候不认识execute方法的返回值类型(Nothing与String产生了矛盾), 类源码如下:</p>
+<pre><code class="java">public abstract class JedisClusterCommand&lt;T&gt; {
+    private JedisClusterConnectionHandler connectionHandler;
+    private int redirections;
+    private ThreadLocal&lt;Jedis&gt; askConnection = new ThreadLocal();
+    private StringBuilder hostTrace;
+
+    public JedisClusterCommand(JedisClusterConnectionHandler connectionHandler, int maxRedirections) {
+        this.connectionHandler = connectionHandler;
+        this.redirections = maxRedirections;
+    }
+
+    public abstract T execute(Jedis var1);
+
+    public T run(String key) {
+        if(key == null) {
+            throw new JedisClusterException(&quot;No way to dispatch this command to Redis Cluster.&quot;);
+        } else {
+            this.hostTrace = new StringBuilder();
+            return this.runWithRetries(key, this.redirections, false, false);
+        }
+    }
+}
+</code></pre>
+<p>解决方法: 创建JedisClusterCommand对象时增加一个泛型即可。<br>修改后的代码如下:</p>
+<pre><code class="java">def set(key: Array[Byte], value: Array[Byte]) = {
+    new JedisClusterCommand[String](connectionHandler, maxRedirections) {
+      override def execute(connection: Jedis): String = connection.set(key, value)
+    }.run(new String(key, &quot;utf-8&quot;))
+}
+</code></pre>
+<p>再次编译则通过了!!!!!!!<br>参考: <a href="http://stackoverflow.com/questions/17089760/scala-implementing-java-interface-results-in-incompatible-type" target="_blank" rel="external">http://stackoverflow.com/questions/17089760/scala-implementing-java-interface-results-in-incompatible-type</a></p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;h3 id=&quot;Scala泛型的一个异常&quot;&gt;&lt;a href=&quot;#Scala泛型的一个异常&quot; class=&quot;headerlink&quot; title=&quot;Scala泛型的一个异常&quot;&gt;&lt;/a&gt;Scala泛型的一个异常&lt;/h3&gt;&lt;p&gt;异常代码:&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;ja
+    
+    </summary>
+    
+      <category term="Scala" scheme="http://itsky88.com/categories/Scala/"/>
+    
+    
+      <category term="Scala" scheme="http://itsky88.com/tags/Scala/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>scala中Either,Option,Try的使用</title>
+    <link href="http://itsky88.com/2016/12/23/scala/scala%E4%B8%ADEither,Option,Try%E7%9A%84%E4%BD%BF%E7%94%A8/"/>
+    <id>http://itsky88.com/2016/12/23/scala/scala中Either,Option,Try的使用/</id>
+    <published>2016-12-22T16:00:00.000Z</published>
+    <updated>2016-12-24T02:06:23.000Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="scala中Either-Option-Try的使用"><a href="#scala中Either-Option-Try的使用" class="headerlink" title="scala中Either,Option,Try的使用"></a>scala中Either,Option,Try的使用</h2><p>scala是一种函数式的编程语言, 在进行数据交互时，以一种优雅的方式处理各种异常，于是就出现了Either, Option, Try这三个容器。这样编写出来的代码健壮性极强。<br>这三个类的作用各有不同：<br>1, Either解决的是两个值的类型不确定的问题;<br>2, Option解决的是null的问题;<br>3, Try解决的是捕获运行过程中可能出现的异常;</p>
+<p>下面就来细细说来, 哈哈。。。</p>
+<h3 id="Either"><a href="#Either" class="headerlink" title="Either"></a>Either</h3><p>Either包含了两个子类Left, Right, 并且Either也提供了类似集合的功能, 测试代码如下:</p>
+<pre><code class="java">package com.scala.test.collect
+
+import scala.util.{Failure, Success, Try}
+
+/**
+  * Created by jerry on 16-12-23.
+  * scala Either测试
+  */
+object EitherTest extends App {
+  def getEither(str: String): Either[Set[Int], List[String]] = {
+    if(str == &quot;left&quot;) {
+      Left(Set(1, 2, 3))
+    } else {
+      Right(List(&quot;zhangsan&quot;, &quot;lisi&quot;, &quot;wangwu&quot;, &quot;zhaoliu&quot;))
+    }
+  }
+  def eitherTest = {
+    val res = getEither(&quot;left&quot;)
+    println(res.isLeft)   // 判断第一个值是否为空
+    println(res.isRight)  // 判断第二个值是否为空
+    res.left.get.map(println _) // .left获取Left对象,
+    res.left.map(println _)
+    println(res.right.getOrElse(&quot;no right...&quot;))
+  }
+  eitherTest
+}
+</code></pre>
+<p>输出结果:</p>
+<pre><code class="java">true
+false
+1
+2
+3
+Set(1, 2, 3)
+no right...
+</code></pre>
+<h3 id="Option"><a href="#Option" class="headerlink" title="Option"></a>Option</h3><p>Option包含了两个子类None(表示空值), Some(表示非空值), 并且Option也提供了类似集合的功能, 测试代码如下:</p>
+<pre><code class="java">package com.scala.test.collect
+
+import scala.util.{Failure, Success, Try}
+
+/**
+  * Created by jerry on 16-12-23.
+  * scala Option测试
+  */
+object EitherTest extends App {
+  def getOpt(str: String): Option[String] = {
+    if(str == null || str == &quot;&quot;) None else Some(&quot;hello Option....&quot;)
+  }
+  def optionTest = {
+    val res1 = getOpt(&quot;1&quot;)
+    println(res1.isEmpty)
+    println(res1.isDefined)
+    if(res1.isDefined) println(res1.get)
+
+    // 高级用法
+    val res2 = getOpt(&quot;&quot;)
+    println(res2.getOrElse(&quot;is empty&quot;))
+  }
+  optionTest
+}
+</code></pre>
+<p>输出结果:</p>
+<pre><code class="java">false
+true
+hello Option....
+is empty
+</code></pre>
+<h3 id="Try"><a href="#Try" class="headerlink" title="Try"></a>Try</h3><p>Try包含了两个子类Failure(表示出现异常), Success(表示执行成功), 并且Try也提供了类似集合的功能, 测试代码如下:</p>
+<pre><code class="java">package com.scala.test.collect
+
+import scala.util.{Failure, Success, Try}
+
+/**
+  * Created by jerry on 16-12-23.
+  * scala Try测试
+  */
+object EitherTest extends App {
+  def divide(a: Int, b: Int): Try[Int] = Try(a / b)
+  def getTryValue(t: Try[Int]) = {
+    t match {
+      case Success(s) =&gt; println(s&quot;success value is : $s&quot;)
+      case Failure(f) =&gt; println(s&quot;error value is : $f&quot;)
+    }
+  }
+  def tryTest = {
+    val res1 = divide(1, 0)
+    getTryValue(res1)
+    // 高级用法
+    println(res1.getOrElse(5))
+
+    val res2 = divide(1, 2)
+    getTryValue(res2)
+  }
+  tryTest
+}
+</code></pre>
+<p>输出结果:</p>
+<pre><code class="java">error value is : java.lang.ArithmeticException: / by zero
+5
+success value is : 0
+</code></pre>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;h2 id=&quot;scala中Either-Option-Try的使用&quot;&gt;&lt;a href=&quot;#scala中Either-Option-Try的使用&quot; class=&quot;headerlink&quot; title=&quot;scala中Either,Option,Try的使用&quot;&gt;&lt;/a&gt;scala中Ei
+    
+    </summary>
+    
+      <category term="Scala" scheme="http://itsky88.com/categories/Scala/"/>
+    
+    
+      <category term="Scala" scheme="http://itsky88.com/tags/Scala/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>redis集群模式下进行二进制数据存储</title>
+    <link href="http://itsky88.com/2016/12/22/redis/redis%E9%9B%86%E7%BE%A4%E6%A8%A1%E5%BC%8F%E4%B8%8B%E8%BF%9B%E8%A1%8C%E4%BA%8C%E8%BF%9B%E5%88%B6%E6%95%B0%E6%8D%AE%E5%AD%98%E5%82%A8/"/>
+    <id>http://itsky88.com/2016/12/22/redis/redis集群模式下进行二进制数据存储/</id>
+    <published>2016-12-21T16:00:00.000Z</published>
+    <updated>2016-12-24T01:22:36.000Z</updated>
+    
+    <content type="html"><![CDATA[<h3 id="概述"><a href="#概述" class="headerlink" title="概述:"></a>概述:</h3><p>在集群模式下, 官方文档提供的JedisCluster没有提供redis二进制数据操作的api, 经过查看源码发现JedisCluster底层也是使用的Jedis对象操作的redis, 所以理论上来说JedisCluster不应该不能进行二进制数据存储操作, 所以就来了这篇文章。</p>
+<h3 id="JedisCluster部分源码"><a href="#JedisCluster部分源码" class="headerlink" title="JedisCluster部分源码:"></a>JedisCluster部分源码:</h3><pre><code class="java">public String set(final String key, final String value) {
+    return (String)(new JedisClusterCommand(this.connectionHandler, this.maxRedirections) {
+        public String execute(Jedis connection) {
+            return connection.set(key, value);
+        }
+    }).run(key);
+}
+</code></pre>
+<p>相信你应该看出来了吧。</p>
+<h3 id="自己的扩展源码如下"><a href="#自己的扩展源码如下" class="headerlink" title="自己的扩展源码如下:"></a>自己的扩展源码如下:</h3><pre><code class="java">package com.raysdata.model
+
+import java.util.Set
+
+import com.raysdata.common.Configuration
+import org.apache.commons.pool2.impl.GenericObjectPoolConfig
+import redis.clients.jedis._
+
+/**
+  * Created by jerry on 16-12-21.
+  * 扩展的JedisCluster客户端
+  * 目的：在redis集群中存储二进制数据
+  */
+class MyJedisCluster(jedisClusterNode: Set[HostAndPort], timeout: Int, maxRedirections: Int, poolConfig: GenericObjectPoolConfig)
+  extends JedisCluster(jedisClusterNode: Set[HostAndPort], timeout: Int, maxRedirections: Int, poolConfig: GenericObjectPoolConfig) {
+  private val poolConfig1: GenericObjectPoolConfig = null
+  val connectionHandler = new JedisSlotBasedConnectionHandler(jedisClusterNode, poolConfig, timeout);
+
+  def this (nodes: Set[HostAndPort], timeout: Int, poolConfig: GenericObjectPoolConfig)= this(nodes, timeout, 5, poolConfig)
+  def this (nodes: Set[HostAndPort], poolConfig: GenericObjectPoolConfig)= this(nodes, 20000, 5, poolConfig)
+
+  def set(key: Array[Byte], value: Array[Byte]) = {
+    new JedisClusterCommand[String](connectionHandler, maxRedirections) {
+      override def execute(connection: Jedis): String = connection.set(key, value)
+    }.run(new String(key, &quot;utf-8&quot;)) // 如果不是用String类型的key则需要重写JedisClusterCommand的run方法
+  }
+}
+
+import scala.collection.JavaConverters._
+object MyJedisCluster extends App with Configuration {
+  /** jedis配置 */
+  private[this] val jedisPoolConfig = new JedisPoolConfig
+  jedisPoolConfig.setMaxTotal(REDIS_MAX_ACTIVE)
+  jedisPoolConfig.setMaxIdle(REDIS_MAX_IDLE)
+  jedisPoolConfig.setMaxWaitMillis(REDIS_MAX_WAIT_TIME)
+  private[this] lazy val hostAndPortSet = REDIS_HOST.split(&quot;,&quot;, -1).map(x =&gt; new HostAndPort(x, REDIS_PORT)).toSet.asJava
+  val myCluster = new MyJedisCluster(hostAndPortSet, jedisPoolConfig)
+  val key = &quot;test_byte_key&quot;
+  val value = &quot;test_byte_value&quot;
+  myCluster.set(key.getBytes, value.getBytes)
+}
+</code></pre>
+<h3 id="JedisClusterCommand的run方法如下"><a href="#JedisClusterCommand的run方法如下" class="headerlink" title="JedisClusterCommand的run方法如下:"></a>JedisClusterCommand的run方法如下:</h3><pre><code class="java">public T run(String key) {
+    if(key == null) {
+        throw new JedisClusterException(&quot;No way to dispatch this command to Redis Cluster.&quot;);
+    } else {
+        this.hostTrace = new StringBuilder();
+        return this.runWithRetries(key, this.redirections, false, false);
+    }
+}
+</code></pre>
+<p>该代码都是自己亲测可以的。</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;h3 id=&quot;概述&quot;&gt;&lt;a href=&quot;#概述&quot; class=&quot;headerlink&quot; title=&quot;概述:&quot;&gt;&lt;/a&gt;概述:&lt;/h3&gt;&lt;p&gt;在集群模式下, 官方文档提供的JedisCluster没有提供redis二进制数据操作的api, 经过查看源码发现JedisCluste
+    
+    </summary>
+    
+      <category term="Redis" scheme="http://itsky88.com/categories/Redis/"/>
+    
+    
+      <category term="Redis" scheme="http://itsky88.com/tags/Redis/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>sparksql或hive中创建hbase表</title>
+    <link href="http://itsky88.com/2016/12/22/hbase/sparksql%E6%88%96hive%E4%B8%AD%E5%88%9B%E5%BB%BAhbase%E8%A1%A8/"/>
+    <id>http://itsky88.com/2016/12/22/hbase/sparksql或hive中创建hbase表/</id>
+    <published>2016-12-21T16:00:00.000Z</published>
+    <updated>2016-12-24T01:22:36.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>建表语句如下:</p>
+<pre><code class="sql">create table c1
+(
+key1 string,
+c11 int,
+c12 string,
+c13 string,
+c14 string
+)
+stored by &#39;org.apache.hadoop.hive.hbase.HBaseStorageHandler&#39;
+with serdeproperties(
+&quot;hbase.columns.mapping&quot; = &quot;:key,
+info:c11,
+info:c12,
+info:c13,
+info:c14
+&quot;)
+tblproperties(&quot;hbase.table.name&quot; = &quot;rays:chb&quot;);
+
+然后在hbase中添加数据:
+put &#39;rays:chb&#39;,&quot;k1&quot;,&#39;info:c11&#39;,100
+put &#39;rays:chb&#39;,&quot;k1&quot;,&#39;info:c11&#39;,100
+put &#39;rays:chb&#39;,&quot;k1&quot;,&#39;info:c12&#39;,200
+put &#39;rays:chb&#39;,&quot;k1&quot;,&#39;info:c13&#39;,200
+put &#39;rays:chb&#39;,&quot;k1&quot;,&#39;info:c14&#39;,200
+put &#39;rays:chb&#39;,&quot;k2&quot;,&#39;info:c11&#39;,300
+put &#39;rays:chb&#39;,&quot;k2&quot;,&#39;info:c12&#39;,400
+put &#39;rays:chb&#39;,&quot;k2&quot;,&#39;info:c13&#39;,200
+put &#39;rays:chb&#39;,&quot;k2&quot;,&#39;info:c14&#39;,200
+put &#39;rays:chb&#39;,&quot;k3&quot;,&#39;info:c11&#39;,500
+put &#39;rays:chb&#39;,&quot;k3&quot;,&#39;info:c12&#39;,600
+put &#39;rays:chb&#39;,&quot;k3&quot;,&#39;info:c13&#39;,200
+put &#39;rays:chb&#39;,&quot;k3&quot;,&#39;info:c14&#39;,200;
+</code></pre>
+<p>sparksql和hive为hbase提供了方便的sql查询工具,在进行大数据分析时及其方便。</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;建表语句如下:&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;sql&quot;&gt;create table c1
+(
+key1 string,
+c11 int,
+c12 string,
+c13 string,
+c14 string
+)
+stored by &amp;#39;org.apache
+    
+    </summary>
+    
+      <category term="Hbase" scheme="http://itsky88.com/categories/Hbase/"/>
+    
+    
+      <category term="Hbase" scheme="http://itsky88.com/tags/Hbase/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Netty教程(一)之HelloWorld</title>
+    <link href="http://itsky88.com/2016/12/21/netty/Netty%E6%95%99%E7%A8%8B(%E4%B8%80)%E4%B9%8BHelloWorld/"/>
+    <id>http://itsky88.com/2016/12/21/netty/Netty教程(一)之HelloWorld/</id>
+    <published>2016-12-21T11:31:26.000Z</published>
+    <updated>2016-12-21T11:31:26.000Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>程序员最直接的学习方式是代码, 任何程序的基础就是HelloWorld, 例子如下：</p>
+<h3 id="服务端代码"><a href="#服务端代码" class="headerlink" title="服务端代码"></a>服务端代码</h3><pre><code class="java">package com.netty.test.server
+
+import java.net.InetSocketAddress
+import java.util.concurrent.Executors
+
+import org.jboss.netty.bootstrap.ServerBootstrap
+import org.jboss.netty.channel._
+import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory
+
+/**
+  * Created by jerry on 16-12-21.
+  * Netty服务端程序
+  */
+object HelloWorldServer extends App {
+  // 服务端启动程序(入口)
+  val serverBootstrap = new ServerBootstrap(
+    new NioServerSocketChannelFactory( // 创建服务端连接的工厂
+      Executors.newCachedThreadPool(), Executors.newCachedThreadPool()))
+  /** 设置服务端业务处理逻辑(客户端和服务端的通用代码部分, 只是对应不同的Handler) */
+  serverBootstrap.setPipelineFactory(new ChannelPipelineFactory {
+    override def getPipeline: ChannelPipeline = Channels.pipeline(new ServerHandler())
+  })
+  /** 绑定服务端端口号 */
+  serverBootstrap.bindAsync(new InetSocketAddress(8888))
+}
+
+/**
+  * 服务端连接成功后的处理
+  */
+class ServerHandler() extends SimpleChannelHandler {
+  override def channelConnected(ctx: ChannelHandlerContext, e: ChannelStateEvent) = {
+    println(&quot;hello world, server........&quot;)
+  }
+}
+</code></pre>
+<h3 id="客户端代码"><a href="#客户端代码" class="headerlink" title="客户端代码"></a>客户端代码</h3><pre><code class="java">package com.netty.test.client
+
+import java.net.InetSocketAddress
+import java.util.concurrent.Executors
+
+import org.jboss.netty.bootstrap.ClientBootstrap
+import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory
+import org.jboss.netty.channel._
+
+/**
+  * Created by jerry on 16-12-21.
+  * Netty 客户端程序
+  */
+object HelloWorldClient extends App {
+  /** 客户端启动程序 */
+  val clientBootstrap = new ClientBootstrap(
+    /** 客户端连接的创建工厂 */
+    new NioClientSocketChannelFactory(
+      Executors.newCachedThreadPool(), Executors.newCachedThreadPool()))
+  /** 设置客户端业务处理逻辑(客户端和服务端的通用代码部分, 只是对应不同的Handler) */
+  clientBootstrap.setPipelineFactory(new ChannelPipelineFactory {
+    override def getPipeline: ChannelPipeline = Channels.pipeline(new ClientHandler())
+  })
+  /** 连接服务器 */
+  clientBootstrap.connect(new InetSocketAddress(&quot;localhost&quot;, 8888))
+}
+
+/**
+  * 客户端连接成功后的处理逻辑
+  */
+class ClientHandler extends SimpleChannelHandler {
+  override def channelConnected(ctx: ChannelHandlerContext, e: ChannelStateEvent) = {
+    println(&quot;hello world, client.......&quot;)
+  }
+}
+</code></pre>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;h2 id=&quot;概述&quot;&gt;&lt;a href=&quot;#概述&quot; class=&quot;headerlink&quot; title=&quot;概述&quot;&gt;&lt;/a&gt;概述&lt;/h2&gt;&lt;p&gt;程序员最直接的学习方式是代码, 任何程序的基础就是HelloWorld, 例子如下：&lt;/p&gt;
+&lt;h3 id=&quot;服务端代码&quot;&gt;&lt;a href=
+    
+    </summary>
+    
+      <category term="Netty" scheme="http://itsky88.com/categories/Netty/"/>
+    
+    
+      <category term="Netty" scheme="http://itsky88.com/tags/Netty/"/>
+    
+  </entry>
   
   <entry>
     <title>Netty教程(二)之传递字符串消息</title>
@@ -117,165 +557,41 @@ import
   </entry>
   
   <entry>
-    <title>Netty教程(一)之HelloWorld</title>
-    <link href="http://itsky88.com/2016/12/21/netty/Netty%E6%95%99%E7%A8%8B(%E4%B8%80)%E4%B9%8BHelloWorld/"/>
-    <id>http://itsky88.com/2016/12/21/netty/Netty教程(一)之HelloWorld/</id>
-    <published>2016-12-21T11:31:26.000Z</published>
-    <updated>2016-12-21T11:31:26.000Z</updated>
+    <title>hightcharts柱状图click事件深入研究</title>
+    <link href="http://itsky88.com/2016/12/18/csdn/hightcharts%E6%9F%B1%E7%8A%B6%E5%9B%BEclick%E4%BA%8B%E4%BB%B6%E6%B7%B1%E5%85%A5%E7%A0%94%E7%A9%B6/"/>
+    <id>http://itsky88.com/2016/12/18/csdn/hightcharts柱状图click事件深入研究/</id>
+    <published>2016-12-18T09:34:18.000Z</published>
+    <updated>2016-12-18T09:34:18.000Z</updated>
     
-    <content type="html"><![CDATA[<h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>程序员最直接的学习方式是代码, 任何程序的基础就是HelloWorld, 例子如下：</p>
-<h3 id="服务端代码"><a href="#服务端代码" class="headerlink" title="服务端代码"></a>服务端代码</h3><pre><code class="java">package com.netty.test.server
-
-import java.net.InetSocketAddress
-import java.util.concurrent.Executors
-
-import org.jboss.netty.bootstrap.ServerBootstrap
-import org.jboss.netty.channel._
-import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory
-
-/**
-  * Created by jerry on 16-12-21.
-  * Netty服务端程序
-  */
-object HelloWorldServer extends App {
-  // 服务端启动程序(入口)
-  val serverBootstrap = new ServerBootstrap(
-    new NioServerSocketChannelFactory( // 创建服务端连接的工厂
-      Executors.newCachedThreadPool(), Executors.newCachedThreadPool()))
-  /** 设置服务端业务处理逻辑(客户端和服务端的通用代码部分, 只是对应不同的Handler) */
-  serverBootstrap.setPipelineFactory(new ChannelPipelineFactory {
-    override def getPipeline: ChannelPipeline = Channels.pipeline(new ServerHandler())
-  })
-  /** 绑定服务端端口号 */
-  serverBootstrap.bindAsync(new InetSocketAddress(8888))
-}
-
-/**
-  * 服务端连接成功后的处理
-  */
-class ServerHandler() extends SimpleChannelHandler {
-  override def channelConnected(ctx: ChannelHandlerContext, e: ChannelStateEvent) = {
-    println(&quot;hello world, server........&quot;)
-  }
-}
-</code></pre>
-<h3 id="客户端代码"><a href="#客户端代码" class="headerlink" title="客户端代码"></a>客户端代码</h3><pre><code class="java">package com.netty.test.client
-
-import java.net.InetSocketAddress
-import java.util.concurrent.Executors
-
-import org.jboss.netty.bootstrap.ClientBootstrap
-import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory
-import org.jboss.netty.channel._
-
-/**
-  * Created by jerry on 16-12-21.
-  * Netty 客户端程序
-  */
-object HelloWorldClient extends App {
-  /** 客户端启动程序 */
-  val clientBootstrap = new ClientBootstrap(
-    /** 客户端连接的创建工厂 */
-    new NioClientSocketChannelFactory(
-      Executors.newCachedThreadPool(), Executors.newCachedThreadPool()))
-  /** 设置客户端业务处理逻辑(客户端和服务端的通用代码部分, 只是对应不同的Handler) */
-  clientBootstrap.setPipelineFactory(new ChannelPipelineFactory {
-    override def getPipeline: ChannelPipeline = Channels.pipeline(new ClientHandler())
-  })
-  /** 连接服务器 */
-  clientBootstrap.connect(new InetSocketAddress(&quot;localhost&quot;, 8888))
-}
-
-/**
-  * 客户端连接成功后的处理逻辑
-  */
-class ClientHandler extends SimpleChannelHandler {
-  override def channelConnected(ctx: ChannelHandlerContext, e: ChannelStateEvent) = {
-    println(&quot;hello world, client.......&quot;)
-  }
-}
-</code></pre>
+    <content type="html"><![CDATA[<p>柱状图的json数据：<br>data = {categories:[“小学一年级1班”,”小学一年级2班”],<br>        series:[<br>                {name:”0-20”,data:[10,30],urls:[1,2]},<br>                {name:”20-40”,data:[20,31],urls:[3,4]},<br>                {name:”40-60”,data:[25,30],urls:[5,6]},<br>                {name:”60-80”,data:[40,35],urls:[7,8]},<br>                {name:”80-100”,data:[20,60],urls:[9,10]}<br>               ]};<br>其中0-20中，data[0]=10对应小学一年级1班，data[1]=30对应小学一年级2班，urls[0]对应用户点击小学一年级1班的柱状图时的url后面的同理。<br>事件处理函数的设置：<br>plotOptions: {<br>                column: {<br>                 cursor: ‘pointer’,<br>                 groupPadding:0.1,<br>                 pointPadding :0.1,<br>                 events:{click:function(e){<br>                         if(callbackClickEvent) {<br>                          callbackClickEvent(e);<br>                         }<br>                       }},<br>                       dataLabels: {<br>                           enabled: true<br>                       }<br>                   }<br>               },<br>               series: data<br>callbackClickEvent函数如下：<br>function callbackClickEvent(e) {<br>    var urls = e.point.series.userOptions.urls[e.point.x];// 我们可以使用这些属性来获得用户点击的柱子对应url的值<br>   }<br>效果图：<br><img src="http://img.blog.csdn.net/20131122144449937?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGl1aHVpXzMwNg==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" alt=""></p>
+<p>关于event的其他属性：<br><img src="http://img.blog.csdn.net/20131122145139796?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGl1aHVpXzMwNg==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" alt=""><br><img src="http://img.blog.csdn.net/20131122145156687?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGl1aHVpXzMwNg==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" alt=""><br><img src="http://img.blog.csdn.net/20131122145207640?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGl1aHVpXzMwNg==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" alt=""></p>
 ]]></content>
     
     <summary type="html">
     
-      &lt;h2 id=&quot;概述&quot;&gt;&lt;a href=&quot;#概述&quot; class=&quot;headerlink&quot; title=&quot;概述&quot;&gt;&lt;/a&gt;概述&lt;/h2&gt;&lt;p&gt;程序员最直接的学习方式是代码, 任何程序的基础就是HelloWorld, 例子如下：&lt;/p&gt;
-&lt;h3 id=&quot;服务端代码&quot;&gt;&lt;a href=
+      &lt;p&gt;柱状图的json数据：&lt;br&gt;data = {categories:[“小学一年级1班”,”小学一年级2班”],&lt;br&gt;        series:[&lt;br&gt;                {name:”0-20”,data:[10,30],urls:[1,2]},&lt;br
     
     </summary>
     
-      <category term="Netty" scheme="http://itsky88.com/categories/Netty/"/>
-    
-    
-      <category term="Netty" scheme="http://itsky88.com/tags/Netty/"/>
     
   </entry>
   
   <entry>
-    <title>method execute has incompatible type</title>
-    <link href="http://itsky88.com/2016/12/21/scala/method%20execute%20has%20incompatible%20type/"/>
-    <id>http://itsky88.com/2016/12/21/scala/method execute has incompatible type/</id>
-    <published>2016-12-21T11:31:26.000Z</published>
-    <updated>2016-12-21T11:31:26.000Z</updated>
+    <title>Eclipse快捷键的使用，很实用</title>
+    <link href="http://itsky88.com/2016/12/18/csdn/Eclipse%E5%BF%AB%E6%8D%B7%E9%94%AE%E7%9A%84%E4%BD%BF%E7%94%A8%EF%BC%8C%E5%BE%88%E5%AE%9E%E7%94%A8/"/>
+    <id>http://itsky88.com/2016/12/18/csdn/Eclipse快捷键的使用，很实用/</id>
+    <published>2016-12-18T09:34:18.000Z</published>
+    <updated>2016-12-18T09:34:18.000Z</updated>
     
-    <content type="html"><![CDATA[<h3 id="Scala泛型的一个异常"><a href="#Scala泛型的一个异常" class="headerlink" title="Scala泛型的一个异常"></a>Scala泛型的一个异常</h3><p>异常代码:</p>
-<pre><code class="java">def set(key: Array[Byte], value: Array[Byte]) = {
-    new JedisClusterCommand(connectionHandler, maxRedirections) {
-      override def execute(connection: Jedis): String = connection.set(key, value)
-    }.run(new String(key, &quot;utf-8&quot;))
-}
-</code></pre>
-<p>结果在编译的时候出现了如下异常:</p>
-<pre><code class="java">Error:(26, 20) overriding method execute in class JedisClusterCommand of type (x$1: redis.clients.jedis.Jedis)Nothing;
- method execute has incompatible type
-      override def execute(connection: Jedis): String = connection.set(key, value)
-                   ^
-</code></pre>
-<p>到JedisClusterCommand类的源码中发现该类是一个泛型, 而我创建对象的时候没有使用泛型, 编译的时候不认识execute方法的返回值类型(Nothing与String产生了矛盾), 类源码如下:</p>
-<pre><code class="java">public abstract class JedisClusterCommand&lt;T&gt; {
-    private JedisClusterConnectionHandler connectionHandler;
-    private int redirections;
-    private ThreadLocal&lt;Jedis&gt; askConnection = new ThreadLocal();
-    private StringBuilder hostTrace;
-
-    public JedisClusterCommand(JedisClusterConnectionHandler connectionHandler, int maxRedirections) {
-        this.connectionHandler = connectionHandler;
-        this.redirections = maxRedirections;
-    }
-
-    public abstract T execute(Jedis var1);
-
-    public T run(String key) {
-        if(key == null) {
-            throw new JedisClusterException(&quot;No way to dispatch this command to Redis Cluster.&quot;);
-        } else {
-            this.hostTrace = new StringBuilder();
-            return this.runWithRetries(key, this.redirections, false, false);
-        }
-    }
-}
-</code></pre>
-<p>解决方法: 创建JedisClusterCommand对象时增加一个泛型即可。<br>修改后的代码如下:</p>
-<pre><code class="java">def set(key: Array[Byte], value: Array[Byte]) = {
-    new JedisClusterCommand[String](connectionHandler, maxRedirections) {
-      override def execute(connection: Jedis): String = connection.set(key, value)
-    }.run(new String(key, &quot;utf-8&quot;))
-}
-</code></pre>
-<p>再次编译则通过率!!!!!!!<br>参考: <a href="http://stackoverflow.com/questions/17089760/scala-implementing-java-interface-results-in-incompatible-type" target="_blank" rel="external">http://stackoverflow.com/questions/17089760/scala-implementing-java-interface-results-in-incompatible-type</a></p>
+    <content type="html"><![CDATA[<p><a href="http://www.open-open.com/bbs/view/1320934157953" target="_blank" rel="external">http://www.open-open.com/bbs/view/1320934157953</a></p>
 ]]></content>
     
     <summary type="html">
     
-      &lt;h3 id=&quot;Scala泛型的一个异常&quot;&gt;&lt;a href=&quot;#Scala泛型的一个异常&quot; class=&quot;headerlink&quot; title=&quot;Scala泛型的一个异常&quot;&gt;&lt;/a&gt;Scala泛型的一个异常&lt;/h3&gt;&lt;p&gt;异常代码:&lt;/p&gt;
-&lt;pre&gt;&lt;code class=&quot;ja
+      &lt;p&gt;&lt;a href=&quot;http://www.open-open.com/bbs/view/1320934157953&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;http://www.open-open.com/bbs/view/1320934157953&lt;
     
     </summary>
     
-      <category term="Scala" scheme="http://itsky88.com/categories/Scala/"/>
-    
-    
-      <category term="Scala" scheme="http://itsky88.com/tags/Scala/"/>
     
   </entry>
   
@@ -318,25 +634,6 @@ java.lang.OutOfMemoryError: Java heap space
     
       &lt;p&gt;今天搭建了kafka单机版用于测试，配置好以后启动kafka时出现了内存溢出的问题，如下： &lt;/p&gt;
 &lt;pre&gt;&lt;code class=&quot;java&quot;&gt;[2016-10-22 10:39:39,112] INFO [Kafka Server 0], shut down com
-    
-    </summary>
-    
-    
-  </entry>
-  
-  <entry>
-    <title>Eclipse快捷键的使用，很实用</title>
-    <link href="http://itsky88.com/2016/12/18/csdn/Eclipse%E5%BF%AB%E6%8D%B7%E9%94%AE%E7%9A%84%E4%BD%BF%E7%94%A8%EF%BC%8C%E5%BE%88%E5%AE%9E%E7%94%A8/"/>
-    <id>http://itsky88.com/2016/12/18/csdn/Eclipse快捷键的使用，很实用/</id>
-    <published>2016-12-18T09:34:18.000Z</published>
-    <updated>2016-12-18T09:34:18.000Z</updated>
-    
-    <content type="html"><![CDATA[<p><a href="http://www.open-open.com/bbs/view/1320934157953" target="_blank" rel="external">http://www.open-open.com/bbs/view/1320934157953</a></p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;&lt;a href=&quot;http://www.open-open.com/bbs/view/1320934157953&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;http://www.open-open.com/bbs/view/1320934157953&lt;
     
     </summary>
     
@@ -405,6 +702,54 @@ Settings.Builder settings = Settings.builde
   </entry>
   
   <entry>
+    <title>ERROR The node /hbase is not in ZooKeeper. It should have been written by the master. Check the val</title>
+    <link href="http://itsky88.com/2016/12/18/csdn/ERROR%20The%20node%20hbase%20is%20not%20in%20ZooKeeper.%20It%20should%20have%20been%20written%20by%20the%20master.%20Check%20the%20val/"/>
+    <id>http://itsky88.com/2016/12/18/csdn/ERROR The node hbase is not in ZooKeeper. It should have been written by the master. Check the val/</id>
+    <published>2016-12-18T09:34:18.000Z</published>
+    <updated>2016-12-18T09:34:18.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>今天在安装hbase（1.2.3）单机版，安装完毕启动没有问题，但是在运行hbase shell执行命令的时候却抛出了异常，经过google后解决了问题，问题如下：<br>比如：执行  list 命令：</p>
+<pre><code class="java">ERROR: The node /hbase is not in ZooKeeper. It should have been written by the master. Check the value configured in &#39;zookeeper.znode.parent&#39;. There could be a mismatch with the one configured in the master.
+</code></pre>
+<p>根据报错信息也能够发现是配置的问题。解决方法：<br>在hbase-site.xml文件中添加如下配置：</p>
+<pre><code class="html">&lt;property&gt;
+    &lt;name&gt;zookeeper.znode.parent&lt;/name&gt;
+    &lt;value&gt;/hbase&lt;/value&gt;
+&lt;/property&gt;
+</code></pre>
+<p>重新启动hbase，再次执行hbase shell命令，问题即解决。</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;今天在安装hbase（1.2.3）单机版，安装完毕启动没有问题，但是在运行hbase shell执行命令的时候却抛出了异常，经过google后解决了问题，问题如下：&lt;br&gt;比如：执行  list 命令：&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;java&quot;&gt;ERROR: 
+    
+    </summary>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>专注大数据</title>
+    <link href="http://itsky88.com/2016/12/18/csdn/%E4%B8%93%E6%B3%A8%E5%A4%A7%E6%95%B0%E6%8D%AE/"/>
+    <id>http://itsky88.com/2016/12/18/csdn/专注大数据/</id>
+    <published>2016-12-18T09:34:18.000Z</published>
+    <updated>2016-12-18T09:34:18.000Z</updated>
+    
+    <content type="html"><![CDATA[<p><a href="http://user.qzone.qq.com/377486624/blog/1382158555#!app=2&amp;via=QZ.HashRefresh&amp;pos=catalog_list" target="_blank" rel="external">http://user.qzone.qq.com/377486624/blog/1382158555#!app=2&amp;via=QZ.HashRefresh&amp;pos=catalog_list</a></p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;&lt;a href=&quot;http://user.qzone.qq.com/377486624/blog/1382158555#!app=2&amp;amp;via=QZ.HashRefresh&amp;amp;pos=catalog_list&quot; target=&quot;_blank&quot; rel=&quot;exte
+    
+    </summary>
+    
+    
+  </entry>
+  
+  <entry>
     <title>ImportError No module named apt_pkg</title>
     <link href="http://itsky88.com/2016/12/18/csdn/ImportError%20No%20module%20named%20apt_pkg/"/>
     <id>http://itsky88.com/2016/12/18/csdn/ImportError No module named apt_pkg/</id>
@@ -429,6 +774,46 @@ sudo apt-get install python-apt
 &lt;/code&gt;&lt;/pre&gt;
 &lt;pre&gt;&lt;code class=&quot;python&quot;&gt;Traceback (most recent call last):
   File &amp;quot;/usr/bin/apt-listchanges&amp;
+    
+    </summary>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>HighCharts点击柱形或饼块加URL或Click事件</title>
+    <link href="http://itsky88.com/2016/12/18/csdn/HighCharts%E7%82%B9%E5%87%BB%E6%9F%B1%E5%BD%A2%E6%88%96%E9%A5%BC%E5%9D%97%E5%8A%A0URL%E6%88%96Click%E4%BA%8B%E4%BB%B6/"/>
+    <id>http://itsky88.com/2016/12/18/csdn/HighCharts点击柱形或饼块加URL或Click事件/</id>
+    <published>2016-12-18T09:34:18.000Z</published>
+    <updated>2016-12-18T09:34:18.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>我们在做图表的时候，有时候需要在单个数据上加链接或点击事件，是在plotOptions里的events里设置的<br><code>01``plotOptions:
+ {``02``    ``pie:
+ {``03``        ``cursor: ``&#39;pointer&#39;``,``04``        ``events:
+ {``05``            ``click: ``function``(e)
+ {``06``        ``location.href
+ = e.point.url;&lt;span&gt;&lt;/span&gt; ``//上面是当前页跳转，如果是要跳出新页面，那就用``07``                ``//window.open(e.point.url);``08``                ``//这里的url要后面的data里给出``09``        ``}``10``    ``},``11``    ``}``12``},``13``series:
+ [{``14``    ``data:
+ [``15``        ``{name:``&#39;地产组&#39;``,y:76,url:``&#39;http://www.baidu.com&#39;``},``16``   
+     ``{name:``&#39;能源组&#39;``,y:54,url:``&#39;&lt;span&gt;&lt;/span&gt;http://www.google.com&lt;span&gt;&lt;/span&gt;&#39;``},&lt;span&gt;&lt;/span&gt;
+             {``17``   
+     ``{name:``&#39;互联网&#39;``,y:20,url:``&#39;http://www.sohu.com&#39;``}``18``}]</code>以上是针对饼图的，如果是柱形图那就把pie:{}换成column : {}当然如果换成series:{}那就不用管是饼图还是柱形图或是其他图形了</p>
+<p><code>01``plotOptions:
+ {``02``    ``series:
+ {``03``        ``cursor: ``&#39;pointer&#39;``,``04``        ``events:
+ {``05``            ``click: ``function``(e)
+ {``06``        ``location.href
+ = e.point.url;``07``                ``//上面是当前页跳转，如果是要跳出新页面，那就用``08``                ``//window.open(e.point.url);``09``                ``//这里的url要后面的data里给出``10``        ``}``11``    ``},``12``    ``}``13``},``14``series:
+ [{``15``    ``data:
+ [``16``        ``{name:``&#39;地产组&#39;``,y:76,url:``&#39;http://www.baidu.com&#39;``},``17``        ``{name:``&#39;能源组&#39;``,y:54,url:``&#39;http://www.google.com&#39;``},            
+ {``18``        ``{name:``&#39;互联网&#39;``,y:20,url:``&#39;http://www.sohu.com&#39;``}``19``}]</code></p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;我们在做图表的时候，有时候需要在单个数据上加链接或点击事件，是在plotOptions里的events里设置的&lt;br&gt;&lt;code&gt;01``plotOptions:
+ {``02``    ``pie:
+ {``03``        ``cursor: ``&amp;#39;poi
     
     </summary>
     
@@ -500,213 +885,6 @@ sudo apt-get install python-apt
     <summary type="html">
     
       &lt;p&gt;拿来主义，试了，确实好用哈。。。&lt;br&gt;注册方法:   注册码可以沿用14的,只是在 注册时选择 License server ，填 &lt;a href=&quot;http://idea.lanyus.com&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;http:/
-    
-    </summary>
-    
-    
-  </entry>
-  
-  <entry>
-    <title>Junit测试出现异常：Exception in thread &quot;main&quot; java.lang.NoSuchMethodError org.junit.runner.Description.cre</title>
-    <link href="http://itsky88.com/2016/12/18/csdn/Junit%E6%B5%8B%E8%AF%95%E5%87%BA%E7%8E%B0%E5%BC%82%E5%B8%B8%EF%BC%9AException%20in%20thread%20main%20java.lang.NoSuchMethodError%20org.junit.runner.Description.cre/"/>
-    <id>http://itsky88.com/2016/12/18/csdn/Junit测试出现异常：Exception in thread main java.lang.NoSuchMethodError org.junit.runner.Description.cre/</id>
-    <published>2016-12-18T09:34:18.000Z</published>
-    <updated>2016-12-18T09:34:18.000Z</updated>
-    
-    <content type="html"><![CDATA[<p>先来看看错误：</p>
-<pre><code class="java">Exception in thread &quot;main&quot; java.lang.NoSuchMethodError: org.junit.runner.Description.createSuiteDescription(Ljava/lang/String;[Ljava/lang/annotation/Annotation;)Lorg/junit/runner/Description;
-    at com.intellij.junit4.JUnit4TestListener.testStarted(JUnit4TestListener.java:96)
-    at org.junit.runner.notification.RunNotifier$3.notifyListener(RunNotifier.java:83)
-    at org.junit.runner.notification.RunNotifier$SafeNotifier.run(RunNotifier.java:37)
-    at org.junit.runner.notification.RunNotifier.fireTestStarted(RunNotifier.java:80)
-    at org.junit.internal.runners.TestMethodRunner.run(TestMethodRunner.java:39)
-    at org.junit.internal.runners.TestClassMethodsRunner.invokeTestMethod(TestClassMethodsRunner.java:75)
-    at org.junit.internal.runners.TestClassMethodsRunner.run(TestClassMethodsRunner.java:36)
-    at org.junit.internal.runners.TestClassRunner$1.runUnprotected(TestClassRunner.java:42)
-    at org.junit.internal.runners.BeforeAndAfterRunner.runProtected(BeforeAndAfterRunner.java:34)
-    at org.junit.internal.runners.TestClassRunner.run(TestClassRunner.java:52)
-    at org.junit.runner.JUnitCore.run(JUnitCore.java:130)
-    at com.intellij.junit4.JUnit4IdeaTestRunner.startRunnerWithArgs(JUnit4IdeaTestRunner.java:117)
-    at com.intellij.rt.execution.junit.JUnitStarter.prepareStreamsAndStart(JUnitStarter.java:234)
-    at com.intellij.rt.execution.junit.JUnitStarter.main(JUnitStarter.java:74)
-    at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
-    at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:57)
-    at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
-    at java.lang.reflect.Method.invoke(Method.java:606)
-    at com.intellij.rt.execution.application.AppMain.main(AppMain.java:144)
-</code></pre>
-<p>经过资料查询，发现是junit版本的问题，改成4.11即恢复正常，现在是4.2版本。运行结果：<br><img src="http://img.blog.csdn.net/20151118112634813?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" alt=""><br><img src="http://img.blog.csdn.net/20151118112816775?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" alt=""></p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;先来看看错误：&lt;/p&gt;
-&lt;pre&gt;&lt;code class=&quot;java&quot;&gt;Exception in thread &amp;quot;main&amp;quot; java.lang.NoSuchMethodError: org.junit.runner.Description.create
-    
-    </summary>
-    
-    
-  </entry>
-  
-  <entry>
-    <title>Jquery form 插件原文档</title>
-    <link href="http://itsky88.com/2016/12/18/csdn/Jquery%20form%20%E6%8F%92%E4%BB%B6%E5%8E%9F%E6%96%87%E6%A1%A3/"/>
-    <id>http://itsky88.com/2016/12/18/csdn/Jquery form 插件原文档/</id>
-    <published>2016-12-18T09:34:18.000Z</published>
-    <updated>2016-12-18T09:34:18.000Z</updated>
-    
-    <content type="html"><![CDATA[<p><a href="http://malsup.com/jquery/form/#options-object" target="_blank" rel="external">http://malsup.com/jquery/form/#options-object</a></p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;&lt;a href=&quot;http://malsup.com/jquery/form/#options-object&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;http://malsup.com/jquery/form/#options-object&lt;/a&gt;&lt;
-    
-    </summary>
-    
-    
-  </entry>
-  
-  <entry>
-    <title>HighCharts点击柱形或饼块加URL或Click事件</title>
-    <link href="http://itsky88.com/2016/12/18/csdn/HighCharts%E7%82%B9%E5%87%BB%E6%9F%B1%E5%BD%A2%E6%88%96%E9%A5%BC%E5%9D%97%E5%8A%A0URL%E6%88%96Click%E4%BA%8B%E4%BB%B6/"/>
-    <id>http://itsky88.com/2016/12/18/csdn/HighCharts点击柱形或饼块加URL或Click事件/</id>
-    <published>2016-12-18T09:34:18.000Z</published>
-    <updated>2016-12-18T09:34:18.000Z</updated>
-    
-    <content type="html"><![CDATA[<p>我们在做图表的时候，有时候需要在单个数据上加链接或点击事件，是在plotOptions里的events里设置的<br><code>01``plotOptions:
- {``02``    ``pie:
- {``03``        ``cursor: ``&#39;pointer&#39;``,``04``        ``events:
- {``05``            ``click: ``function``(e)
- {``06``        ``location.href
- = e.point.url;&lt;span&gt;&lt;/span&gt; ``//上面是当前页跳转，如果是要跳出新页面，那就用``07``                ``//window.open(e.point.url);``08``                ``//这里的url要后面的data里给出``09``        ``}``10``    ``},``11``    ``}``12``},``13``series:
- [{``14``    ``data:
- [``15``        ``{name:``&#39;地产组&#39;``,y:76,url:``&#39;http://www.baidu.com&#39;``},``16``   
-     ``{name:``&#39;能源组&#39;``,y:54,url:``&#39;&lt;span&gt;&lt;/span&gt;http://www.google.com&lt;span&gt;&lt;/span&gt;&#39;``},&lt;span&gt;&lt;/span&gt;
-             {``17``   
-     ``{name:``&#39;互联网&#39;``,y:20,url:``&#39;http://www.sohu.com&#39;``}``18``}]</code>以上是针对饼图的，如果是柱形图那就把pie:{}换成column : {}当然如果换成series:{}那就不用管是饼图还是柱形图或是其他图形了</p>
-<p><code>01``plotOptions:
- {``02``    ``series:
- {``03``        ``cursor: ``&#39;pointer&#39;``,``04``        ``events:
- {``05``            ``click: ``function``(e)
- {``06``        ``location.href
- = e.point.url;``07``                ``//上面是当前页跳转，如果是要跳出新页面，那就用``08``                ``//window.open(e.point.url);``09``                ``//这里的url要后面的data里给出``10``        ``}``11``    ``},``12``    ``}``13``},``14``series:
- [{``15``    ``data:
- [``16``        ``{name:``&#39;地产组&#39;``,y:76,url:``&#39;http://www.baidu.com&#39;``},``17``        ``{name:``&#39;能源组&#39;``,y:54,url:``&#39;http://www.google.com&#39;``},            
- {``18``        ``{name:``&#39;互联网&#39;``,y:20,url:``&#39;http://www.sohu.com&#39;``}``19``}]</code></p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;我们在做图表的时候，有时候需要在单个数据上加链接或点击事件，是在plotOptions里的events里设置的&lt;br&gt;&lt;code&gt;01``plotOptions:
- {``02``    ``pie:
- {``03``        ``cursor: ``&amp;#39;poi
-    
-    </summary>
-    
-    
-  </entry>
-  
-  <entry>
-    <title>Linux环境下查看jar包的归档目录</title>
-    <link href="http://itsky88.com/2016/12/18/csdn/Linux%E7%8E%AF%E5%A2%83%E4%B8%8B%E6%9F%A5%E7%9C%8Bjar%E5%8C%85%E7%9A%84%E5%BD%92%E6%A1%A3%E7%9B%AE%E5%BD%95/"/>
-    <id>http://itsky88.com/2016/12/18/csdn/Linux环境下查看jar包的归档目录/</id>
-    <published>2016-12-18T09:34:18.000Z</published>
-    <updated>2016-12-18T09:34:18.000Z</updated>
-    
-    <content type="html"><![CDATA[<p>Linux环境下使用java自带的jar命令进行归档，及归档目录的查看。<br>首先使用 jar –help 查看帮助文档：</p>
-<pre><code class="javascript">jerry@debian0:~/testdata$ jar --help
-非法选项: -
-用法: jar {ctxui}[vfm0Me] [jar-file] [manifest-file] [entry-point] [-C dir] files ...
-选项包括: 
-    -c  创建新的归档文件
-    -t  列出归档目录
-    -x  从档案中提取指定的 (或所有) 文件
-    -u  更新现有的归档文件
-    -v  在标准输出中生成详细输出
-    -f  指定归档文件名
-    -m  包含指定清单文件中的清单信息
-    -e  为捆绑到可执行 jar 文件的独立应用程序
-        指定应用程序入口点
-    -0  仅存储; 不使用情况任何 ZIP 压缩
-    -M  不创建条目的清单文件
-    -i  为指定的 jar 文件生成索引信息
-    -C  更改为指定的目录并包含其中的文件
-如果有任何目录文件, 则对其进行递归处理。
-清单文件名, 归档文件名和入口点名称的指定顺序
-与 &#39;m&#39;, &#39;f&#39; 和 &#39;e&#39; 标记的指定顺序相同。
-
-示例 1: 将两个类文件归档到一个名为 classes.jar 的归档文件中: 
-       jar cvf classes.jar Foo.class Bar.class 
-示例 2: 使用现有的清单文件 &#39;mymanifest&#39; 并
-           将 foo/ 目录中的所有文件归档到 &#39;classes.jar&#39; 中: 
-       jar cvfm classes.jar mymanifest -C foo/ .
-</code></pre>
-<p>上个例子：查看归档的jar包中是否包含我们想要的class文件：</p>
-<pre><code class="javascript">jerry@debian0:~/testdata$ jar vtf /home/jerry/data/data1/workspace/intellij/spark_test_project/target/spark_test_project-1.0-SNAPSHOT.jar | grep com.spark.test.udf
-     0 Sun Jul 10 17:58:56 CST 2016 com/spark/test/udf/
-   741 Sun Jul 10 17:58:56 CST 2016 com/spark/test/udf/HelloUDF.class
-</code></pre>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;Linux环境下使用java自带的jar命令进行归档，及归档目录的查看。&lt;br&gt;首先使用 jar –help 查看帮助文档：&lt;/p&gt;
-&lt;pre&gt;&lt;code class=&quot;javascript&quot;&gt;jerry@debian0:~/testdata$ jar --help
-非法选
-    
-    </summary>
-    
-    
-  </entry>
-  
-  <entry>
-    <title>Linux date命令</title>
-    <link href="http://itsky88.com/2016/12/18/csdn/Linux%20date%E5%91%BD%E4%BB%A4/"/>
-    <id>http://itsky88.com/2016/12/18/csdn/Linux date命令/</id>
-    <published>2016-12-18T09:34:18.000Z</published>
-    <updated>2016-12-18T09:34:18.000Z</updated>
-    
-    <content type="html"><![CDATA[<p>date命令的帮助信息<br> [root@localhost source]# date –help<br>用法：date [选项]… [+格式]<br>　或：date [-u|–utc|–universal] [MMDDhhmm[[CC]YY][.ss]]<br>以给定的格式显示当前时间，或是设置系统日期。</p>
-<p>  -d,–date=字符串              显示指定字符串所描述的时间，而非当前时间<br>  -f,–file=日期文件            类似–date，从日期文件中按行读入时间描述<br>  -r, –reference=文件          显示文件指定文件的最后修改时间<br>  -R, –rfc-2822                以RFC 2822格式输出日期和时间<br>                                例如：2006年8月7日，星期一 12:34:56 -0600<br>      –rfc-3339=TIMESPEC       以RFC 3339 格式输出日期和时间。<br>                                TIMESPEC=<code>date&#39;，</code>seconds’，或 `ns’<br>                                表示日期和时间的显示精度。<br>                                日期和时间单元由单个的空格分开：<br>                                2006-08-07 12:34:56-06:00<br>  -s, –set=字符串              设置指定字符串来分开时间<br>  -u, –utc, –universal        输出或者设置协调的通用时间<br>      –help            显示此帮助信息并退出<br>      –version         显示版本信息并退出</p>
-<p>给定的格式FORMAT 控制着输出，解释序列如下：</p>
-<p>  %%    一个文字的 %<br>  %a    当前locale 的星期名缩写(例如： 日，代表星期日)<br>  %A    当前locale 的星期名全称 (如：星期日)<br>  %b    当前locale 的月名缩写 (如：一，代表一月)<br>  %B    当前locale 的月名全称 (如：一月)<br>  %c    当前locale 的日期和时间 (如：2005年3月3日 星期四 23:05:25)<br>  %C    世纪；比如 %Y，通常为省略当前年份的后两位数字(例如：20)<br>  %d    按月计的日期(例如：01)<br>  %D    按月计的日期；等于%m/%d/%y<br>  %e    按月计的日期，添加空格，等于%_d<br>  %F    完整日期格式，等价于 %Y-%m-%d<br>  %g    ISO-8601 格式年份的最后两位 (参见%G)<br>  %G    ISO-8601 格式年份 (参见%V)，一般只和 %V 结合使用<br>  %h    等于%b<br>  %H    小时(00-23)<br>  %I    小时(00-12)<br>  %c    按年计的日期(001-366)<br>  %k    时(0-23)<br>  %l    时(1-12)<br>  %m    月份(01-12)<br>  %M    分(00-59)<br>  %n    换行<br>  %N    纳秒(000000000-999999999)<br>  %p    当前locale 下的”上午”或者”下午”，未知时输出为空<br>  %P    与%p 类似，但是输出小写字母<br>  %r    当前locale 下的 12 小时时钟时间 (如：11:11:04 下午)<br>  %R    24 小时时间的时和分，等价于 %H:%M<br>  %s    自UTC 时间 1970-01-01 00:00:00 以来所经过的秒数<br>  %S    秒(00-60)<br>  %t    输出制表符 Tab<br>  %T    时间，等于%H:%M:%S<br>  %u    星期，1 代表星期一<br>  %U    一年中的第几周，以周日为每星期第一天(00-53)<br>  %V    ISO-8601 格式规范下的一年中第几周，以周一为每星期第一天(01-53)<br>  %w    一星期中的第几日(0-6)，0 代表周一<br>  %W    一年中的第几周，以周一为每星期第一天(00-53)<br>  %x    当前locale 下的日期描述 (如：12/31/99)<br>  %X    当前locale 下的时间描述 (如：23:13:48)<br>  %y    年份最后两位数位 (00-99)<br>  %Y    年份<br>  %z +hhmm              数字时区(例如，-0400)<br>  %:z +hh:mm            数字时区(例如，-04:00)<br>  %::z +hh:mm:ss        数字时区(例如，-04:00:00)<br>  %:::z                 数字时区带有必要的精度 (例如，-04，+05:30)<br>  %Z                    按字母表排序的时区缩写 (例如，EDT)</p>
-<p>默认情况下，日期的数字区域以0 填充。<br>以下可选标记可以跟在”%”后:</p>
-<ul>
-<li>(连字符)不填充该域<br>_ (下划线)以空格填充<br>0 (数字0)以0 填充<br>^ 如果可能，使用大写字母<h1 id="如果可能，使用相反的大小写"><a href="#如果可能，使用相反的大小写" class="headerlink" title="如果可能，使用相反的大小写"></a>如果可能，使用相反的大小写</h1></li>
-</ul>
-<p>在任何标记之后还允许一个可选的域宽度指定，它是一个十进制数字。<br>作为一个可选的修饰声明，它可以是E，在可能的情况下使用本地环境关联的<br>表示方式；或者是O，在可能的情况下使用本地环境关联的数字符号。</p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;date命令的帮助信息&lt;br&gt; [root@localhost source]# date –help&lt;br&gt;用法：date [选项]… [+格式]&lt;br&gt;　或：date [-u|–utc|–universal] [MMDDhhmm[[CC]YY][.ss]]&lt;br&gt;以给定
-    
-    </summary>
-    
-    
-  </entry>
-  
-  <entry>
-    <title>Linux根据内容查找所在文件名</title>
-    <link href="http://itsky88.com/2016/12/18/csdn/Linux%E6%A0%B9%E6%8D%AE%E5%86%85%E5%AE%B9%E6%9F%A5%E6%89%BE%E6%89%80%E5%9C%A8%E6%96%87%E4%BB%B6%E5%90%8D/"/>
-    <id>http://itsky88.com/2016/12/18/csdn/Linux根据内容查找所在文件名/</id>
-    <published>2016-12-18T09:34:18.000Z</published>
-    <updated>2016-12-18T09:34:18.000Z</updated>
-    
-    <content type="html"><![CDATA[<p>今天遇到要查找一个表名在哪个python文件中，网上搜了下命令，运行没问题，所以拿出来跟大家分享下：</p>
-<p>案例：查找表名为 rs_all_user_pv_category 的内容在哪个python文件中</p>
-<pre><code class="python">find . -name &quot;*.py&quot; | xargs grep &quot;rs_all_user_pv_category&quot;
-</code></pre>
-<p>命令含义： 在当前目录下查找  rs_all_user_pv_category  在哪个以.py结尾的文件中输出结果：<br>./rs_all_user_pv_category.py:print ‘&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt; BEGIN rs_all_user_pv_category.py’<br>./rs_all_user_pv_category.py:# python rs_all_user_pv_category.py $(date +%Y-%m-%d -d ‘-1 day’)</p>
-<p>有待研究的：过滤掉重复的文件名，并只显示文件名称，，，，，，</p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;今天遇到要查找一个表名在哪个python文件中，网上搜了下命令，运行没问题，所以拿出来跟大家分享下：&lt;/p&gt;
-&lt;p&gt;案例：查找表名为 rs_all_user_pv_category 的内容在哪个python文件中&lt;/p&gt;
-&lt;pre&gt;&lt;code class=&quot;python&quot;&gt;
     
     </summary>
     
@@ -871,20 +1049,41 @@ sudo apt-get install python-apt
   </entry>
   
   <entry>
-    <title>Maven安装远程仓库没有的依赖库</title>
-    <link href="http://itsky88.com/2016/12/18/csdn/Maven%E5%AE%89%E8%A3%85%E8%BF%9C%E7%A8%8B%E4%BB%93%E5%BA%93%E6%B2%A1%E6%9C%89%E7%9A%84%E4%BE%9D%E8%B5%96%E5%BA%93/"/>
-    <id>http://itsky88.com/2016/12/18/csdn/Maven安装远程仓库没有的依赖库/</id>
+    <title>Junit测试出现异常：Exception in thread &quot;main&quot; java.lang.NoSuchMethodError org.junit.runner.Description.cre</title>
+    <link href="http://itsky88.com/2016/12/18/csdn/Junit%E6%B5%8B%E8%AF%95%E5%87%BA%E7%8E%B0%E5%BC%82%E5%B8%B8%EF%BC%9AException%20in%20thread%20main%20java.lang.NoSuchMethodError%20org.junit.runner.Description.cre/"/>
+    <id>http://itsky88.com/2016/12/18/csdn/Junit测试出现异常：Exception in thread main java.lang.NoSuchMethodError org.junit.runner.Description.cre/</id>
     <published>2016-12-18T09:34:18.000Z</published>
     <updated>2016-12-18T09:34:18.000Z</updated>
     
-    <content type="html"><![CDATA[<p>有时候maven远程仓库不存在我们要的依赖库，那么就需要自己将需要的jar安装到本地仓库，maven安装依赖到本地有两种方式：<br>1、手动方式安装已经存在的jar：</p>
-<p>安装命令：<br>          mvn install:install-file -Dfile=<strong>{</strong>Path<strong>/</strong>to<strong>/</strong>your<strong>/</strong>ojdbc.jar<strong>}</strong>-DgroupId=com.oracle -DartifactId=ojdbc6 -Dversion=11.2.0 -Dpackaging=jar<br>    例子：安装IKAnalyzer.jar<br>    目录：<br>    <img src="http://img.blog.csdn.net/20151103173323250?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" alt=""><br>    安装命令：mvn install:install-file -Dfile=D:\Users\Administrator\Desktop\IKAnalyzer2012_u6 -DgroupId=org.wltea.analyzer -DartifactId=IKAnalyzer -Dversion=12.06 -Dpackaging=jar<br>    打开cmd命令终端，输入执行结果：<br>    <img src="http://img.blog.csdn.net/20151103173344478" alt=""><br>    本地仓库：<br>    <img src="http://img.blog.csdn.net/20151103173503995" alt=""><br>    在使用的项目中添加maven依赖：<br>    <img src="http://img.blog.csdn.net/20151103173709557" alt=""><br>    此时还不行，还需要将刚才的jar重命名成 IKAnalyzer-12.06.jar ，让后放到maven本地仓库目录下：<br>    <img src="http://img.blog.csdn.net/20151103173847723" alt=""><br>    ok了<br>2、安装maven项目：<br>执行命令：mvn install -Dmaven.test.skip=true<br>执行结果：<br><img src="http://img.blog.csdn.net/20151104172610416?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" alt=""><br>网速有点慢执行，的时间稍微有点长。<br>然后在项目中添加依赖即可。<br><img src="http://img.blog.csdn.net/20151104172803354?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" alt=""><br>大功告成。</p>
+    <content type="html"><![CDATA[<p>先来看看错误：</p>
+<pre><code class="java">Exception in thread &quot;main&quot; java.lang.NoSuchMethodError: org.junit.runner.Description.createSuiteDescription(Ljava/lang/String;[Ljava/lang/annotation/Annotation;)Lorg/junit/runner/Description;
+    at com.intellij.junit4.JUnit4TestListener.testStarted(JUnit4TestListener.java:96)
+    at org.junit.runner.notification.RunNotifier$3.notifyListener(RunNotifier.java:83)
+    at org.junit.runner.notification.RunNotifier$SafeNotifier.run(RunNotifier.java:37)
+    at org.junit.runner.notification.RunNotifier.fireTestStarted(RunNotifier.java:80)
+    at org.junit.internal.runners.TestMethodRunner.run(TestMethodRunner.java:39)
+    at org.junit.internal.runners.TestClassMethodsRunner.invokeTestMethod(TestClassMethodsRunner.java:75)
+    at org.junit.internal.runners.TestClassMethodsRunner.run(TestClassMethodsRunner.java:36)
+    at org.junit.internal.runners.TestClassRunner$1.runUnprotected(TestClassRunner.java:42)
+    at org.junit.internal.runners.BeforeAndAfterRunner.runProtected(BeforeAndAfterRunner.java:34)
+    at org.junit.internal.runners.TestClassRunner.run(TestClassRunner.java:52)
+    at org.junit.runner.JUnitCore.run(JUnitCore.java:130)
+    at com.intellij.junit4.JUnit4IdeaTestRunner.startRunnerWithArgs(JUnit4IdeaTestRunner.java:117)
+    at com.intellij.rt.execution.junit.JUnitStarter.prepareStreamsAndStart(JUnitStarter.java:234)
+    at com.intellij.rt.execution.junit.JUnitStarter.main(JUnitStarter.java:74)
+    at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+    at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:57)
+    at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+    at java.lang.reflect.Method.invoke(Method.java:606)
+    at com.intellij.rt.execution.application.AppMain.main(AppMain.java:144)
+</code></pre>
+<p>经过资料查询，发现是junit版本的问题，改成4.11即恢复正常，现在是4.2版本。运行结果：<br><img src="http://img.blog.csdn.net/20151118112634813?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" alt=""><br><img src="http://img.blog.csdn.net/20151118112816775?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" alt=""></p>
 ]]></content>
     
     <summary type="html">
     
-      &lt;p&gt;有时候maven远程仓库不存在我们要的依赖库，那么就需要自己将需要的jar安装到本地仓库，maven安装依赖到本地有两种方式：&lt;br&gt;1、手动方式安装已经存在的jar：&lt;/p&gt;
-&lt;p&gt;安装命令：&lt;br&gt;          mvn install:install-file -
+      &lt;p&gt;先来看看错误：&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;java&quot;&gt;Exception in thread &amp;quot;main&amp;quot; java.lang.NoSuchMethodError: org.junit.runner.Description.create
     
     </summary>
     
@@ -892,19 +1091,26 @@ sudo apt-get install python-apt
   </entry>
   
   <entry>
-    <title>MySQL的字符串函数截取字符</title>
-    <link href="http://itsky88.com/2016/12/18/csdn/MySQL%E7%9A%84%E5%AD%97%E7%AC%A6%E4%B8%B2%E5%87%BD%E6%95%B0%E6%88%AA%E5%8F%96%E5%AD%97%E7%AC%A6/"/>
-    <id>http://itsky88.com/2016/12/18/csdn/MySQL的字符串函数截取字符/</id>
+    <title>Linux date命令</title>
+    <link href="http://itsky88.com/2016/12/18/csdn/Linux%20date%E5%91%BD%E4%BB%A4/"/>
+    <id>http://itsky88.com/2016/12/18/csdn/Linux date命令/</id>
     <published>2016-12-18T09:34:18.000Z</published>
     <updated>2016-12-18T09:34:18.000Z</updated>
     
-    <content type="html"><![CDATA[<p>函数：<br><strong>1、从左开始截取字符串</strong><br>left（str, length）<br>说明：left（被截取字段，截取长度）<br>例：select left（content,200） as abstract from my_content_t<br><strong>2、从右开始截取字符串</strong><br>right（str, length）<br>说明：right（被截取字段，截取长度）<br>例：select right（content,200） as abstract from my_content_t<br><strong>3、截取字符串 
-</strong>substring（str, pos）<br>substring（str, pos, length）<br>说明：substring（被截取字段，从第几位开始截取）<br>substring（被截取字段，从第几位开始截取，截取长度）<br>例：select substring（content,5） as abstract from my_content_t<br>select substring（content,5,200） as abstract from my_content_t<br>（注：如果位数是负数 如-5 则是从后倒数位数，到字符串结束或截取的长度）<br><strong>4、按关键字截取字符串</strong><br>substring_index（str,delim,count）<br>说明：substring_index（被截取字段，关键字，关键字出现的次数）<br>例：select substring_index（”blog.jb51.net”，”。”，2） as abstract from my_content_t<br>结果：blog.jb51<br>（注：如果关键字出现的次数是负数 如-2 则是从后倒数，到字符串结束）<br>函数简介：<br>SUBSTRING(<em>str</em>,<em>pos</em>) , SUBSTRING(<em>str</em> FROM <em>pos</em>) SUBSTRING(<em>str</em>,<em>pos</em>,<em>len</em>)<br> , SUBSTRING(<em>str</em> FROM <em>pos</em> FOR <em>len</em>)<br>不带有<em>len</em> 参数的格式从字符串<em>str</em>返回一个子字符串，起始于位置 <em>pos</em>。带有<em>len</em>参数的格式从字符串<em>str</em>返回一个长度同<em>len</em>字符相同的子字符串，起始于位置 <em>pos</em>。<br> 使用 FROM的格式为标准 SQL 语法。也可能对<em>pos</em>使用一个负值。假若这样，则子字符串的位置起始于字符串结尾的<em>pos</em> 字符，而不是字符串的开头位置。在以下格式的函数中可以对<em>pos</em> 使用一个负值。</p>
+    <content type="html"><![CDATA[<p>date命令的帮助信息<br> [root@localhost source]# date –help<br>用法：date [选项]… [+格式]<br>　或：date [-u|–utc|–universal] [MMDDhhmm[[CC]YY][.ss]]<br>以给定的格式显示当前时间，或是设置系统日期。</p>
+<p>  -d,–date=字符串              显示指定字符串所描述的时间，而非当前时间<br>  -f,–file=日期文件            类似–date，从日期文件中按行读入时间描述<br>  -r, –reference=文件          显示文件指定文件的最后修改时间<br>  -R, –rfc-2822                以RFC 2822格式输出日期和时间<br>                                例如：2006年8月7日，星期一 12:34:56 -0600<br>      –rfc-3339=TIMESPEC       以RFC 3339 格式输出日期和时间。<br>                                TIMESPEC=<code>date&#39;，</code>seconds’，或 `ns’<br>                                表示日期和时间的显示精度。<br>                                日期和时间单元由单个的空格分开：<br>                                2006-08-07 12:34:56-06:00<br>  -s, –set=字符串              设置指定字符串来分开时间<br>  -u, –utc, –universal        输出或者设置协调的通用时间<br>      –help            显示此帮助信息并退出<br>      –version         显示版本信息并退出</p>
+<p>给定的格式FORMAT 控制着输出，解释序列如下：</p>
+<p>  %%    一个文字的 %<br>  %a    当前locale 的星期名缩写(例如： 日，代表星期日)<br>  %A    当前locale 的星期名全称 (如：星期日)<br>  %b    当前locale 的月名缩写 (如：一，代表一月)<br>  %B    当前locale 的月名全称 (如：一月)<br>  %c    当前locale 的日期和时间 (如：2005年3月3日 星期四 23:05:25)<br>  %C    世纪；比如 %Y，通常为省略当前年份的后两位数字(例如：20)<br>  %d    按月计的日期(例如：01)<br>  %D    按月计的日期；等于%m/%d/%y<br>  %e    按月计的日期，添加空格，等于%_d<br>  %F    完整日期格式，等价于 %Y-%m-%d<br>  %g    ISO-8601 格式年份的最后两位 (参见%G)<br>  %G    ISO-8601 格式年份 (参见%V)，一般只和 %V 结合使用<br>  %h    等于%b<br>  %H    小时(00-23)<br>  %I    小时(00-12)<br>  %c    按年计的日期(001-366)<br>  %k    时(0-23)<br>  %l    时(1-12)<br>  %m    月份(01-12)<br>  %M    分(00-59)<br>  %n    换行<br>  %N    纳秒(000000000-999999999)<br>  %p    当前locale 下的”上午”或者”下午”，未知时输出为空<br>  %P    与%p 类似，但是输出小写字母<br>  %r    当前locale 下的 12 小时时钟时间 (如：11:11:04 下午)<br>  %R    24 小时时间的时和分，等价于 %H:%M<br>  %s    自UTC 时间 1970-01-01 00:00:00 以来所经过的秒数<br>  %S    秒(00-60)<br>  %t    输出制表符 Tab<br>  %T    时间，等于%H:%M:%S<br>  %u    星期，1 代表星期一<br>  %U    一年中的第几周，以周日为每星期第一天(00-53)<br>  %V    ISO-8601 格式规范下的一年中第几周，以周一为每星期第一天(01-53)<br>  %w    一星期中的第几日(0-6)，0 代表周一<br>  %W    一年中的第几周，以周一为每星期第一天(00-53)<br>  %x    当前locale 下的日期描述 (如：12/31/99)<br>  %X    当前locale 下的时间描述 (如：23:13:48)<br>  %y    年份最后两位数位 (00-99)<br>  %Y    年份<br>  %z +hhmm              数字时区(例如，-0400)<br>  %:z +hh:mm            数字时区(例如，-04:00)<br>  %::z +hh:mm:ss        数字时区(例如，-04:00:00)<br>  %:::z                 数字时区带有必要的精度 (例如，-04，+05:30)<br>  %Z                    按字母表排序的时区缩写 (例如，EDT)</p>
+<p>默认情况下，日期的数字区域以0 填充。<br>以下可选标记可以跟在”%”后:</p>
+<ul>
+<li>(连字符)不填充该域<br>_ (下划线)以空格填充<br>0 (数字0)以0 填充<br>^ 如果可能，使用大写字母<h1 id="如果可能，使用相反的大小写"><a href="#如果可能，使用相反的大小写" class="headerlink" title="如果可能，使用相反的大小写"></a>如果可能，使用相反的大小写</h1></li>
+</ul>
+<p>在任何标记之后还允许一个可选的域宽度指定，它是一个十进制数字。<br>作为一个可选的修饰声明，它可以是E，在可能的情况下使用本地环境关联的<br>表示方式；或者是O，在可能的情况下使用本地环境关联的数字符号。</p>
 ]]></content>
     
     <summary type="html">
     
-      &lt;p&gt;函数：&lt;br&gt;&lt;strong&gt;1、从左开始截取字符串&lt;/strong&gt;&lt;br&gt;left（str, length）&lt;br&gt;说明：left（被截取字段，截取长度）&lt;br&gt;例：select left（content,200） as abstract from my_content
+      &lt;p&gt;date命令的帮助信息&lt;br&gt; [root@localhost source]# date –help&lt;br&gt;用法：date [选项]… [+格式]&lt;br&gt;　或：date [-u|–utc|–universal] [MMDDhhmm[[CC]YY][.ss]]&lt;br&gt;以给定
     
     </summary>
     
@@ -912,21 +1118,18 @@ sudo apt-get install python-apt
   </entry>
   
   <entry>
-    <title>Number of dynamic partitions exceeded hive.exec.max.dynamic.partitions.pernode</title>
-    <link href="http://itsky88.com/2016/12/18/csdn/Number%20of%20dynamic%20partitions%20exceeded%20hive.exec.max.dynamic.partitions.pernode/"/>
-    <id>http://itsky88.com/2016/12/18/csdn/Number of dynamic partitions exceeded hive.exec.max.dynamic.partitions.pernode/</id>
+    <title>Jquery form 插件原文档</title>
+    <link href="http://itsky88.com/2016/12/18/csdn/Jquery%20form%20%E6%8F%92%E4%BB%B6%E5%8E%9F%E6%96%87%E6%A1%A3/"/>
+    <id>http://itsky88.com/2016/12/18/csdn/Jquery form 插件原文档/</id>
     <published>2016-12-18T09:34:18.000Z</published>
     <updated>2016-12-18T09:34:18.000Z</updated>
     
-    <content type="html"><![CDATA[<p>动态分区数太大的问题：[Fatal Error] Operator FS_2 (id=2): Number of dynamic partitions exceeded hive.exec.max.dynamic.partitions.pernode.</p>
-<p>hive&gt; insert into table sogouq_test partition(query_time) select user_id,query_word,query_order,click_order,url,query_time from sogouq_test_tmp;<br>Total MapReduce jobs = 3<br>Launching Job 1 out of 3<br>Number of reduce tasks is set to 0 since there’s no reduce operator<br>Starting Job = job_1409113942738_0026, Tracking URL = <a href="http://centos1:8088/proxy/application_1409113942738_0026/" target="_blank" rel="external">http://centos1:8088/proxy/application_1409113942738_0026/</a><br>Kill Command = /home/hadoop-2.2/bin/hadoop job  -kill job_1409113942738_0026<br>Hadoop job information for Stage-1: number of mappers: 1; number of reducers: 0<br>2014-08-27 03:55:16,868 Stage-1 map = 0%,  reduce = 0%<br>[Fatal Error] Operator FS_2 (id=2): Number of dynamic partitions exceeded hive.exec.max.dynamic.partitions.pernode.<br>Sample of 100 partitions created under hdfs://centos1:8020/hive/scratchdir/hive_2014-08-27_03-55-09_118_348369539322185503-1/_tmp.-ext-10002:<br>        …/query_time=20111230000005<br>        …/query_time=20111230000007<br>        …/query_time=20111230000008<br>        …/query_time=20111230000009<br>        …/query_time=20111230000010<br>        …/query_time=20111230000011</p>
-<p>查看最大分区数：<br>hive&gt; set hive.exec.max.dynamic.partitions.pernode;<br>hive.exec.max.dynamic.partitions.pernode=100<br>将该参数设置的大一点，问题即解决。</p>
+    <content type="html"><![CDATA[<p><a href="http://malsup.com/jquery/form/#options-object" target="_blank" rel="external">http://malsup.com/jquery/form/#options-object</a></p>
 ]]></content>
     
     <summary type="html">
     
-      &lt;p&gt;动态分区数太大的问题：[Fatal Error] Operator FS_2 (id=2): Number of dynamic partitions exceeded hive.exec.max.dynamic.partitions.pernode.&lt;/p&gt;
-&lt;p&gt;hiv
+      &lt;p&gt;&lt;a href=&quot;http://malsup.com/jquery/form/#options-object&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;http://malsup.com/jquery/form/#options-object&lt;/a&gt;&lt;
     
     </summary>
     
@@ -934,233 +1137,25 @@ sudo apt-get install python-apt
   </entry>
   
   <entry>
-    <title>Oracle TIMESTAMP的处理</title>
-    <link href="http://itsky88.com/2016/12/18/csdn/Oracle%20TIMESTAMP%E7%9A%84%E5%A4%84%E7%90%86/"/>
-    <id>http://itsky88.com/2016/12/18/csdn/Oracle TIMESTAMP的处理/</id>
+    <title>Linux根据内容查找所在文件名</title>
+    <link href="http://itsky88.com/2016/12/18/csdn/Linux%E6%A0%B9%E6%8D%AE%E5%86%85%E5%AE%B9%E6%9F%A5%E6%89%BE%E6%89%80%E5%9C%A8%E6%96%87%E4%BB%B6%E5%90%8D/"/>
+    <id>http://itsky88.com/2016/12/18/csdn/Linux根据内容查找所在文件名/</id>
     <published>2016-12-18T09:34:18.000Z</published>
     <updated>2016-12-18T09:34:18.000Z</updated>
     
-    <content type="html"><![CDATA[<p>public class Test {<br>private static final SimpleDateFormat FORMAT = new SimpleDateFormat(“yyyy-MM-dd HH:mm:dd”);</p>
-<p>public static void main(String[] args) throws SQLException {<br>oracle.sql.TIMESTAMP temp = new oracle.sql.TIMESTAMP();</p>
-<p>System.out.println(convertOrclTimestemp2String(temp, null));<br>}</p>
-<p>public static String convertOrclTimestemp2String(oracle.sql.TIMESTAMP temp, String pattern) throws SQLException {<br>java.sql.Timestamp tt = (java.sql.Timestamp) temp.toJdbc();<br>if(StringUtils.isNotBlank(pattern)) {<br>FORMAT.applyPattern(pattern);<br>}<br>return FORMAT.format(new Date(tt.getTime()));<br>}<br>}</p>
-<p>输出结果：1970-01-01 00:00:01</p>
+    <content type="html"><![CDATA[<p>今天遇到要查找一个表名在哪个python文件中，网上搜了下命令，运行没问题，所以拿出来跟大家分享下：</p>
+<p>案例：查找表名为 rs_all_user_pv_category 的内容在哪个python文件中</p>
+<pre><code class="python">find . -name &quot;*.py&quot; | xargs grep &quot;rs_all_user_pv_category&quot;
+</code></pre>
+<p>命令含义： 在当前目录下查找  rs_all_user_pv_category  在哪个以.py结尾的文件中输出结果：<br>./rs_all_user_pv_category.py:print ‘&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt; BEGIN rs_all_user_pv_category.py’<br>./rs_all_user_pv_category.py:# python rs_all_user_pv_category.py $(date +%Y-%m-%d -d ‘-1 day’)</p>
+<p>有待研究的：过滤掉重复的文件名，并只显示文件名称，，，，，，</p>
 ]]></content>
     
     <summary type="html">
     
-      &lt;p&gt;public class Test {&lt;br&gt;private static final SimpleDateFormat FORMAT = new SimpleDateFormat(“yyyy-MM-dd HH:mm:dd”);&lt;/p&gt;
-&lt;p&gt;public static v
-    
-    </summary>
-    
-    
-  </entry>
-  
-  <entry>
-    <title>Python处理JSON</title>
-    <link href="http://itsky88.com/2016/12/18/csdn/Python%E5%A4%84%E7%90%86JSON/"/>
-    <id>http://itsky88.com/2016/12/18/csdn/Python处理JSON/</id>
-    <published>2016-12-18T09:34:18.000Z</published>
-    <updated>2016-12-18T09:34:18.000Z</updated>
-    
-    <content type="html"><![CDATA[<p>概念<br>序列化（Serialization）：将对象的状态信息转换为可以存储或可以通过网络传输的过程，传输的格式可以是JSON、XML等。反序列化就是从存储区域（JSON，XML）读取反序列化对象的状态，重新创建该对象。<br>JSON（JavaScript Object Notation）：一种轻量级数据交换格式，相对于XML而言更简单，也易于阅读和编写，机器也方便解析和生成，Json是JavaScript中的一个子集。<br>Python2.6开始加入了JSON模块，无需另外下载，Python的Json模块序列化与反序列化的过程分别是 encoding和 decoding<br>encoding：把一个Python对象编码转换成Json字符串<br>decoding：把Json格式字符串解码转换成Python对象<br>对于简单数据类型（string、unicode、int、float、list、tuple、dict），可以直接处理。</p>
-<p>#####<a href="https://github.com/lzjun567/note/blob/master/python/json.md#jsondumpsencoding" target="_blank" rel="external"></a>json.dumps方法对简单数据类型encoding：<br>    import json<br>    data = [{‘a’:”A”,’b’:(2,4),’c’:3.0}]  #list对象<br>    print “DATA:”,repr(data)</p>
-<pre><code>data_string = json.dumps(data)
-print &quot;JSON:&quot;,data_string
-</code></pre><p>输出：<br>    DATA: [{‘a’:’A’,’c’:3.0,’b’:(2,4)}] #python的dict类型的数据是没有顺序存储的<br>    JSON: [{“a”:”A”,”c”:3.0,”b”:[2,4]}]  </p>
-<p>JSON的输出结果与DATA很相似，除了一些微妙的变化，如python的元组类型变成了Json的数组，Python到Json的编码转换规则是： <a href="https://github.com/lzjun567/note/blob/master/resource/image/python2json.png" target="_blank" rel="external"><img src="https://github.com/lzjun567/note/raw/master/resource/image/python2json.png" alt="python2json"></a></p>
-<p>#####<a href="https://github.com/lzjun567/note/blob/master/python/json.md#jsonloadsdecoding" target="_blank" rel="external"></a>json.loads方法处理简单数据类型的decoding（解码）转换<br>    import json<br>    data = [{‘a’:”A”,’b’:(2,4),’c’:3.0}]  #list对象</p>
-<pre><code>data_string = json.dumps(data)
-print &quot;ENCODED:&quot;,data_string
-
-decoded = json.loads(data_string)
-print &quot;DECODED:&quot;,decoded
-
-print &quot;ORIGINAL:&quot;,type(data[0][&#39;b&#39;])
-print &quot;DECODED:&quot;,type(decoded[0][&#39;b&#39;])
-</code></pre><p>输出:<br>    ENCODED: [{“a”: “A”, “c”: 3.0, “b”: [2, 4]}]<br>    DECODED: [{u’a’: u’A’, u’c’: 3.0, u’b’: [2, 4]}]<br>    ORIGINAL: <type 'tuple'=""><br>    DECODED: <type 'list'=""></type></type></p>
-<p>解码过程中，json的数组最终转换成了python的list，而不是最初的tuple类型，Json到Python的解码规则是： <a href="https://github.com/lzjun567/note/blob/master/resource/image/json2python.png" target="_blank" rel="external"><img src="https://github.com/lzjun567/note/raw/master/resource/image/json2python.png" alt="json2python"></a></p>
-<p>####<a href="https://github.com/lzjun567/note/blob/master/python/json.md#json" target="_blank" rel="external"></a>json的人文关怀<br>编码后的json格式字符串紧凑的输出，而且也没有顺序，因此<code>dumps</code>方法提供了一些可选的参数，让输出的格式提高可读性，如<code>sort_keys</code>是告诉编码器按照字典排序(a到z)输出。<br>    import json</p>
-<pre><code>data = [ { &#39;a&#39;:&#39;A&#39;, &#39;b&#39;:(2, 4), &#39;c&#39;:3.0 } ]
-print &#39;DATA:&#39;, repr(data)
-
-unsorted = json.dumps(data)
-print &#39;JSON:&#39;, json.dumps(data)
-print &#39;SORT:&#39;, json.dumps(data, sort_keys=True)
-</code></pre><p>输出:<br>    DATA: [{‘a’: ‘A’, ‘c’: 3.0, ‘b’: (2, 4)}]<br>    JSON: [{“a”: “A”, “c”: 3.0, “b”: [2, 4]}]<br>    SORT: [{“a”: “A”, “b”: [2, 4], “c”: 3.0}</p>
-<p><code>indent</code>参数根据数据格式缩进显示，读起来更加清晰:<br>    import json</p>
-<pre><code>data = [ { &#39;a&#39;:&#39;A&#39;, &#39;b&#39;:(2, 4), &#39;c&#39;:3.0 } ]
-print &#39;DATA:&#39;, repr(data)
-
-print &#39;NORMAL:&#39;, json.dumps(data, sort_keys=True)
-print &#39;INDENT:&#39;, json.dumps(data, sort_keys=True, indent=2)
-</code></pre><p>输出:<br>    DATA: [{‘a’: ‘A’, ‘c’: 3.0, ‘b’: (2, 4)}]<br>    NORMAL: [{“a”: “A”, “b”: [2, 4], “c”: 3.0}]<br>    INDENT: [<br>      {<br>        “a”: “A”,<br>        “b”: [<br>          2,<br>          4<br>        ],<br>        “c”: 3.0<br>      }<br>    ]</p>
-<p><code>separators</code>参数的作用是去掉<code>,</code>,<code>:</code>后面的空格，从上面的输出结果都能看到”,<br> :”后面都有个空格，这都是为了美化输出结果的作用，但是在我们传输数据的过程中，越精简越好，冗余的东西全部去掉，因此就可以加上separators参数：<br>    import json</p>
-<pre><code>data = [ { &#39;a&#39;:&#39;A&#39;, &#39;b&#39;:(2, 4), &#39;c&#39;:3.0 } ]
-print &#39;DATA:&#39;, repr(data)
-print &#39;repr(data)             :&#39;, len(repr(data))
-print &#39;dumps(data)            :&#39;, len(json.dumps(data))
-print &#39;dumps(data, indent=2)  :&#39;, len(json.dumps(data, indent=2))
-print &#39;dumps(data, separators):&#39;, len(json.dumps(data, separators=(&#39;,&#39;,&#39;:&#39;)))
-</code></pre><p>输出：<br>    DATA: [{‘a’: ‘A’, ‘c’: 3.0, ‘b’: (2, 4)}]<br>    repr(data)             : 35<br>    dumps(data)            : 35<br>    dumps(data, indent=2)  : 76<br>    dumps(data, separators): 29</p>
-<p><code>skipkeys</code>参数，在encoding过程中，dict对象的key只可以是string对象，如果是其他类型，那么在编码过程中就会抛出<code>ValueError</code>的异常。<code>skipkeys</code>可以跳过那些非string对象当作key的处理.<br>    import json</p>
-<pre><code>data= [ { &#39;a&#39;:&#39;A&#39;, &#39;b&#39;:(2, 4), &#39;c&#39;:3.0, (&#39;d&#39;,):&#39;D tuple&#39; } ]
-
-try:
-    print json.dumps(data)
-except (TypeError, ValueError) as err:
-    print &#39;ERROR:&#39;, err
-print 
-print json.dumps(data, skipkeys=True)
-</code></pre><p>输出:<br>    ERROR: keys must be a string</p>
-<pre><code>[{&quot;a&quot;: &quot;A&quot;, &quot;c&quot;: 3.0, &quot;b&quot;: [2, 4]}]
-</code></pre><p>####<a href="https://github.com/lzjun567/note/blob/master/python/json.md#json-1" target="_blank" rel="external"></a>让json支持自定义数据类型<br>以上例子都是基于python的built-in类型的，对于自定义类型的数据结构，json模块默认是没法处理的，会抛出异常：<code>TypeError
- xx is not JSON serializable</code>，此时你需要自定义一个转换函数:<br>    import json  </p>
-<pre><code>class MyObj(object):
-    def __init__(self, s):
-        self.s = s
-    def __repr__(self):
-        return &#39;&lt;MyObj(%s)&gt;&#39; % self.s
-
-obj = .MyObj(&#39;helloworld&#39;)
-
-try:
-    print json.dumps(obj)
-except TypeError, err:
-    print &#39;ERROR:&#39;, err
-
-#转换函数
-def convert_to_builtin_type(obj):
-    print &#39;default(&#39;, repr(obj), &#39;)&#39;
-    # 把MyObj对象转换成dict类型的对象
-    d = { &#39;__class__&#39;:obj.__class__.__name__, 
-          &#39;__module__&#39;:obj.__module__,
-        }
-    d.update(obj.__dict__)
-    return d
-
-print json.dumps(obj, default=convert_to_builtin_type)
-</code></pre><p>输出:<br>    ERROR: <myobj(helloworld)> is not JSON serializable<br>    default( <myobj(helloworld)> )<br>    {“s”: “hellworld”, “<strong>module</strong>“: “MyObj”, “<strong>class</strong>“: “<strong>main</strong>“} </myobj(helloworld)></myobj(helloworld)></p>
-<pre><code>#注意：这里的class和module根据你代码的所在文件位置不同而不同
-</code></pre><p>相反，如果要把json decode 成python对象，同样也需要自定转换函数，传递给json.loads方法的<code>object_hook</code>参数：</p>
-<pre><code>#jsontest.py
-
-import json
-
-class MyObj(object):
-
-    def __init__(self,s):
-        self.s = s
-
-    def __repr__(self):
-
-        return &quot;&lt;MyObj(%s)&gt;&quot; % self.s
-
-def dict_to_object(d):
-    if &#39;__class__&#39; in d:
-        class_name = d.pop(&#39;__class__&#39;)
-        module_name = d.pop(&#39;__module__&#39;)
-        module = __import__(module_name)
-
-        print &quot;MODULE:&quot;,module
-
-        class_ = getattr(module,class_name)
-
-        print &quot;CLASS&quot;,class_
-
-        args = dict((key.encode(&#39;ascii&#39;),value) for key,value in d.items())
-
-        print &#39;INSTANCE ARGS:&#39;,args
-
-        inst = class_(**args)
-    else:
-        inst = d
-    return inst
-
-encoded_object = &#39;[{&quot;s&quot;:&quot;helloworld&quot;,&quot;__module__&quot;:&quot;jsontest&quot;,&quot;__class__&quot;:&quot;MyObj&quot;}]&#39;
-
-myobj_instance = json.loads(encoded_object,object_hook=dict_to_object)
-print myobj_instance
-</code></pre><p>输出：<br>    MODULE: <module 'jsontest'="" from="" 'e:\users\liuzhijun\workspace\python\jsontest.py'=""><br>    CLASS <class 'jsontest.myobj'=""><br>    INSTANCE ARGS: {‘s’: u’helloworld’}<br>    [<myobj(helloworld)>]<br>    MODULE: <module 'jsontest'="" from="" 'e:\users\liuzhijun\workspace\python\jsontest.py'=""><br>    CLASS <class 'jsontest.myobj'=""><br>    INSTANCE ARGS: {‘s’: u’helloworld’}<br>    [<myobj(helloworld)>]</myobj(helloworld)></class></module></myobj(helloworld)></class></module></p>
-<p>####<a href="https://github.com/lzjun567/note/blob/master/python/json.md#encoderdecoderjson" target="_blank" rel="external"></a>使用Encoder与Decoder类实现json编码的转换<br>JSONEncoder有一个迭代接口<code>iterencode(data)</code>，返回一系列编码的数据，他的好处是可以方便的把逐个数据写到文件或网络流中，而不需要一次性就把数据读入内存.<br>    import json</p>
-<pre><code>encoder = json.JSONEncoder()
-data = [ { &#39;a&#39;:&#39;A&#39;, &#39;b&#39;:(2, 4), &#39;c&#39;:3.0 } ]
-
-for part in encoder.iterencode(data):
-    print &#39;PART:&#39;, part
-</code></pre><p>输出：<br>    PART: [<br>    PART: {<br>    PART: “a”<br>    PART: :<br>    PART: “A”<br>    PART: ,<br>    PART: “c”<br>    PART: :<br>    PART: 3.0<br>    PART: ,<br>    PART: “b”<br>    PART: :<br>    PART: [2<br>    PART: , 4<br>    PART: ]<br>    PART: }<br>    PART: ]</p>
-<p><code>encode</code>方法等价于<code>&#39;&#39;.join(encoder.iterencode()</code>，而且预先会做些错误检查（比如非字符串作为dict的key），对于自定义的对象，我们只需从些JSONEncoder的<code>default()</code>方法，其实现方式与上面提及的函数<code>convet_to_builtin_type()</code>是类似的。<br>    import json<br>    import json_myobj</p>
-<pre><code>class MyObj(object):
-
-    def __init__(self,s):
-        self.s = s
-
-    def __repr__(self):
-        return &quot;&lt;MyObj(%s)&gt;&quot; % self.s
-
-class MyEncoder(json.JSONEncoder):
-
-    def default(self, obj):
-        print &#39;default(&#39;, repr(obj), &#39;)&#39;
-        # Convert objects to a dictionary of their representation
-        d = { &#39;__class__&#39;:obj.__class__.__name__, 
-              &#39;__module__&#39;:obj.__module__,
-              }
-        d.update(obj.__dict__)
-        return d
-
-obj = json_myobj.MyObj(&#39;helloworld&#39;)
-print obj
-print MyEncoder().encode(obj)
-</code></pre><p>输出：<br>    <myobj(internal data)=""><br>    default( <myobj(internal data)=""> )<br>    {“s”: “helloworld”, “<strong>module</strong>“: “Myobj”, “<strong>class</strong>“: “MyObj”}</myobj(internal></myobj(internal></p>
-<p>从json对Python对象的转换:<br>    class MyDecoder(json.JSONDecoder):</p>
-<pre><code>    def __init__(self):
-        json.JSONDecoder.__init__(self, object_hook=self.dict_to_object)
-
-    def dict_to_object(self, d):
-        if &#39;__class__&#39; in d:
-            class_name = d.pop(&#39;__class__&#39;)
-            module_name = d.pop(&#39;__module__&#39;)
-            module = __import__(module_name)
-            print &#39;MODULE:&#39;, module
-            class_ = getattr(module, class_name)
-            print &#39;CLASS:&#39;, class_
-            args = dict( (key.encode(&#39;ascii&#39;), value) for key, value in d.items())
-            print &#39;INSTANCE ARGS:&#39;, args
-            inst = class_(**args)
-        else:
-            inst = d
-        return inst
-
-encoded_object = &#39;[{&quot;s&quot;: &quot;helloworld&quot;, &quot;__module__&quot;: &quot;jsontest&quot;, &quot;__class__&quot;: &quot;MyObj&quot;}]&#39;
-
-myobj_instance = MyDecoder().decode(encoded_object)
-print myobj_instance
-</code></pre><p>输出:<br>    MODULE: <module 'jsontest'="" from="" 'e:\users\liuzhijun\workspace\python\jsontest.py'=""><br>    CLASS: <class 'jsontest.myobj'=""><br>    INSTANCE ARGS: {‘s’: u’helloworld’}<br>    [<myobj(helloworld)>]</myobj(helloworld)></class></module></p>
-<p>####<a href="https://github.com/lzjun567/note/blob/master/python/json.md#json-2" target="_blank" rel="external"></a>json格式字符串写入到文件流中<br>上面的例子都是在内存中操作的，如果对于大数据，把他编码到一个类文件(file-like)中更合适，<code>load()</code>和<code>dump()</code>方法就可以实现这样的功能。<br>    import json<br>    import tempfile</p>
-<pre><code>data = [ { &#39;a&#39;:&#39;A&#39;, &#39;b&#39;:(2, 4), &#39;c&#39;:3.0 } ]
-
-f = tempfile.NamedTemporaryFile(mode=&#39;w+&#39;)
-json.dump(data, f)
-f.flush()
-
-print open(f.name, &#39;r&#39;).read()
-</code></pre><p>输出：<br>    [{“a”: “A”, “c”: 3.0, “b”: [2, 4]}]</p>
-<p>类似的：<br>    import json<br>    import tempfile</p>
-<pre><code>f = tempfile.NamedTemporaryFile(mode=&#39;w+&#39;)
-f.write(&#39;[{&quot;a&quot;: &quot;A&quot;, &quot;c&quot;: 3.0, &quot;b&quot;: [2, 4]}]&#39;)
-f.flush()
-f.seek(0)
-
-print json.load(f)
-</code></pre><p>输出：<br>    [{u’a’: u’A’, u’c’: 3.0, u’b’: [2, 4]}]</p>
-<p>参考：<br><a href="http://docs.python.org/2/library/json.html" target="_blank" rel="external">http://docs.python.org/2/library/json.html</a><br><a href="http://www.cnblogs.com/coser/archive/2011/12/14/2287739.html" target="_blank" rel="external">http://www.cnblogs.com/coser/archive/2011/12/14/2287739.html</a><br><a href="http://pymotw.com/2/json/" target="_blank" rel="external">http://pymotw.com/2/json/</a></p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;概念&lt;br&gt;序列化（Serialization）：将对象的状态信息转换为可以存储或可以通过网络传输的过程，传输的格式可以是JSON、XML等。反序列化就是从存储区域（JSON，XML）读取反序列化对象的状态，重新创建该对象。&lt;br&gt;JSON（JavaScript Objec
+      &lt;p&gt;今天遇到要查找一个表名在哪个python文件中，网上搜了下命令，运行没问题，所以拿出来跟大家分享下：&lt;/p&gt;
+&lt;p&gt;案例：查找表名为 rs_all_user_pv_category 的内容在哪个python文件中&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;python&quot;&gt;
     
     </summary>
     

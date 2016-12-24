@@ -1,0 +1,526 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="baidu_union_verify" content="5c2e4a0604dd52d5b462d13c29f27f34">
+  
+  <title>scala中Either,Option,Try的使用 | ITSky</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=3, minimum-scale=1">
+  
+  <meta name="author" content="JerryLiu">
+  
+  <meta name="description" content="scala中Either,Option,Try的使用scala是一种函数式的编程语言, 在进行数据交互时，以一种优雅的方式处理各种异常，于是就出现了Either, Option, Try这三个容器。这样编写出来的代码健壮性极强。这三个类的作用各有不同：1, Either解决的是两个值的类型不确定的问">
+  
+  
+  
+  
+  
+  <link rel="icon" href="/img/favicon.ico">
+  
+  
+  <link rel="apple-touch-icon" href="/img/pacman.jpg">
+  <link rel="apple-touch-icon-precomposed" href="/img/pacman.jpg">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <script src="/js/jquery-2.1.0.min.js"></script>
+  <link rel="stylesheet" href="//cdn.bootcss.com/highlight.js/8.0/styles/monokai_sublime.min.css">
+  <script type="text/javascript" src="//cdn.bootcss.com/highlight.js/8.0/highlight.min.js"></script>
+  <script type="text/javascript">
+      hljs.initHighlightingOnLoad()
+  </script>
+</head>
+
+  <body>
+    <header>
+      <div>
+	
+	<div id="textlogo">
+		<!-- <h1 class="site-name"><a href="/" title="ITSky">ITSky</a></h1>-->
+		<h1 class="site-name">ITSky</h1>
+		<h2 class="blog-motto">专注于Linux、Hadoop、Hive、Spark、Kaffka、Redis、MongoDB、ElasticSearch等技术</h2>
+	</div>
+	<div class="navbar">
+		<a class="navbutton navmobile" href="#" title="菜单"></a>
+	</div>
+	<nav class="animated">
+		<ul>
+			
+				<li><a href="/">主页</a></li>
+			
+				<li><a href="/archives">归档</a></li>
+			
+				<li><a href="/categories">分类</a></li>
+			
+				<li><a href="/about">About</a></li>
+			
+			<li>
+			
+			<!--<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+				<label>Search</label>
+				<input type="text" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+				<input type="hidden" name="q" value="site:itsky88.com">
+			</form>-->
+			
+			</li>
+		</ul>
+	</nav>
+</div>
+
+    </header>
+    <div id="container">
+      <!-- 文章内容详情模块 -->
+<div id="main" class="post" itemscope itemprop="blogPost">
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h2 itemprop="name">
+    
+      <a href="/2016/12/23/scala/scala中Either,Option,Try的使用/" title="scala中Either,Option,Try的使用" itemprop="url">scala中Either,Option,Try的使用</a>
+    
+  </h2>
+  <p class="article-author">By
+    
+      <a href="http://itsky88.com" title="JerryLiu">JerryLiu</a>
+    </p>
+  <p class="article-time">
+    <time datetime="2016-12-22T16:00:00.000Z" itemprop="datePublished">2016-12-23</time>
+    更新日期:<time datetime="2016-12-24T02:06:23.000Z" itemprop="dateModified">2016-12-24</time>
+    
+  </p>
+</header>
+		<div class="article-content">
+			
+			
+				<div id="toc" class="toc-article">
+					<strong class="toc-title">文章目录</strong>
+				<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#scala中Either-Option-Try的使用"><span class="toc-number">1.</span> <span class="toc-text">scala中Either,Option,Try的使用</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Either"><span class="toc-number">1.1.</span> <span class="toc-text">Either</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Option"><span class="toc-number">1.2.</span> <span class="toc-text">Option</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Try"><span class="toc-number">1.3.</span> <span class="toc-text">Try</span></a></li></ol></li></ol>
+				</div>
+			
+			<h2 id="scala中Either-Option-Try的使用"><a href="#scala中Either-Option-Try的使用" class="headerlink" title="scala中Either,Option,Try的使用"></a>scala中Either,Option,Try的使用</h2><p>scala是一种函数式的编程语言, 在进行数据交互时，以一种优雅的方式处理各种异常，于是就出现了Either, Option, Try这三个容器。这样编写出来的代码健壮性极强。<br>这三个类的作用各有不同：<br>1, Either解决的是两个值的类型不确定的问题;<br>2, Option解决的是null的问题;<br>3, Try解决的是捕获运行过程中可能出现的异常;</p>
+<p>下面就来细细说来, 哈哈。。。</p>
+<h3 id="Either"><a href="#Either" class="headerlink" title="Either"></a>Either</h3><p>Either包含了两个子类Left, Right, 并且Either也提供了类似集合的功能, 测试代码如下:</p>
+<pre><code class="java">package com.scala.test.collect
+
+import scala.util.{Failure, Success, Try}
+
+/**
+  * Created by jerry on 16-12-23.
+  * scala Either测试
+  */
+object EitherTest extends App {
+  def getEither(str: String): Either[Set[Int], List[String]] = {
+    if(str == &quot;left&quot;) {
+      Left(Set(1, 2, 3))
+    } else {
+      Right(List(&quot;zhangsan&quot;, &quot;lisi&quot;, &quot;wangwu&quot;, &quot;zhaoliu&quot;))
+    }
+  }
+  def eitherTest = {
+    val res = getEither(&quot;left&quot;)
+    println(res.isLeft)   // 判断第一个值是否为空
+    println(res.isRight)  // 判断第二个值是否为空
+    res.left.get.map(println _) // .left获取Left对象,
+    res.left.map(println _)
+    println(res.right.getOrElse(&quot;no right...&quot;))
+  }
+  eitherTest
+}
+</code></pre>
+<p>输出结果:</p>
+<pre><code class="java">true
+false
+1
+2
+3
+Set(1, 2, 3)
+no right...
+</code></pre>
+<h3 id="Option"><a href="#Option" class="headerlink" title="Option"></a>Option</h3><p>Option包含了两个子类None(表示空值), Some(表示非空值), 并且Option也提供了类似集合的功能, 测试代码如下:</p>
+<pre><code class="java">package com.scala.test.collect
+
+import scala.util.{Failure, Success, Try}
+
+/**
+  * Created by jerry on 16-12-23.
+  * scala Option测试
+  */
+object EitherTest extends App {
+  def getOpt(str: String): Option[String] = {
+    if(str == null || str == &quot;&quot;) None else Some(&quot;hello Option....&quot;)
+  }
+  def optionTest = {
+    val res1 = getOpt(&quot;1&quot;)
+    println(res1.isEmpty)
+    println(res1.isDefined)
+    if(res1.isDefined) println(res1.get)
+
+    // 高级用法
+    val res2 = getOpt(&quot;&quot;)
+    println(res2.getOrElse(&quot;is empty&quot;))
+  }
+  optionTest
+}
+</code></pre>
+<p>输出结果:</p>
+<pre><code class="java">false
+true
+hello Option....
+is empty
+</code></pre>
+<h3 id="Try"><a href="#Try" class="headerlink" title="Try"></a>Try</h3><p>Try包含了两个子类Failure(表示出现异常), Success(表示执行成功), 并且Try也提供了类似集合的功能, 测试代码如下:</p>
+<pre><code class="java">package com.scala.test.collect
+
+import scala.util.{Failure, Success, Try}
+
+/**
+  * Created by jerry on 16-12-23.
+  * scala Try测试
+  */
+object EitherTest extends App {
+  def divide(a: Int, b: Int): Try[Int] = Try(a / b)
+  def getTryValue(t: Try[Int]) = {
+    t match {
+      case Success(s) =&gt; println(s&quot;success value is : $s&quot;)
+      case Failure(f) =&gt; println(s&quot;error value is : $f&quot;)
+    }
+  }
+  def tryTest = {
+    val res1 = divide(1, 0)
+    getTryValue(res1)
+    // 高级用法
+    println(res1.getOrElse(5))
+
+    val res2 = divide(1, 2)
+    getTryValue(res2)
+  }
+  tryTest
+}
+</code></pre>
+<p>输出结果:</p>
+<pre><code class="java">error value is : java.lang.ArithmeticException: / by zero
+5
+success value is : 0
+</code></pre>
+
+		</div>
+		<footer class="article-footer clearfix">
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/Scala/">Scala</a>
+  </div>
+
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/Scala/">Scala</a>
+</div>
+
+
+
+<div class="article-share" id="share">
+
+  <div data-url="http://itsky88.com/2016/12/23/scala/scala中Either,Option,Try的使用/" data-title="scala中Either,Option,Try的使用 | ITSky" data-tsina="null" class="share clearfix">
+  </div>
+
+</div>
+</footer>   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2016/12/24/scala/method execute has incompatible type/" title="method execute has incompatible type">
+  <strong>PREVIOUS:</strong><br/>
+  <span>
+  method execute has incompatible type</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2016/12/22/redis/redis集群模式下进行二进制数据存储/"  title="redis集群模式下进行二进制数据存储">
+ <strong>NEXT:</strong><br/> 
+ <span>redis集群模式下进行二进制数据存储
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+	<script type="text/javascript" src="/js/my_highlight.js"></script>
+</div>  
+      <div class="openaside">
+    <a class="navbutton" href="#" title="显示侧边栏"></a>
+</div>
+
+  <div id="toc" class="toc-aside">
+      <strong class="toc-title">文章目录</strong>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#scala中Either-Option-Try的使用"><span class="toc-number">1.</span> <span class="toc-text">scala中Either,Option,Try的使用</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Either"><span class="toc-number">1.1.</span> <span class="toc-text">Either</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Option"><span class="toc-number">1.2.</span> <span class="toc-text">Option</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Try"><span class="toc-number">1.3.</span> <span class="toc-text">Try</span></a></li></ol></li></ol>
+  </div>
+
+<div id="asidepart">
+    <div class="closeaside">
+        <a class="closebutton" href="#" title="隐藏侧边栏"></a>
+    </div>
+    <aside class="clearfix">
+        
+          
+	<div class="widget">
+		<div class="categorieslist">
+			<p class="asidetitle fa fa-gui">分类</p>
+				<ul>
+				
+					<li><a href="/categories/Hbase/" title="Hbase">Hbase<sup>1</sup></a></li>
+				
+					<li><a href="/categories/Hibernate/" title="Hibernate">Hibernate<sup>1</sup></a></li>
+				
+					<li><a href="/categories/Hive/" title="Hive">Hive<sup>2</sup></a></li>
+				
+					<li><a href="/categories/Java/" title="Java">Java<sup>2</sup></a></li>
+				
+					<li><a href="/categories/Js/" title="Js">Js<sup>2</sup></a></li>
+				
+					<li><a href="/categories/Maven/" title="Maven">Maven<sup>1</sup></a></li>
+				
+					<li><a href="/categories/Netty/" title="Netty">Netty<sup>2</sup></a></li>
+				
+					<li><a href="/categories/Nodejs/" title="Nodejs">Nodejs<sup>1</sup></a></li>
+				
+					<li><a href="/categories/Redis/" title="Redis">Redis<sup>1</sup></a></li>
+				
+					<li><a href="/categories/Scala/" title="Scala">Scala<sup>2</sup></a></li>
+				
+				</ul>
+		</div>
+	</div>
+
+        
+          
+  <div class="widget">
+    <div class="archiveslist">
+      <!-- 输出 ‘归档’ 标题 -->
+      <p class="asidetitle fa fa-fei">
+        <a href="/archives">
+          归档
+        </a>
+      </p>
+
+        <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">十二月 2016</a><span class="archive-list-count">95</span></li></ul>
+    </div>
+  </div>
+
+
+        
+          
+<div class="widget">
+	<div class="linkslist">
+		<p class="asidetitle fa fa-xie">最新文章</p>
+			<ul>
+			
+				<li><a href="/tags/Hbase/" title="Hbase">Hbase<sup>1</sup></a></li>
+			
+				<li><a href="/tags/Hexo/" title="Hexo">Hexo<sup>1</sup></a></li>
+			
+				<li><a href="/tags/Hibernate/" title="Hibernate">Hibernate<sup>1</sup></a></li>
+			
+				<li><a href="/tags/Hive/" title="Hive">Hive<sup>2</sup></a></li>
+			
+				<li><a href="/tags/Java/" title="Java">Java<sup>2</sup></a></li>
+			
+				<li><a href="/tags/Js/" title="Js">Js<sup>2</sup></a></li>
+			
+				<li><a href="/tags/Maven/" title="Maven">Maven<sup>1</sup></a></li>
+			
+				<li><a href="/tags/Netty/" title="Netty">Netty<sup>2</sup></a></li>
+			
+				<li><a href="/tags/Redis/" title="Redis">Redis<sup>1</sup></a></li>
+			
+				<li><a href="/tags/Scala/" title="Scala">Scala<sup>2</sup></a></li>
+			
+			</ul>
+	</div>
+</div>
+
+        
+          <div class="widget">
+  <div class="linkslist">
+    <p class="asidetitle fa fa-you">友情链接</p>
+      <ul>
+        <li><a href="http://www.css88.com/jqapi-1.9/" target="_blank" title="Jquery参考手册">Jquery参考手册</a></li>
+        <li><a href="http://hexo.io" target="_blank" title="Hexo">Hexo</a></li>
+      </ul>
+  </div>
+</div>
+        
+    </aside>
+</div>
+    </div>
+    <a id="totop" href="#top"></a>
+<script type="text/javascript" src="/js/totop.js?v=1", async></script>
+    <footer><div id="footer" >
+	<div class="footer-info">
+		<p>
+			<a>网站地图</a>|<a>订阅本站</a>|<a>联系博主</a>:
+			<span>
+				<a class="fa fa-github" target="_blank" href="https://github.com/jerryliu306"></a>
+				<a class="fa fa-weibo" target="_blank" href="http://weibo.com/u/2679045517/home?wvr=5"></a>
+				<a class="fa fa-email" target="_blank" href="1031757312@qq.com"></a>
+			</span>
+		</p>
+		<p>
+			<span>
+				Copyright &copy;2016&nbsp;JerryLiu
+			</span>
+			<span>
+				Powered by
+				<a target='_blank', href='https://hexo.io'>Hexo.</a>
+			</span>
+		</p>
+	</div>
+	<!--
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	-->
+</div>
+</footer>
+    <script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else
+    {
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      h  = $('article h2')
+      ah = $('article h2'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  if(ah.length==0){
+    t.css('display','none');
+  }else{
+    c.click(function(){
+      ta.css('display', 'block').addClass('fadeIn');
+    });
+    o.click(function(){
+      ta.css('display', 'none');
+    });
+    $(window).scroll(function(){
+      ta.css("top",Math.max(140,320-$(this).scrollTop()));
+    });
+  };
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina');
+  var html = [
+  '<a href="#" class="overlay" id="qrcode"></a>',
+  '<div class="qrcode clearfix"><span>扫描二维码分享到微信朋友圈</span><a class="qrclose" href="#share"></a><strong>Loading...Please wait</strong><img id="qrcode-pic" data-src="http://s.jiathis.com/qrcode.php?url=' + encodedUrl + '"/></div>',
+  '<a href="#textlogo" class="article-back-to-top" title="Top"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="QRcode"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="Weibo"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+  $('.article-share-qrcode').click(function(){
+    var imgSrc = $('#qrcode-pic').attr('data-src');
+    $('#qrcode-pic').attr('src', imgSrc);
+    $('#qrcode-pic').load(function(){
+        $('.qrcode strong').text(' ');
+    });
+  });
+});     
+</script>
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+  </body>
+</html>
+
